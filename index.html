@@ -591,6 +591,28 @@ function buildWhy(sovereign, flagged, ranked){
     body:`複数の要因が重なって、夜がかなり乱れています。中でも ${names} の影響が大きい状態です。ただ、これはあなたの意志が弱いからではありません。<b style="color:var(--accent2)">今の状況を作っているのは仕組みのほう</b>です。責める必要はまったくなく、一度に全部ではなく、上から一つずつ変えれば必ず変わります。`};
 }
 
+/* 診断カード1枚を生成。無料と完全版の両方から使う */
+function diagCard(d, i, sev){
+  const sub = SUB[d][pickSub(d)];
+  const band = bandInfo(sev[d]);
+  const fi = band.idx % sub.acts.length;   // スコア帯で最初の一手が入れ替わる
+  const feat = sub.acts[fi];
+  const rest = sub.acts.filter((_,j)=>j!==fi).map(a=>`<li>${a}</li>`).join('');
+  return `<div class="diag">
+    <div class="dh">
+      <div class="dt">${sub.name}${i===0?'<span class="pri">最優先</span>':''}</div>
+      <div class="ds">${DOMAINS[d].name}　${sev[d]}点・${band.label}</div>
+    </div>
+    <div class="db">
+      <p class="mech">${sub.mech}</p>
+      <div class="lab">いまの段階の一手</div>
+      <div class="feat">${feat}</div>
+      <div class="lab">あわせてできること</div>
+      <ul class="acts">${rest}</ul>
+    </div>
+  </div>`;
+}
+
 function renderResult(D){
   const {sev, flagged, ranked, sovereign} = D;
   $('quiz').classList.add('hidden');
@@ -605,27 +627,13 @@ function renderResult(D){
 
   // 無料の診断カード。引っかかった領域すべてに、サブタイプ別の詳しい診断と行動例
   let cards = '';
+  const freeDoms = flagged.slice(0,2);   // 無料はスコア上位2枚まで。同点が並ぶ場合は並び順の2つ
+  const restCount = Math.max(0, flagged.length - freeDoms.length);
   if(flagged.length){
-    cards = flagged.map((d,i)=>{
-      const sub = SUB[d][pickSub(d)];
-      const band = bandInfo(sev[d]);
-      const fi = band.idx % sub.acts.length;   // スコア帯で最初の一手が入れ替わる
-      const feat = sub.acts[fi];
-      const rest = sub.acts.filter((_,j)=>j!==fi).map(a=>`<li>${a}</li>`).join('');
-      return `<div class="diag">
-        <div class="dh">
-          <div class="dt">${sub.name}${i===0?'<span class="pri">最優先</span>':''}</div>
-          <div class="ds">${DOMAINS[d].name}　${sev[d]}点・${band.label}</div>
-        </div>
-        <div class="db">
-          <p class="mech">${sub.mech}</p>
-          <div class="lab">いまの段階の一手</div>
-          <div class="feat">${feat}</div>
-          <div class="lab">あわせてできること</div>
-          <ul class="acts">${rest}</ul>
-        </div>
-      </div>`;
-    }).join('');
+    cards = freeDoms.map((d,i)=>diagCard(d,i,sev)).join('');
+    if(restCount>0){
+      cards += `<p class="body" style="font-size:13.5px;color:var(--sub);margin-top:4px">ほかに ${restCount} 項目の診断が見つかっています。残りは下の完全版レポートで読めます。</p>`;
+    }
   } else {
     cards = `<div class="diag"><div class="dh"><div class="dt">大きな問題は見つかりませんでした</div></div>
       <div class="db"><p class="mech">今の夜の過ごし方は、よく整っています。この状態を保つために、次の3つだけ意識しておくと崩れにくくなります。</p>
@@ -668,6 +676,8 @@ function renderResult(D){
       </div>
       <div class="locked">
         <ul>
+          ${restCount>0?`<li>残り ${restCount} 項目の診断カード（${flagged.slice(2).map(d=>DOMAINS[d].name).join('、')}）</li>`:''}
+          <li>無料分もふくめた、すべての診断カードの完全版</li>
           <li>あなた専用の30日の行動計画。週ごとに一手ずつ進める設計</li>
           <li>それぞれの対処に効く道具の選び方と、購入先の一覧</li>
           <li>毎日の実行を支えるLINEサポートへの接続</li>
@@ -726,13 +736,18 @@ function buildPremium(D){
     const sub = SUB[d][pickSub(d)];
     return `<li><b>第${i+1}週　${DOMAINS[d].name}</b><br>${sub.acts[0]}</li>`;
   }).join('');
+  const allCards = targets.map((d,i)=>diagCard(d,i,sev)).join('');
   return `
     <div class="head">
       <div class="t">完全版レポート　テスト表示中</div>
-      <div class="s">続けるための30日設計と、毎日のサポート</div>
+      <div class="s">すべての診断と、続けるための30日設計・毎日のサポート</div>
     </div>
     <div class="repbody">
-      <p class="intro">無料の診断で出た「今夜からできること」を、<b style="color:var(--accent)">30日で定着させる順番</b>と、<b style="color:var(--accent)">それを支える道具とサポート</b>にまとめました。一度に全部ではなく、週にひとつずつで十分です。</p>
+      <p class="intro">見つかった診断カードのすべてと、それを<b style="color:var(--accent)">30日で定着させる順番</b>、<b style="color:var(--accent)">支える道具とサポート</b>をまとめました。一度に全部ではなく、週にひとつずつで十分です。</p>
+      <div class="sec">
+        <h3>すべての診断カード　完全版</h3>
+        ${allCards}
+      </div>
       <div class="sec">
         <h3>30日の進め方</h3>
         <ol class="rep">${weeks}</ol>
