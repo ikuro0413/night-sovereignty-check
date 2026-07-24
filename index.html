@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>夜の主権診断 — 睡眠を妨げる行動のクセを読み解く</title>
+<style>
+  :root{
+    --bg:#0b0e14; --bg2:#111725; --card:#161d2b; --line:#26304a;
+    --ink:#e9e6dc; --sub:#9aa3b5; --accent:#c8b273; --accent2:#7fa6c4; --bad:#c98a7a;
+    --good:#8bbf9f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    background:radial-gradient(1200px 600px at 50% -10%,#182236 0%,var(--bg) 55%);
+    color:var(--ink); line-height:1.8; min-height:100vh; padding:24px 16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:680px;margin:0 auto}
+  .brand{text-align:center;letter-spacing:.3em;font-size:12px;color:var(--accent);margin-bottom:6px}
+  .card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);
+    border-radius:16px;padding:26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .btn{display:block;width:100%;text-align:center;cursor:pointer;border:none;border-radius:12px;
+    padding:15px;font-family:inherit;font-size:16px;letter-spacing:.05em;
+    background:linear-gradient(180deg,var(--accent),#a8925a);color:#1a1305;font-weight:600;
+    transition:transform .08s ease,opacity .2s}
+  .btn:hover{transform:translateY(-1px)} .btn:active{transform:translateY(0)}
+  .prog{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:14px}
+  .prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0;transition:width .3s}
+  .qhead{text-align:center;font-size:19px;font-weight:600;letter-spacing:.06em;margin-bottom:6px;color:var(--ink)}
+  .phase{text-align:center;font-size:12px;color:var(--accent2);letter-spacing:.1em;margin-bottom:16px;min-height:18px}
+  .q{font-size:19px;font-weight:600;margin:6px 0 22px;letter-spacing:.02em;min-height:64px;display:flex;align-items:center}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{cursor:pointer;border:1px solid var(--line);background:#131a28;border-radius:12px;padding:14px 16px;
+    font-size:15px;color:var(--ink);transition:all .12s;text-align:left;font-family:inherit}
+  .opt:hover{border-color:var(--accent2);background:#17202f}
+  .back{background:none;border:none;color:var(--sub);font-family:inherit;font-size:13px;cursor:pointer;margin-top:18px}
+  .back:hover{color:var(--ink)}
+  .score-wrap{text-align:center;margin:4px 0 20px}
+  .score-num{font-size:56px;font-weight:700;color:var(--accent);line-height:1}
+  .score-lab{font-size:13px;color:var(--sub);letter-spacing:.2em;margin-top:6px}
+  .delta{font-size:14px;margin-top:8px;font-weight:600}
+  .delta.up{color:var(--good)} .delta.down{color:var(--bad)}
+  .hist{margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:11px;color:var(--sub)}
+  .hist span{border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+  .bandnote{font-size:13.5px;color:var(--accent2);border-left:2px solid var(--accent2);padding-left:10px;margin-bottom:10px;line-height:1.75}
+  .feat{background:#1a2130;border:1px solid var(--accent);border-radius:10px;padding:12px 14px;font-size:14px;color:#e9e2cf;line-height:1.75;margin-bottom:4px}
+  h2{font-size:18px;margin:24px 0 10px;letter-spacing:.04em;border-left:3px solid var(--accent);padding-left:12px}
+  p.body{font-size:15px;color:#d8d4c8;margin-bottom:10px}
+  .bars{margin:6px 0}
+  .bar{margin:11px 0}
+  .bar .bl{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .bar .bt{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+  .bar .bf{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+  .bar.top .bf{background:linear-gradient(90deg,#c98a7a,var(--accent))}
+  .bar.top .bl b{color:var(--bad)}
+  /* 無料の診断カード */
+  .diag{border:1px solid var(--line);border-radius:14px;margin:16px 0;overflow:hidden;background:#121927}
+  .diag .dh{padding:14px 18px;background:linear-gradient(180deg,#1a2233,#141c2b);border-bottom:1px solid var(--line)}
+  .diag .dh .dt{font-size:16px;font-weight:600;color:var(--ink)}
+  .diag .dh .ds{font-size:12px;color:var(--sub);margin-top:2px}
+  .diag .dh .pri{display:inline-block;font-size:11px;color:#1a1305;background:var(--accent);border-radius:6px;padding:1px 8px;margin-left:8px;vertical-align:2px}
+  .diag .db{padding:16px 18px}
+  .diag .mech{font-size:14px;color:#d2cec2;line-height:1.85;margin-bottom:12px}
+  .lab{font-size:12px;letter-spacing:.15em;color:var(--accent2);margin:12px 0 6px}
+  .acts{list-style:none;font-size:14px;color:#d8d4c8}
+  .acts li{padding:8px 0 8px 22px;border-bottom:1px dashed var(--line);position:relative;line-height:1.75}
+  .acts li:before{content:"◆";position:absolute;left:2px;color:var(--accent);font-size:10px;top:13px}
+  /* premium */
+  .prem{position:relative;margin-top:22px;border:1px solid var(--accent);border-radius:14px;overflow:hidden}
+  .prem .head{background:linear-gradient(180deg,#1d2436,#161d2b);padding:16px 18px;border-bottom:1px solid var(--line)}
+  .prem .head .t{font-size:16px;font-weight:600;color:var(--accent)}
+  .prem .head .s{font-size:12px;color:var(--sub);margin-top:3px}
+  .locked{padding:18px}
+  .locked ul{list-style:none;font-size:14px;color:#cfcbbf}
+  .locked li{padding:7px 0;border-bottom:1px dashed var(--line);filter:blur(3.5px);user-select:none}
+  .lockbar{padding:16px 18px;background:#131a28;text-align:center}
+  .price{font-size:22px;font-weight:700;color:var(--ink)}.price small{font-size:13px;color:var(--sub);font-weight:400}
+  .prem h3{font-size:15px;color:var(--accent);margin:0 0 8px;letter-spacing:.03em}
+  .prem .rep{list-style:none;font-size:14px;color:#d2cec2;margin:4px 0 8px}
+  .prem .rep li{padding:9px 0;border-bottom:1px solid var(--line);line-height:1.75}
+  .prem .rep li b{color:var(--ink)}
+  .sec{padding:16px 18px;border-top:1px solid var(--line)}
+  .sec .sc{font-size:12px;color:var(--sub);font-weight:400}
+  .goods{list-style:none;font-size:13.5px}
+  .goods li{padding:9px 0;border-bottom:1px dashed var(--line);line-height:1.7}
+  .goods .pr{color:var(--accent);font-weight:600}
+  .goods .gn{color:var(--sub);font-size:12.5px}
+  .goods .amz{color:var(--accent2);font-size:12px;text-decoration:none;border:1px solid var(--accent2);border-radius:6px;padding:2px 9px;white-space:nowrap}
+  .goods .amz:hover{background:#17202f}
+  .svc2{background:#12202a;border:1px solid #2c4658;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#d6e2ea;line-height:1.75}
+  .svc2 b{color:var(--good)}
+  .btn2{display:block;width:100%;text-align:center;cursor:pointer;border:1px solid var(--good);
+    border-radius:10px;padding:13px;font-family:inherit;font-size:15px;color:#0b1410;font-weight:600;
+    background:linear-gradient(180deg,#8bbf9f,#6ba585)}
+  .testnote{font-size:12px;color:var(--sub);margin-top:16px;background:#131a28;border:1px solid var(--line);border-radius:10px;padding:12px}
+  .prem .intro{font-size:14px;color:#cfcbbf;padding:18px 18px 0}
+  .disc{margin-top:26px;font-size:11px;color:#6f778a;line-height:1.7;border-top:1px solid var(--line);padding-top:16px}
+  .hidden{display:none}
+  .fade{animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media(max-width:480px){.q{font-size:17px}.score-num{font-size:46px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">TOKI ／ 夜の主権診断</div>
+
+  <section id="quiz" class="card fade">
+    <div class="qhead">あなたの夜を、読み解く</div>
+    <div class="phase" id="phase"></div>
+    <div class="prog"><i id="pbar"></i></div>
+    <div class="q" id="qtext"></div>
+    <div class="opts" id="opts"></div>
+    <button class="back" id="backbtn" onclick="goBack()">← 前の質問へ</button>
+  </section>
+
+  <section id="result" class="hidden fade"></section>
+
+  <p class="disc" id="globalDisc"></p>
+</div>
+
+<script>
+/* ============================================================
+   データ定義
+   dom = 8つの行動領域。各領域に、入口の質問と深掘りの質問ツリー、
+   サブタイプ別の診断文と行動例、グッズ、LINEサポートを持つ。
+============================================================ */
+
+const LIKERT = [
+  {t:'とても当てはまる', v:4},
+  {t:'やや当てはまる',   v:3},
+  {t:'あまり当てはまらない', v:2},
+  {t:'まったく違う',     v:1},
+];
+
+const DOMAINS = {
+  present:{ name:'目先の誘惑への弱さ',
+    screen:'布団に入ってから「あと5分だけ」とスマホを見て、気づけば30分以上たっていることがある',
+    deep:[
+      {type:'choice', text:'夜、いちばん時間が溶けているのはどれですか',
+        choices:[
+          {label:'動画や配信', sub:'autoplay'},
+          {label:'SNSやニュース', sub:'scroll'},
+          {label:'ゲーム', sub:'game'},
+          {label:'チャットやメッセージのやり取り', sub:'chat'},
+        ]},
+      {type:'scale', text:'次のコンテンツが自動で始まると、そのまま見続けてしまう'},
+      {type:'scale', text:'「やめよう」と思ってから、実際にやめるまで30分以上かかることがある'},
+    ]},
+  commit:{ name:'就寝時刻の曖昧さ',
+    screen:'寝る時刻を決めていない、または決めても守れないことが多い',
+    deep:[
+      {type:'choice', text:'寝る時刻について、近いのはどちらですか',
+        choices:[
+          {label:'そもそも決めていない', sub:'none', skip:1},
+          {label:'決めているが、守れない', },
+        ]},
+      {type:'choice', text:'守れない一番の理由は何ですか',
+        choices:[
+          {label:'仕事や家事が終わらない', sub:'push'},
+          {label:'一日の中で自分の時間が夜しかない', sub:'revenge'},
+          {label:'理由はないが、なんとなく延びる', sub:'drift'},
+        ]},
+    ]},
+  default:{ name:'夜更かししやすい環境',
+    screen:'スマホを手の届く場所に置いて寝ている',
+    deep:[
+      {type:'scale', text:'スマホの充電器は、寝室か枕元にある', sub:'charge'},
+      {type:'scale', text:'朝のアラームはスマホに頼っている', sub:'alarm'},
+      {type:'scale', text:'寝室にテレビやパソコンがあり、寝る直前まで見られる状態だ', sub:'media'},
+    ]},
+  fatigue:{ name:'夜の判断疲れ',
+    screen:'夜は考える気力が残っておらず、つい流されてしまう',
+    deep:[
+      {type:'choice', text:'夜の過ごし方で、近いのはどちらですか',
+        choices:[
+          {label:'帰宅してから寝るまで、なんとなくスマホやテレビで過ぎていく', sub:'inertia'},
+          {label:'夜に仕事や重要な決め事を持ち込みがちだ', sub:'nightwork'},
+        ]},
+      {type:'scale', text:'寝る準備を始めるタイミングを、毎晩その場の気分で決めている'},
+    ]},
+  hotcold:{ name:'朝と夜の自分のズレ',
+    screen:'朝は「今日こそ早く寝よう」と思うのに、夜になると崩れる',
+    deep:[
+      {type:'choice', text:'決意が夜に崩れるとき、近いのはどちらですか',
+        choices:[
+          {label:'決意はするが、具体的に何時に何をするかまでは決めていない', sub:'vague'},
+          {label:'夜になると「今日は疲れたから明日から」と思ってしまう', sub:'tomorrow'},
+        ]},
+      {type:'scale', text:'決めたことを、紙やアプリに書き残していない'},
+    ]},
+  sunk:{ name:'切り上げられなさ',
+    screen:'見続けないと損な気がして、途中でやめられない',
+    deep:[
+      {type:'choice', text:'切り上げられない感覚に、近いのはどちらですか',
+        choices:[
+          {label:'「ここまで見たから最後まで」と思って続けてしまう', sub:'sunkcost'},
+          {label:'見ておかないと話題や情報に取り残される気がする', sub:'fomo'},
+        ]},
+      {type:'scale', text:'明日見ても同じ内容だと分かっていても、今夜見てしまう'},
+    ]},
+  loop:{ name:'無意識のスマホ習慣',
+    screen:'特に用がなくても、気づくとスマホを開いている',
+    deep:[
+      {type:'choice', text:'スマホを開くきっかけとして、いちばん多いのはどれですか',
+        choices:[
+          {label:'通知が来たとき', sub:'notif'},
+          {label:'手持ち無沙汰になった瞬間', sub:'idle'},
+          {label:'ソファや布団など、決まった場所に着いたとき', sub:'place'},
+        ]},
+      {type:'scale', text:'開いたあと、当初の目的と関係ないアプリまで見ている'},
+    ]},
+  rhythm:{ name:'生活リズムの乱れ',
+    screen:'寝る時刻と起きる時刻が、日によってバラバラだ',
+    deep:[
+      {type:'scale', text:'休日は平日より2時間以上遅く起きる', sub:'weekend'},
+      {type:'choice', text:'勤務の形はどちらに近いですか',
+        choices:[
+          {label:'日中のほぼ決まった時間に働いている', },
+          {label:'交代勤務や夜勤がある', sub:'shift'},
+        ]},
+      {type:'scale', text:'朝、起きてから太陽の光を浴びる習慣がない', sub:'light'},
+    ]},
+};
+
+/* ---- サブタイプ別の診断文と行動例。研究知見を根拠として添える ---- */
+const SUB = {
+  present:{
+    autoplay:{ name:'自動再生に流されるタイプ',
+      mech:'次が勝手に始まる仕組みは、やめる判断だけをあなたに要求し、続ける判断は要求しません。人は初期設定に従いやすいことが知られていて、ジョンソンとゴールドスタインの比較研究では、初期設定の違いだけで人々の選択が大きく変わりました。これは意志の敗北ではなく、設定の問題です。',
+      acts:['YouTubeやNetflixの自動再生を今すぐオフにする。次が始まらなければ、そこが自然な区切りになる',
+        '再生する前に「今夜はあと2本で終わり」と口に出して決める。声に出した約束は破りにくい',
+        '画面を白黒表示にする。色を消しただけでスマホの利用時間が減ったという研究報告がある',
+        '見終わったらアプリを閉じ、スマホをリビングの充電器に置いてから布団に戻る']},
+    scroll:{ name:'無限スクロールが止まらないタイプ',
+      mech:'SNSやニュースには終わりがありません。終わりのないものを意志で切り上げるのは、誰にとっても難しいことです。テキサス大学のワードらの研究では、スマホが視界にあるだけで注意力が割かれると報告されています。終わりは、自分で外側に作るしかありません。',
+      acts:['アプリごとに1日の上限時間を設定し、上限が来たら画面を閉じてスマホを部屋の外へ置く',
+        'よく開くSNSをホーム画面の1枚目から消してフォルダの奥に移す。開くまでの手間が増えるだけで利用は減る',
+        '寝る前の巡回を「3つのアプリを1周だけ」と決め、2周目に入りそうになったら立ち上がって水を飲む',
+        '画面を白黒表示にする。色の刺激が減るとスクロールが止まりやすいという報告がある']},
+    game:{ name:'ゲームの区切りでやめられないタイプ',
+      mech:'ゲームは1試合、1クエストと、常に続きが用意されるよう設計されています。やめられるのは区切りの直後だけで、そこを逃すと次の区切りまで止まれません。アリエリーらの研究では、締切を自分で先に課した学生の方が成果が良かったと報告されています。区切りは前もって決めるのが有効です。',
+      acts:['遊ぶ前に「今夜は◯試合まで」と口に出して決める。家族がいれば宣言する',
+        '最後の1試合を始める前に、終了時刻のアラームをセットしておく',
+        '試合が終わった瞬間にアプリを閉じ、スマホやコントローラーを充電器へ置く。次のロード画面を見ない']},
+    chat:{ name:'夜のやり取りを切り上げられないタイプ',
+      mech:'夜のやり取りは、相手がいる分だけ、切り上げの主導権が自分にないように感じられます。しかし返信への期待は、送る側が思うよりずっと緩いという調査報告があります。切り上げは失礼ではなく、翌朝返すのは普通のことです。',
+      acts:['「そろそろ寝るね、続きは明日」と一言送ってから閉じる。この定型文を決めておくと迷わない',
+        '就寝30分前からおやすみモードにして、通知そのものを翌朝に回す',
+        '親しい相手には「23時以降は返信しない人」だと先に伝えて、期待値ごと変えてしまう']},
+    gen:{ name:'目先の誘惑で夜が延びるタイプ',
+      mech:'目の前の快楽は、少し先の休息よりも常に強く見えます。これは人間に共通する性質で、意志の強さの問題ではありません。勝負を意志でなく、仕組みの側に移すのが定石です。',
+      acts:['動画の自動再生をオフにする','見る本数や時間を、再生する前に口に出して決める','見終わったらスマホを別の部屋の充電器に置く']},
+  },
+  commit:{
+    none:{ name:'就寝時刻を決めていないタイプ',
+      mech:'ゴールのないマラソンを走り切れる人はいません。何時に寝るかが決まっていないと、脳は終わりを判断できず、夜は自然に延び続けます。ゴルヴィツァーらの大規模な分析では、時刻と行動を具体的に決めた計画は、漠然とした決意に比べて達成率が大きく上がると報告されています。',
+      acts:['理想ではなく、今週守れそうな就寝時刻を1つ決める。今の実態が1時なら、まず0時45分でいい',
+        '決めた時刻を家族やパートナーに言う。「今日から0時45分に寝ることにした」と伝えるだけで守りやすくなる',
+        '就寝30分前にアラームを1本入れ、鳴ったら照明を一段落とす',
+        '1週間守れたら15分だけ前に動かす。一気に早めようとしない']},
+    push:{ name:'仕事や家事に就寝を押し出されるタイプ',
+      mech:'あなたの夜更かしは娯楽ではなく、終わらないタスクの側の問題です。ただし夜の作業は能率が落ちるため、同じ作業でも朝に回すと短時間で済むことが多い。判断の質が時間帯や疲労で変わることは、裁判官の判断を調べたダンジガーらの研究でも報告されています。',
+      acts:['「夜やる」を「明日の朝やる」に置き換える。朝15分早く起きて回す方が、総時間は短くなりやすい',
+        '就寝時刻を先に固定し、そこから逆算して家事の締切を決める。終わらない分は翌日に持ち越すと最初から決めておく',
+        '夜の残タスクは紙に書き出して机に置く。頭から紙に移すと、抱えたまま布団に入らずに済む']},
+    revenge:{ name:'夜にしか自分の時間がないタイプ',
+      mech:'日中が仕事や家族のための時間で埋まっている人ほど、夜更かしは唯一の自分の時間になります。これは報復性夜更かしと呼ばれ、クローゼらの研究以来、自制心の弱さではなく日中の自由の少なさと結びつくと報告されています。責めるべきはあなたではなく、自分の時間が夜にしか置けていない配置です。',
+      acts:['自分の時間を夜から朝に引っ越す。夜30分削って、朝30分、誰にも邪魔されない時間を予約する',
+        '夜の自分時間に終わりの儀式を作る。好きな飲み物を1杯だけ淹れ、飲み終わったら終了と決める',
+        '週に1日、家族と交渉して昼間に完全な自由時間を確保する。夜で取り返す必要そのものをなくす']},
+    drift:{ name:'なんとなく夜が延びるタイプ',
+      mech:'理由もなく延びる夜は、時刻の感覚が消えていることがほとんどです。時計を見ない環境では、体感時間は実際よりずっと短く感じられます。区切りの合図を自分の外側に置くと、感覚に頼らずに切り上げられます。',
+      acts:['就寝1時間前と30分前に、照明やスマートスピーカーで自動の合図を鳴らす',
+        'リビングに針の時計を置く。画面の中の時計より、物理の時計の方が時間の感覚が戻る',
+        '「この番組が終わったら風呂」のように行動同士を連結し、時刻ではなく順番で夜を進める']},
+    gen:{ name:'就寝の約束が弱いタイプ',
+      mech:'自分の中だけの約束は破りやすく、外に出した約束は守りやすい。これは多くの行動研究で確認されている性質です。',
+      acts:['守れそうな就寝時刻を1つ決める','その時刻を家族に言う、または紙に書いて貼る','就寝30分前のアラームを1本入れる']},
+  },
+  default:{
+    charge:{ name:'枕元で充電しているタイプ',
+      mech:'充電器の位置が、夜の行動をほぼ決めています。スマホは電池が減るから、必ず充電器のそばに戻る。枕元にあれば布団の中まで、リビングにあれば布団の外までで止まります。ワードらの研究では、スマホが同じ部屋にあるだけで注意力が割かれると報告されました。',
+      acts:['今夜、充電器をリビングか玄関に差し替える。この一手だけで寝室からスマホが消える',
+        '寝室用に目覚まし時計を用意して、スマホを枕元に置く最後の理由をなくす',
+        'どうしても寝室に置くなら、ベッドから立たないと届かない棚の上と決める']},
+    alarm:{ name:'アラームをスマホに頼っているタイプ',
+      mech:'朝のアラームがスマホである限り、スマホは正当な理由をもって枕元に居座ります。そして枕元にあれば、夜も朝も開いてしまう。アラームを別の道具に移すと、スマホを寝室に置く理由そのものが消えます。',
+      acts:['目覚まし時計を用意して、スマホのアラームを全部消す。数千円で夜と朝の両方が変わる',
+        '朝いちばんにスマホを見る流れごと変えたいなら、光で起こすタイプの時計も選択肢になる',
+        '時計が届くまでは、スマホを部屋の入口近くの床で鳴らす。止めに立った勢いでそのまま部屋の外へ持ち出す']},
+    media:{ name:'寝室が娯楽部屋になっているタイプ',
+      mech:'行動研究では、寝室やベッドを眠ること以外に使うほど、体は寝室を活動の場所として学習すると報告されています。ベッドで動画を見る夜が続くと、布団に入ること自体が目を覚ます合図になります。場所と行動の結びつきを付け替えるのが近道です。',
+      acts:['動画やSNSは必ずリビングで見ると決め、寝室への持ち込みをやめる',
+        '寝室のテレビは電源プラグを抜いておく。プラグを差し直す一手間が、視聴を自然に減らす',
+        '布団の中では何も見ない、を1週間だけ試して、寝室を眠る場所に戻す']},
+    gen:{ name:'環境が夜更かし向きになっているタイプ',
+      mech:'行動は意志より環境で決まります。手を伸ばせば届く場所にスマホがある部屋では、夜更かしが標準設定になります。',
+      acts:['充電器を寝室の外へ移す','アラームを目覚まし時計に替える','寝室では画面を見ないと1週間だけ決める']},
+  },
+  fatigue:{
+    inertia:{ name:'夜がなんとなく過ぎていくタイプ',
+      mech:'疲れた夜には、決断する力が残っていません。何をするかを毎晩その場で決める方式は、疲れている人ほど機能しない。行動を毎回選ばずに済む固定の流れにすると、意志と関係なく夜が進みます。ロンドン大学のラリーらの研究では、同じ状況で同じ行動を繰り返すことが習慣化の鍵で、定着まで平均66日かかると報告されています。',
+      acts:['夜の流れを一本に固定する。「夕食、風呂、ストレッチ、消灯」と紙に書いて冷蔵庫に貼る',
+        '22時に照明が自動で落ちるようスマートプラグを設定し、流れの合図を機械に任せる',
+        '最初の2週間は完璧を求めず、順番どおり進んだ日にカレンダーへ丸を付けて数える']},
+    nightwork:{ name:'重い仕事を夜に持ち込むタイプ',
+      mech:'重要な判断や作業を夜に置くほど、就寝は後ろへ押されます。判断の質は疲労で落ちることが報告されていて、夜の1時間は朝の30分に負けることが珍しくありません。作業を朝へ動かすのはサボりではなく、合理的な配置換えです。',
+      acts:['「23時以降は判断しない」と決める。夜に浮かんだ懸案は紙に書いて、翌朝の自分に渡す',
+        '重い作業は起床後の1時間に予約する。朝の自分の方が同じ作業を速く終える',
+        '夜のパソコン作業には終了アラームを設定し、鳴ったら保存して閉じる']},
+    gen:{ name:'夜に頭を使う流れになっているタイプ',
+      mech:'判断力は日中に消耗します。夜に考えさせる設計は、疲れている日ほど破綻します。夜は考えなくても進む形に変えるのが近道です。',
+      acts:['夜の行動の順番を紙に書いて固定する','照明の消灯を自動化する','夜に決めることを朝のうちに済ませる']},
+  },
+  hotcold:{
+    vague:{ name:'決意を具体的な計画にしていないタイプ',
+      mech:'「早く寝よう」という決意は、いつ何をするかが決まっていないため、疲れた夜の自分には実行できません。ゴルヴィツァーらの分析では、「Xになったら、Yをする」の形まで落とした計画は、漠然とした決意に比べて達成率が大きく上がると報告されています。',
+      acts:['決意を「22時半になったら風呂に入る」のように、時刻と行動のセットに書き換える',
+        'それを紙に書いて、夜必ず目に入る場所、テレビの横や冷蔵庫に貼る',
+        '始めるのは週の初めか月の初めにする。区切りの日は行動を変えやすいという研究報告がある']},
+    tomorrow:{ name:'「明日から」を繰り返してしまうタイプ',
+      mech:'「明日から」は、今夜の快楽と将来の計画の両方を手に入れた気分になれる、最も心地よい先送りです。しかし明日の自分も同じ状況に置かれるため、同じ選択をします。今夜の自分の逃げ道は、前もって塞ぐしかありません。',
+      acts:['朝のうちに、今夜やることを家族やSNSに宣言する。人に言った計画は破りにくい',
+        '「明日から」と思った瞬間の合言葉を決めておく。「明日の自分も同じことを言う」と口に出す',
+        '破ったら少し困る約束を作る。守れなかったら翌朝コーヒーをおごる程度の、軽い罰でいい']},
+    gen:{ name:'決意が夜に崩れるタイプ',
+      mech:'朝の冷静な自分と夜の疲れた自分は、ほとんど別人です。夜の自分を信用せず、朝の自分に決めさせて、夜はそれに従うだけの形にします。',
+      acts:['今夜の行動を朝のうちに時刻つきで決める','決めたことを紙に書いて貼る','家族に宣言して逃げ道を塞ぐ']},
+  },
+  sunk:{
+    sunkcost:{ name:'もったいなくてやめられないタイプ',
+      mech:'ここまで見たから最後まで、という感覚は、すでに使った時間を取り戻そうとする心の働きです。しかし使った時間は、何をしても戻りません。人が過去の投資に引きずられて不合理な継続を選ぶことは、アーケスらの研究以来、繰り返し確認されています。',
+      acts:['「ここまで見たから」と思った瞬間に「続きは明日の楽しみ」と言い換えて、一時停止を押す',
+        '続きが気になる作品は、何分で区切るかを再生前に決めてタイマーをかける',
+        '途中でやめた場所のメモを1行残す。翌日そこから再開できると分かれば、失う感覚が薄れる']},
+    fomo:{ name:'見逃しが不安でやめられないタイプ',
+      mech:'取り残される不安には名前があり、プシビルスキらの研究ではFOMOという尺度で測定されています。この不安が強い人ほど夜の利用が延びがちだと報告されていますが、一晩見なくても、大事な情報はほぼ翌朝に残っています。それを一度自分で確かめるのが近道です。',
+      acts:['今夜1回だけ実験する。23時に閉じて、翌朝何を見逃したか数える。ほぼ何も失っていないと分かる',
+        '通知をまとめて受け取る設定にする。通知の一括化で気分の改善が報告された研究がある',
+        '本当に大事な相手の連絡だけ鳴る設定にして、残りは翌朝見ると決める']},
+    gen:{ name:'終わりを決めずに見始めるタイプ',
+      mech:'コンテンツ側は終わりを作りません。終わりを自分の意志で決める勝負にすると、設計上あなたが不利です。終わりは機械に決めさせます。',
+      acts:['再生前にタイマーをかける','「続きは明日の楽しみ」と言い換える','23時に閉じる実験を1回だけやってみる']},
+  },
+  loop:{
+    notif:{ name:'通知をきっかけに開いてしまうタイプ',
+      mech:'通知は、あなたの計画より優先されるように設計された割り込みです。1つの通知から10分の巡回が始まるのは、意志の弱さではなく設計どおりの結果です。フィッツらの研究では、通知をまとめて受け取る方式で気分の改善が報告されています。',
+      acts:['21時以降、SNSとニュースの通知を全部止める。人からの連絡だけ残す',
+        '通知を1日3回まとめて受け取る設定を1週間試す',
+        '通知が来ても一呼吸置いて「いま開く必要があるか」を自問する。大半は翌朝で間に合う']},
+    idle:{ name:'手持ち無沙汰で開いてしまうタイプ',
+      mech:'退屈した瞬間に手がスマホへ伸びるのは、繰り返しで刻まれた反射です。反射は我慢では消えず、手間を増やすことでだけ弱まります。行動までのハードルをわずか20秒分上げるだけで頻度が下がる、という知見が知られています。',
+      acts:['スマホをポケットでなく鞄や別の部屋に置く。取りに行く20秒が反射を止める',
+        '手持ち無沙汰の瞬間の代わりの行動を1つ決める。ストレッチ、白湯を飲む、窓を開ける',
+        '触りたくなった回数をその都度数える。数えるだけで無意識の行動は減り始める']},
+    place:{ name:'決まった場所で開いてしまうタイプ',
+      mech:'ソファに座ると開く。布団に入ると開く。特定の場所が引き金になった習慣は、自分でなく場所の方を変えるのが早い。習慣は状況と行動の結びつきで作られると、ラリーらの習慣研究でも報告されています。',
+      acts:['スマホを見ていい場所を家の中で1か所に決める。ダイニングの椅子だけ、など',
+        '引き金になっている場所では、スマホを手の届かない位置に置く',
+        '布団に入る前に、スマホを玄関の充電器へ置いてくる動線を作る']},
+    gen:{ name:'無意識に開くタイプ',
+      mech:'無意識の行動は意志では止まりません。行動までの手間を増やし、回数を見えるようにするのが定石です。',
+      acts:['スマホを手の届かない場所に置く','代わりの行動を1つ決める','触った回数を数えて記録する']},
+  },
+  rhythm:{
+    weekend:{ name:'週末に時差ぼけを作っているタイプ',
+      mech:'平日と休日で起きる時刻が2時間以上ずれる状態は、毎週飛行機で時差を往復しているのと同じで、社会的ジェットラグと呼ばれます。ヴィットマンらの研究以来、週明けの不調との関連が繰り返し報告されています。鍵は寝る時刻ではなく、起きる時刻をそろえることです。',
+      acts:['休日の起床を平日プラス1時間以内に収める。眠ければ昼に20分の仮眠で補う',
+        '起きたらまずカーテンを開けて光を浴びる。体の時計は朝の光で毎日合わせ直される',
+        '日曜の夜更かしを直したければ、日曜の朝を早くする。夜は朝で作られる']},
+    shift:{ name:'勤務の形でリズムが揺れるタイプ',
+      mech:'交代勤務や夜勤では、毎日同じ時刻に寝ること自体が不可能です。この場合、世間の朝に合わせるのではなく、自分の勤務パターンの中に自分の朝を定義して、そこだけを固定するのが現実的です。',
+      acts:['シフトの型ごとに、寝る時刻と起きる時刻を決めて書き出しておく',
+        '寝る部屋は遮光カーテンで暗くし、起きたら強い光を浴びる。時間帯でなく光で体に合図を送る',
+        'シフトが切り替わる日は、20分の仮眠を橋にして移行する']},
+    light:{ name:'朝の光が足りていないタイプ',
+      mech:'体の時計は24時間より少し長く、放っておくと毎日後ろへずれていきます。それを毎朝リセットしているのが朝の光です。朝に光を浴びない生活では、夜が自然と遅くなっていくことが報告されています。',
+      acts:['起きて1時間以内に、窓際で10分過ごすか、外に出て光を浴びる',
+        '在宅の日は、朝の作業をいちばん明るい窓のそばでする',
+        '冬場や日当たりの悪い部屋なら、光で起こすタイプの目覚まし時計も選択肢になる']},
+    gen:{ name:'起床時刻がばらついているタイプ',
+      mech:'就寝をそろえるのは難しくても、起床は自分で決められます。起きる時刻がそろうと、体は自然に寝る時刻を覚えていきます。',
+      acts:['起きる時刻を休日も含めて毎日そろえる','起きたらすぐ光を浴びる','休日の寝坊は1時間以内にする']},
+  },
+};
+
+/* ---- 有料版のグッズとLINEサポート ---- */
+const GOODS = {
+  present:[
+    {name:'スマホ用タイムロックボックス', price:'¥2,900〜3,980', kw:'タイムロッキングコンテナ', note:'設定時間まで開かない。区切りのあとここへ入れると物理的に触れなくなる'},
+    {name:'スマートプラグ', price:'¥1,650〜', kw:'スマートプラグ SwitchBot', note:'SwitchBotなど。照明を決まった時刻に自動で落とし、やめる合図にできる'}],
+  commit:[
+    {name:'アナログ目覚まし時計', price:'約¥4,990', kw:'目覚まし時計 大音量 アナログ', note:'無印良品などの大音量タイプ。起床をスマホに頼らなくなり、寝室に持ち込む理由が減る'}],
+  default:[
+    {name:'スマホ用タイムロックボックス', price:'¥2,900〜3,980', kw:'タイムロッキングコンテナ', note:'寝室の外の定位置として。決めた時間まで開かない'},
+    {name:'スマートプラグ', price:'¥1,650〜2,500', kw:'スマートプラグ SwitchBot', note:'ルーターや照明を毎晩決まった時刻に自動で切り、夜更かしの初期設定を変える'}],
+  fatigue:[
+    {name:'スマートプラグ', price:'¥1,650〜', kw:'スマートプラグ SwitchBot', note:'照明やルーターを自動で切り、夜に消そうか考えること自体をなくす'}],
+  hotcold:[
+    {name:'光目覚まし時計', price:'約¥6,000〜8,000', kw:'光目覚まし時計', note:'YABAEなど手頃なもの。設定時刻に強い光で起こし、起床を固定しやすくする'},
+    {name:'光目覚まし時計の上位モデル', price:'約¥12,000〜15,000', kw:'光目覚まし時計 Philips', note:'Philipsなど。しっかり投資するならこちら'}],
+  sunk:[
+    {name:'スマホ用タイムロックボックス', price:'¥2,900〜3,980', kw:'タイムロッキングコンテナ', note:'時間が来るまで開かない。あと少しを物理的に断つ'},
+    {name:'キッチンタイマー', price:'数百円〜', kw:'キッチンタイマー', note:'区切りを機械に任せる、いちばん安い道具'}],
+  loop:[
+    {name:'スマホ用タイムロックボックス', price:'¥2,900〜3,980', kw:'タイムロッキングコンテナ', note:'きっかけがあっても手が届かない状態を作る'}],
+  rhythm:[
+    {name:'光目覚まし時計', price:'約¥6,000〜8,000', kw:'光目覚まし時計', note:'YABAEなど。設定時刻の光で起床をそろえる道具'},
+    {name:'光目覚まし時計の上位モデル', price:'¥12,000〜25,000', kw:'光目覚まし時計 Philips', note:'Philipsやトトノエ系など。投資できるなら、より強い光量のものを'}],
+};
+const SVC = {
+  present:{title:'LINEでやめる時刻を宣言→その時刻に合図', body:'Botに「今夜◯時にやめる」と宣言すると、その時刻に合図が届きます。意志ではなく、外からの合図で区切ります。', cta:'LINEでやめる時刻を宣言する'},
+  commit:{title:'LINEで寝る時刻を宣言→毎晩リマインド', body:'Botに寝る時刻を宣言すると、毎晩その時刻にリマインドが届きます。「おやすみ」と送れば就寝時刻を記録し、守れた日が積み上がって推移も見られます。', cta:'LINEで寝る時刻を宣言する'},
+  default:{title:'LINEで寝室スマホなしを毎晩チェック', body:'「今夜、スマホを寝室の外に置けた？」を毎晩1タップで記録。続いた日数が見えることで、環境の変更が習慣として定着します。', cta:'LINEで毎晩のチェックを受ける'},
+  fatigue:{title:'LINEが毎晩、終わりの合図を自動送信', body:'あなたが判断しなくても、毎晩決まった時刻に「今日はここまで」の合図が届きます。夜に意志を使わせません。', cta:'LINEで終わりの合図を受け取る'},
+  hotcold:{title:'朝の宣言を夜に届けるLINE', body:'朝のうちに「今夜はこうする」と宣言すると、夜にあなた自身の言葉として届きます。夜の自分に、朝の決意を渡します。', cta:'LINEで朝の宣言を夜に届ける'},
+  sunk:{title:'LINEで終わりの時間を宣言→時間で通知', body:'「30分」と送ると、その時間に「ここまで」と届きます。終わりを自分で決めずに済みます。', cta:'LINEで終わりの時間を宣言する'},
+  loop:{title:'LINEで触った回数を記録', body:'スマホを触りたくなったら1タップ。回数が見えることで、無意識の習慣が意識にのぼり、断ちやすくなります。', cta:'LINEで触った回数を記録する'},
+  rhythm:{title:'LINEで毎朝の起床時刻を記録', body:'毎朝、起きたら一言送るだけで起床時刻を記録。ばらつきと推移が見え、起床の固定を後押しします。', cta:'LINEで起床時刻を記録する'},
+};
+
+/* ============================================================
+   診断エンジン（ツリー型）
+============================================================ */
+const DOMS = Object.keys(DOMAINS);
+let queue = [];        // これから出す質問
+let snapshots = [];    // 戻る用のスナップショット
+let answered = 0;
+let maxProg = 0;
+let phaseText = '';
+let LAST = null;
+
+const state = {
+  scale:{},   // dom -> [値,...]（入口と深掘りの4件法）
+  screen:{},  // dom -> 入口の値
+  subPt:{},   // dom -> {sub:点}
+};
+DOMS.forEach(d=>{ state.scale[d]=[]; state.subPt[d]={}; });
+
+const $ = id => document.getElementById(id);
+
+function init(){
+  queue = DOMS.map(d=>({dom:d, type:'scale', text:DOMAINS[d].screen, isScreen:true}));
+  phaseText = 'まずは全体を見ています';
+  render();
+}
+
+function snapshot(){
+  snapshots.push(JSON.stringify({queue, answered, phaseText, state, maxProg, built: stateBuiltDeep}));
+}
+function goBack(){
+  if(!snapshots.length) return;
+  const s = JSON.parse(snapshots.pop());
+  queue = s.queue; answered = s.answered; phaseText = s.phaseText; maxProg = s.maxProg;
+  stateBuiltDeep = s.built;
+  Object.assign(state, s.state);
+  render();
+}
+
+function render(){
+  const q = queue[0];
+  if(!q){ return finish(); }
+  const prog = answered/(answered+queue.length);
+  maxProg = Math.max(maxProg, prog);
+  $('pbar').style.width = (maxProg*100)+'%';
+  $('phase').textContent = phaseText;
+  $('qtext').textContent = q.text;
+  const box = $('opts'); box.innerHTML='';
+  const options = q.type==='scale'
+    ? LIKERT.map(o=>({label:o.t, fn:()=>answerScale(q,o.v)}))
+    : q.choices.map((c,i)=>({label:c.label, fn:()=>answerChoice(q,i)}));
+  options.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='opt'; b.textContent=o.label; b.onclick=o.fn;
+    box.appendChild(b);
+  });
+  $('backbtn').style.visibility = snapshots.length? 'visible':'hidden';
+  $('quiz').classList.remove('fade'); void $('quiz').offsetWidth; $('quiz').classList.add('fade');
+}
+
+function answerScale(q, v){
+  snapshot();
+  state.scale[q.dom].push(v);
+  if(q.isScreen) state.screen[q.dom]=v;
+  if(q.sub && v>=3) state.subPt[q.dom][q.sub]=(state.subPt[q.dom][q.sub]||0)+1;
+  queue.shift(); answered++;
+  afterAnswer();
+}
+function answerChoice(q, i){
+  snapshot();
+  const c = q.choices[i];
+  if(c.sub) state.subPt[q.dom][c.sub]=(state.subPt[q.dom][c.sub]||0)+2;
+  queue.shift(); answered++;
+  if(c.skip) queue.splice(0, c.skip);   // 分岐で不要になった質問を飛ばす
+  afterAnswer();
+}
+function afterAnswer(){
+  // 入口が終わったら、引っかかった領域の深掘りを重い順に積む
+  if(queue.length===0 && !stateBuiltDeep){
+    stateBuiltDeep = true;
+    const flagged = DOMS.filter(d=>state.screen[d]>=3)
+      .sort((a,b)=>state.screen[b]-state.screen[a]);
+    flagged.forEach(d=>{
+      DOMAINS[d].deep.forEach(dq=>queue.push(Object.assign({dom:d}, dq)));
+    });
+    if(queue.length) phaseText = '気になるところを深掘りしています';
+  }
+  if(queue.length && !queue[0].isScreen){
+    phaseText = '深掘り中：'+DOMAINS[queue[0].dom].name;
+  }
+  render();
+}
+let stateBuiltDeep = false;
+
+/* ============================================================
+   集計と結果
+============================================================ */
+function severity(d){
+  const arr = state.scale[d];
+  if(!arr.length) return 0;
+  const avg = arr.reduce((a,b)=>a+b,0)/arr.length;
+  return Math.round((avg-1)/3*100);
+}
+function pickSub(d){
+  const pts = state.subPt[d];
+  const keys = Object.keys(pts);
+  if(!keys.length) return 'gen';
+  keys.sort((a,b)=>pts[b]-pts[a]);
+  return keys[0];
+}
+
+function finish(){
+  const sev = {}; DOMS.forEach(d=>sev[d]=severity(d));
+  const flagged = DOMS.filter(d=>state.screen[d]>=3).sort((a,b)=>sev[b]-sev[a]);
+  const ranked = DOMS.map(d=>({d, s:sev[d]})).sort((a,b)=>b.s-a.s);
+  const sovereign = Math.max(0, 100 - Math.round(DOMS.reduce((a,d)=>a+sev[d],0)/DOMS.length));
+  LAST = {sev, flagged, ranked, sovereign};
+  renderResult(LAST);
+}
+
+/* 週番号。今週の一手を週ごとに入れ替えるために使う */
+function weekIdx(){ return Math.floor(Date.now()/(7*24*3600*1000)); }
+
+/* 点数の帯。同じタイプでも強さで文章を出し分ける */
+function bandInfo(s){
+  if(s>=67) return {label:'傾向は強め',
+    note:'この傾向は、すでに毎晩の型になっています。意志の力で崩すのは難しい段階なので、道具や仕組みの力を借りて、外側から変えるのが近道です。'};
+  if(s>=40) return {label:'傾向は中くらい',
+    note:'習慣として根づき始めた段階です。今なら、仕組みをひとつ変えるだけで流れを戻せます。'};
+  return {label:'傾向は軽め',
+    note:'まだ芽の段階です。下の一手をひとつ試しておくだけで、これ以上の定着を防げます。'};
+}
+
+/* スコア履歴。前回との差と推移を出す（この端末のブラウザに保存） */
+function historyUpdate(score){
+  let h=[]; try{h=JSON.parse(localStorage.getItem('yoru_shindan_history')||'[]');}catch(e){}
+  const t=new Date();
+  const dstr=(t.getMonth()+1)+'/'+t.getDate();
+  const last=h.length? h[h.length-1] : null;
+  const delta=last? score-last.s : null;
+  if(last && last.d===dstr){ h[h.length-1]={d:dstr,s:score}; } else { h.push({d:dstr,s:score}); }
+  if(h.length>12) h=h.slice(h.length-12);
+  try{localStorage.setItem('yoru_shindan_history', JSON.stringify(h));}catch(e){}
+  return {delta:delta, chips:h.slice(-8)};
+}
+
+function buildWhy(sovereign, flagged, ranked){
+  const tops = (flagged.length?flagged:[ranked[0].d]).slice(0,2);
+  const names = tops.map(d=>'<b style="color:var(--accent)">'+DOMAINS[d].name+'</b>').join(' と ');
+  if(sovereign>=75) return {head:'あなたの夜は、よく守れています',
+    body:`大きな乱れは見当たりません。強いて挙げるなら ${names} に少し余地がある程度です。下の内容は、今の良さをさらに安定させるための調整として読んでください。`};
+  if(sovereign>=50) return {head:'あなたの夜は、おおむね保てています',
+    body:`夜はおおむね自分で保てていますが、${names} に改善の余地があります。これは意志ではなく仕組みの問題なので、下のそれぞれの対処で整えれば、今の良さはもっと崩れにくくなります。`};
+  if(sovereign>=25) return {head:'なぜ、あなたの夜は乱れるのか',
+    body:`${names} を中心に、いくつかの要因が夜を乱しています。ただしこれは<b style="color:var(--accent2)">意志ではなく仕組みの問題</b>です。裏を返せば、下の対処で仕組みを変えれば必ず動きます。`};
+  return {head:'なぜ、あなたの夜は乱れるのか',
+    body:`複数の要因が重なって、夜がかなり乱れています。中でも ${names} の影響が大きい状態です。ただ、これはあなたの意志が弱いからではありません。<b style="color:var(--accent2)">今の状況を作っているのは仕組みのほう</b>です。責める必要はまったくなく、一度に全部ではなく、上から一つずつ変えれば必ず変わります。`};
+}
+
+function renderResult(D){
+  const {sev, flagged, ranked, sovereign} = D;
+  $('quiz').classList.add('hidden');
+  const w = buildWhy(sovereign, flagged, ranked);
+
+  const bars = ranked.map(r=>{
+    const isTop = flagged.indexOf(r.d)!==-1 && r.s>=40;
+    return `<div class="bar ${isTop?'top':''}">
+      <div class="bl"><span>${isTop?'<b>':''}${DOMAINS[r.d].name}${isTop?'</b>':''}</span><span>${r.s}</span></div>
+      <div class="bt"><div class="bf" style="width:${r.s}%"></div></div></div>`;
+  }).join('');
+
+  // 無料の診断カード。引っかかった領域すべてに、サブタイプ別の詳しい診断と行動例
+  let cards = '';
+  const wk = weekIdx();
+  if(flagged.length){
+    cards = flagged.map((d,i)=>{
+      const sub = SUB[d][pickSub(d)];
+      const band = bandInfo(sev[d]);
+      const fi = (wk + i) % sub.acts.length;
+      const feat = sub.acts[fi];
+      const rest = sub.acts.filter((_,j)=>j!==fi).map(a=>`<li>${a}</li>`).join('');
+      return `<div class="diag">
+        <div class="dh">
+          <div class="dt">${sub.name}${i===0?'<span class="pri">最優先</span>':''}</div>
+          <div class="ds">${DOMAINS[d].name}　${sev[d]}点・${band.label}</div>
+        </div>
+        <div class="db">
+          <p class="bandnote">${band.note}</p>
+          <p class="mech">${sub.mech}</p>
+          <div class="lab">今週の一手</div>
+          <div class="feat">${feat}</div>
+          <div class="lab">あわせてできること</div>
+          <ul class="acts">${rest}</ul>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    cards = `<div class="diag"><div class="dh"><div class="dt">大きな問題は見つかりませんでした</div></div>
+      <div class="db"><p class="mech">今の夜の過ごし方は、よく整っています。この状態を保つために、次の3つだけ意識しておくと崩れにくくなります。</p>
+      <div class="lab">保つためにできること</div>
+      <ul class="acts">
+        <li>起きる時刻を休日も含めてそろえ続ける。夜は朝で作られる</li>
+        <li>スマホの充電場所を寝室の外に保つ。環境が良い限り、習慣は崩れにくい</li>
+        <li>生活が変わる時期、転職や引っ越しの直後だけ意識して見直す。乱れはそこから始まりやすい</li>
+      </ul></div></div>`;
+  }
+
+  const hist = historyUpdate(sovereign);
+  const deltaHtml = hist.delta!==null
+    ? `<div class="delta ${hist.delta>=0?'up':'down'}">前回から ${hist.delta>=0?'+':''}${hist.delta}点</div>` : '';
+  const chipsHtml = hist.chips.length>1
+    ? `<div class="hist">${hist.chips.map(c=>`<span>${c.d}　${c.s}</span>`).join('')}</div>` : '';
+
+  const html = `
+  <div class="card">
+    <div class="score-wrap">
+      <div class="score-num">${sovereign}</div>
+      <div class="score-lab">夜の主権スコア　100点満点・高いほど良好</div>
+      ${deltaHtml}
+      ${chipsHtml}
+    </div>
+
+    <h2>${w.head}</h2>
+    <p class="body">${w.body}</p>
+
+    <h2>8つの行動要因の内訳</h2>
+    <div class="bars">${bars}</div>
+
+    <h2>あなたの診断と、今夜からできること</h2>
+    ${cards}
+
+    <div class="prem">
+      <div class="head">
+        <div class="t">完全版レポート</div>
+        <div class="s">続けるための30日設計と、毎日のサポート</div>
+      </div>
+      <div class="locked">
+        <ul>
+          <li>あなた専用の30日の行動計画。週ごとに一手ずつ進める設計</li>
+          <li>それぞれの対処に効く道具の選び方と、購入先の一覧</li>
+          <li>毎日の実行を支えるLINEサポートへの接続</li>
+          <li>3ヶ月後の再診断と、スコアの推移の記録</li>
+        </ul>
+      </div>
+      <div class="lockbar">
+        <div class="price">¥980 <small>／ 買い切り</small></div>
+        <button class="btn" style="margin-top:12px" onclick="buy()">完全版レポートを見る</button>
+      </div>
+    </div>
+
+    <p class="body" style="font-size:13px;color:var(--sub);margin-top:18px">この診断は、毎週の変化を見る設計です。今週の一手は週ごとに入れ替わり、スコアの推移はこの画面に積み上がっていきます。来週また試してみてください。</p>
+    <button class="back" style="margin-top:8px" onclick="location.reload()">もう一度診断する</button>
+  </div>`;
+  const r=$('result'); r.innerHTML=html; r.classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============================================================
+   有料版（テスト表示）
+============================================================ */
+function scrollToPremium(){
+  const p = document.querySelector('.prem');
+  if(p) p.scrollIntoView({behavior:'smooth', block:'start'});
+}
+const LINE_URL = 'https://lin.ee/qmNL5Rp';
+function gotoLine(){
+  window.open(LINE_URL, '_blank', 'noopener');
+}
+function buy(){
+  if(!LAST) return;
+  const prem = document.querySelector('.prem');
+  prem.innerHTML = buildPremium(LAST);
+  prem.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function buildPremium(D){
+  const {sev, flagged, ranked} = D;
+  const targets = (flagged.length?flagged:ranked.slice(0,3).map(r=>r.d));
+  const sections = targets.map((d,i)=>{
+    const goods = (GOODS[d]||[]).map(g=>{
+      const url = 'https://www.amazon.co.jp/s?k=' + encodeURIComponent(g.kw);
+      return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　<a class="amz" href="${url}" target="_blank" rel="noopener">Amazonで見る</a><br><span class="gn">${g.note}</span></li>`;
+    }).join('');
+    const s = SVC[d];
+    return `<div class="sec">
+      <h3>${i+1}．${DOMAINS[d].name}　<span class="sc">${sev[d]}点${i===0?'・最優先':''}</span></h3>
+      <div class="lab">効く道具　価格は実売の目安</div>
+      <ul class="goods">${goods||'<li>道具よりも、無料の行動例をそのまま実行するのが近道です</li>'}</ul>
+      <div class="lab">毎日の実行を支えるサポート</div>
+      <div class="svc2"><b>${s.title}</b><br>${s.body}
+        <br><button class="btn2" style="margin-top:10px" onclick="gotoLine()">${s.cta}</button></div>
+    </div>`;
+  }).join('');
+  const weeks = targets.slice(0,4).map((d,i)=>{
+    const sub = SUB[d][pickSub(d)];
+    return `<li><b>第${i+1}週　${DOMAINS[d].name}</b><br>${sub.acts[0]}</li>`;
+  }).join('');
+  return `
+    <div class="head">
+      <div class="t">完全版レポート　テスト表示中</div>
+      <div class="s">続けるための30日設計と、毎日のサポート</div>
+    </div>
+    <div class="repbody">
+      <p class="intro">無料の診断で出た「今夜からできること」を、<b style="color:var(--accent)">30日で定着させる順番</b>と、<b style="color:var(--accent)">それを支える道具とサポート</b>にまとめました。一度に全部ではなく、週にひとつずつで十分です。</p>
+      <div class="sec">
+        <h3>30日の進め方</h3>
+        <ol class="rep">${weeks}</ol>
+      </div>
+      ${sections}
+      <div class="sec">
+        <h3>3ヶ月後の再診断</h3>
+        <ul class="rep"><li>同じ診断にもう一度答えると、主権スコアの変化を確認できます。行動の定着には平均66日かかるという研究報告があります。60日を過ぎたあたりでの再診断がおすすめです。</li></ul>
+        <p class="testnote">※これはテスト表示です。本番ではこの内容は ¥980 の決済後に表示し、決済が完了した人数だけを「お金を払う意向」の指標として計測します。</p>
+      </div>
+    </div>`;
+}
+
+/* 共通の注記 */
+$('globalDisc').innerHTML =
+ '本サービスは行動習慣のセルフチェックであり、医学的な診断・治療・効果を保証するものではありません。'+
+ '紹介している研究は一般的な知見であり、個人への効果を保証するものではありません。'+
+ '睡眠に関する不調が続く場合、または心身の強い不調がある場合は、医療機関にご相談ください。';
+
+init();
+</script>
+</body>
+</html>
