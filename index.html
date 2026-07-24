@@ -48,7 +48,6 @@
   .delta.up{color:var(--good)} .delta.down{color:var(--bad)}
   .hist{margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:11px;color:var(--sub)}
   .hist span{border:1px solid var(--line);border-radius:6px;padding:2px 8px}
-  .bandnote{font-size:13.5px;color:var(--accent2);border-left:2px solid var(--accent2);padding-left:10px;margin-bottom:10px;line-height:1.75}
   .feat{background:#1a2130;border:1px solid var(--accent);border-radius:10px;padding:12px 14px;font-size:14px;color:#e9e2cf;line-height:1.75;margin-bottom:4px}
   h2{font-size:18px;margin:24px 0 10px;letter-spacing:.04em;border-left:3px solid var(--accent);padding-left:12px}
   p.body{font-size:15px;color:#d8d4c8;margin-bottom:10px}
@@ -546,19 +545,14 @@ function finish(){
   renderResult(LAST);
 }
 
-/* 点数の帯。5段階で細かく出し分け、スコアが動くと文章と一手が目に見えて変わる。
-   時期では変えない。同じスコアなら常に同じ内容 */
+/* 点数の帯。強さのラベルと、いまの段階の一手の選択に使う。
+   帯別の定型文は出さない（複数カードで同文が並ぶと定型文に見えるため廃止） */
 function bandInfo(s){
-  if(s>=80) return {idx:4, label:'かなり強い',
-    note:'この傾向は生活の芯まで食い込んでいて、いまは夜の行動のほとんどがこの型に沿って流れています。意志で戦う段階はもう過ぎています。道具と環境をまとめて変えて、型そのものを作り替えるところから始めてください。'};
-  if(s>=60) return {idx:3, label:'強め',
-    note:'この傾向は、すでに毎晩の型になっています。意志の力で崩すのは難しい段階なので、道具や仕組みの力を借りて、外側から変えるのが近道です。'};
-  if(s>=40) return {idx:2, label:'中くらい',
-    note:'習慣として根づき始めた段階です。まだ型として固まりきってはいないので、いまなら仕組みをひとつ変えるだけで流れを戻せます。'};
-  if(s>=20) return {idx:1, label:'弱まっている',
-    note:'この傾向はかなり弱まっています。ここまで来たら、残っている引き金をひとつ消すだけで、ほとんど気にならなくなります。あと一歩です。'};
-  return {idx:0, label:'ほぼ問題なし',
-    note:'ほぼ問題のない水準です。この項目は維持だけ意識すれば十分。下の一手は、崩れそうになったときの保険として知っておいてください。'};
+  if(s>=80) return {idx:4, label:'かなり強い'};
+  if(s>=60) return {idx:3, label:'強め'};
+  if(s>=40) return {idx:2, label:'中くらい'};
+  if(s>=20) return {idx:1, label:'弱まっている'};
+  return {idx:0, label:'ほぼ問題なし'};
 }
 
 /* スコア履歴。前回との差と推移を出す（この端末のブラウザに保存） */
@@ -624,7 +618,6 @@ function renderResult(D){
           <div class="ds">${DOMAINS[d].name}　${sev[d]}点・${band.label}</div>
         </div>
         <div class="db">
-          <p class="bandnote">${band.note}</p>
           <p class="mech">${sub.mech}</p>
           <div class="lab">いまの段階の一手</div>
           <div class="feat">${feat}</div>
