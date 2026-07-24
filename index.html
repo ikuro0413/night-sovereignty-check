@@ -150,7 +150,7 @@ const DOMAINS = {
           {label:'チャットやメッセージのやり取り', sub:'chat'},
         ]},
       {type:'scale', text:'次のコンテンツが自動で始まると、そのまま見続けてしまう'},
-      {type:'scale', text:'「やめよう」と思ってから、実際にやめるまで30分以上かかることがある'},
+      {type:'scale', text:'「スマホをやめよう」と思ってから、実際にやめるまで30分以上かかることがある'},
     ]},
   commit:{ name:'就寝時刻の曖昧さ',
     screen:'寝る時刻を決めていない、または決めても守れないことが多い',
@@ -160,11 +160,11 @@ const DOMAINS = {
           {label:'そもそも決めていない', sub:'none', skip:1},
           {label:'決めているが、守れない', },
         ]},
-      {type:'choice', text:'守れない一番の理由は何ですか',
+      {type:'choice', text:'寝る時刻を守れない一番の理由は何ですか',
         choices:[
           {label:'仕事や家事が終わらない', sub:'push'},
           {label:'一日の中で自分の時間が夜しかない', sub:'revenge'},
-          {label:'理由はないが、なんとなく延びる', sub:'drift'},
+          {label:'理由はないが、なんとなく夜更かししてしまう', sub:'drift'},
         ]},
     ]},
   default:{ name:'夜更かししやすい環境',
@@ -175,7 +175,7 @@ const DOMAINS = {
       {type:'scale', text:'寝室にテレビやパソコンがあり、寝る直前まで見られる状態だ', sub:'media'},
     ]},
   fatigue:{ name:'夜の判断疲れ',
-    screen:'夜は考える気力が残っておらず、つい流されてしまう',
+    screen:'夜は考える気力が残っておらず、ついスマホやテレビに流されてしまう',
     deep:[
       {type:'choice', text:'夜の過ごし方で、近いのはどちらですか',
         choices:[
@@ -185,7 +185,7 @@ const DOMAINS = {
       {type:'scale', text:'寝る準備を始めるタイミングを、毎晩その場の気分で決めている'},
     ]},
   hotcold:{ name:'朝と夜の自分のズレ',
-    screen:'朝は「今日こそ早く寝よう」と思うのに、夜になると崩れる',
+    screen:'朝は「今日こそ早く寝よう」と思うのに、夜になるとその決意が崩れる',
     deep:[
       {type:'choice', text:'決意が夜に崩れるとき、近いのはどちらですか',
         choices:[
@@ -195,14 +195,14 @@ const DOMAINS = {
       {type:'scale', text:'決めたことを、紙やアプリに書き残していない'},
     ]},
   sunk:{ name:'切り上げられなさ',
-    screen:'見続けないと損な気がして、途中でやめられない',
+    screen:'動画やSNSを見続けないと損な気がして、途中でやめられない',
     deep:[
-      {type:'choice', text:'切り上げられない感覚に、近いのはどちらですか',
+      {type:'choice', text:'動画やSNSを切り上げられないとき、近いのはどちらですか',
         choices:[
           {label:'「ここまで見たから最後まで」と思って続けてしまう', sub:'sunkcost'},
           {label:'見ておかないと話題や情報に取り残される気がする', sub:'fomo'},
         ]},
-      {type:'scale', text:'明日見ても同じ内容だと分かっていても、今夜見てしまう'},
+      {type:'scale', text:'動画やSNSは、明日見ても同じ内容だと分かっていても、今夜見てしまう'},
     ]},
   loop:{ name:'無意識のスマホ習慣',
     screen:'特に用がなくても、気づくとスマホを開いている',
@@ -213,7 +213,7 @@ const DOMAINS = {
           {label:'手持ち無沙汰になった瞬間', sub:'idle'},
           {label:'ソファや布団など、決まった場所に着いたとき', sub:'place'},
         ]},
-      {type:'scale', text:'開いたあと、当初の目的と関係ないアプリまで見ている'},
+      {type:'scale', text:'スマホを開いたあと、当初の目的と関係ないアプリまで見ている'},
     ]},
   rhythm:{ name:'生活リズムの乱れ',
     screen:'寝る時刻と起きる時刻が、日によってバラバラだ',
