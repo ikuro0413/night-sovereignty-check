@@ -32,11 +32,15 @@
   .phase{text-align:center;font-size:12px;color:var(--accent2);letter-spacing:.1em;margin-bottom:16px;min-height:18px}
   .q{font-size:19px;font-weight:600;margin:6px 0 22px;letter-spacing:.02em;min-height:64px;display:flex;align-items:center}
   .opts{display:flex;flex-direction:column;gap:10px}
+  button{-webkit-tap-highlight-color:transparent}
   .opt{cursor:pointer;border:1px solid var(--line);background:#131a28;border-radius:12px;padding:14px 16px;
     font-size:15px;color:var(--ink);transition:all .12s;text-align:left;font-family:inherit}
-  .opt:hover{border-color:var(--accent2);background:#17202f}
+  .opt:focus,.back:focus,.btn:focus,.btn2:focus{outline:none}
+  @media(hover:hover){
+    .opt:hover{border-color:var(--accent2);background:#17202f}
+    .back:hover{color:var(--ink)}
+  }
   .back{background:none;border:none;color:var(--sub);font-family:inherit;font-size:13px;cursor:pointer;margin-top:18px}
-  .back:hover{color:var(--ink)}
   .score-wrap{text-align:center;margin:4px 0 20px}
   .score-num{font-size:56px;font-weight:700;color:var(--accent);line-height:1}
   .score-lab{font-size:13px;color:var(--sub);letter-spacing:.2em;margin-top:6px}
@@ -478,6 +482,7 @@ function render(){
     box.appendChild(b);
   });
   $('backbtn').style.visibility = snapshots.length? 'visible':'hidden';
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
   $('quiz').classList.remove('fade'); void $('quiz').offsetWidth; $('quiz').classList.add('fade');
 }
 
@@ -541,17 +546,19 @@ function finish(){
   renderResult(LAST);
 }
 
-/* 週番号。今週の一手を週ごとに入れ替えるために使う */
-function weekIdx(){ return Math.floor(Date.now()/(7*24*3600*1000)); }
-
-/* 点数の帯。同じタイプでも強さで文章を出し分ける */
+/* 点数の帯。5段階で細かく出し分け、スコアが動くと文章と一手が目に見えて変わる。
+   時期では変えない。同じスコアなら常に同じ内容 */
 function bandInfo(s){
-  if(s>=67) return {label:'傾向は強め',
+  if(s>=80) return {idx:4, label:'かなり強い',
+    note:'この傾向は生活の芯まで食い込んでいて、いまは夜の行動のほとんどがこの型に沿って流れています。意志で戦う段階はもう過ぎています。道具と環境をまとめて変えて、型そのものを作り替えるところから始めてください。'};
+  if(s>=60) return {idx:3, label:'強め',
     note:'この傾向は、すでに毎晩の型になっています。意志の力で崩すのは難しい段階なので、道具や仕組みの力を借りて、外側から変えるのが近道です。'};
-  if(s>=40) return {label:'傾向は中くらい',
-    note:'習慣として根づき始めた段階です。今なら、仕組みをひとつ変えるだけで流れを戻せます。'};
-  return {label:'傾向は軽め',
-    note:'まだ芽の段階です。下の一手をひとつ試しておくだけで、これ以上の定着を防げます。'};
+  if(s>=40) return {idx:2, label:'中くらい',
+    note:'習慣として根づき始めた段階です。まだ型として固まりきってはいないので、いまなら仕組みをひとつ変えるだけで流れを戻せます。'};
+  if(s>=20) return {idx:1, label:'弱まっている',
+    note:'この傾向はかなり弱まっています。ここまで来たら、残っている引き金をひとつ消すだけで、ほとんど気にならなくなります。あと一歩です。'};
+  return {idx:0, label:'ほぼ問題なし',
+    note:'ほぼ問題のない水準です。この項目は維持だけ意識すれば十分。下の一手は、崩れそうになったときの保険として知っておいてください。'};
 }
 
 /* スコア履歴。前回との差と推移を出す（この端末のブラウザに保存） */
@@ -567,13 +574,23 @@ function historyUpdate(score){
   return {delta:delta, chips:h.slice(-8)};
 }
 
+/* 総評。8段階に細分化。スコアが10点前後動くたびに見出しと本文が変わる。
+   時期では変えない。同じスコアなら常に同じ文章 */
 function buildWhy(sovereign, flagged, ranked){
   const tops = (flagged.length?flagged:[ranked[0].d]).slice(0,2);
   const names = tops.map(d=>'<b style="color:var(--accent)">'+DOMAINS[d].name+'</b>').join(' と ');
-  if(sovereign>=75) return {head:'あなたの夜は、よく守れています',
+  if(sovereign>=90) return {head:'夜は、ほぼ完全にあなたのものです',
+    body:`ここまで整った夜は、なかなかありません。もう直すところを探す段階ではなく、この状態を崩さないことだけが課題です。生活が変わる時期、繁忙期や引っ越しの前後だけ、また確認しに来てください。`};
+  if(sovereign>=80) return {head:'あなたの夜は、しっかり守られています',
+    body:`夜の主導権は、はっきりあなたの側にあります。残っているのは ${names} のごく小さな揺らぎだけです。仕上げとして下の一手を押さえれば、満点の夜まであと一歩です。`};
+  if(sovereign>=70) return {head:'あなたの夜は、よく守れています',
     body:`大きな乱れは見当たりません。強いて挙げるなら ${names} に少し余地がある程度です。下の内容は、今の良さをさらに安定させるための調整として読んでください。`};
-  if(sovereign>=50) return {head:'あなたの夜は、おおむね保てています',
-    body:`夜はおおむね自分で保てていますが、${names} に改善の余地があります。これは意志ではなく仕組みの問題なので、下のそれぞれの対処で整えれば、今の良さはもっと崩れにくくなります。`};
+  if(sovereign>=60) return {head:'夜の主導権は、おおむねあなたの側にあります',
+    body:`夜の骨格はできています。ただ ${names} のところで、ときどき主導権を手放している日があります。崩れる日の共通点はこの2つに絞られているので、狙いを定めて整えやすい状態です。`};
+  if(sovereign>=50) return {head:'保てている日と、崩れる日が半々です',
+    body:`いまのあなたの夜は、良い日と崩れる日のちょうど境目にいます。分かれ目を作っているのは ${names} です。ここは意志ではなく仕組みの問題なので、下の対処で境目を良い側に固定できます。`};
+  if(sovereign>=40) return {head:'夜の主導権が、少しずつ向こう側に渡っています',
+    body:`まだ立て直せる位置ですが、${names} を起点に、夜が崩れる日の方が増え始めています。放っておくと型として固まっていく段階なので、いまが動きどきです。下の最優先の一手から始めてください。`};
   if(sovereign>=25) return {head:'なぜ、あなたの夜は乱れるのか',
     body:`${names} を中心に、いくつかの要因が夜を乱しています。ただしこれは<b style="color:var(--accent2)">意志ではなく仕組みの問題</b>です。裏を返せば、下の対処で仕組みを変えれば必ず動きます。`};
   return {head:'なぜ、あなたの夜は乱れるのか',
@@ -594,12 +611,11 @@ function renderResult(D){
 
   // 無料の診断カード。引っかかった領域すべてに、サブタイプ別の詳しい診断と行動例
   let cards = '';
-  const wk = weekIdx();
   if(flagged.length){
     cards = flagged.map((d,i)=>{
       const sub = SUB[d][pickSub(d)];
       const band = bandInfo(sev[d]);
-      const fi = (wk + i) % sub.acts.length;
+      const fi = band.idx % sub.acts.length;   // スコア帯で最初の一手が入れ替わる
       const feat = sub.acts[fi];
       const rest = sub.acts.filter((_,j)=>j!==fi).map(a=>`<li>${a}</li>`).join('');
       return `<div class="diag">
@@ -610,7 +626,7 @@ function renderResult(D){
         <div class="db">
           <p class="bandnote">${band.note}</p>
           <p class="mech">${sub.mech}</p>
-          <div class="lab">今週の一手</div>
+          <div class="lab">いまの段階の一手</div>
           <div class="feat">${feat}</div>
           <div class="lab">あわせてできること</div>
           <ul class="acts">${rest}</ul>
@@ -671,7 +687,7 @@ function renderResult(D){
       </div>
     </div>
 
-    <p class="body" style="font-size:13px;color:var(--sub);margin-top:18px">この診断は、毎週の変化を見る設計です。今週の一手は週ごとに入れ替わり、スコアの推移はこの画面に積み上がっていきます。来週また試してみてください。</p>
+    <p class="body" style="font-size:13px;color:var(--sub);margin-top:18px">この診断は、スコアが変わると出てくる文章と一手も変わります。生活を少し変えて、また試しに来てください。スコアの推移はこの画面に積み上がっていきます。</p>
     <button class="back" style="margin-top:8px" onclick="location.reload()">もう一度診断する</button>
   </div>`;
   const r=$('result'); r.innerHTML=html; r.classList.remove('hidden');
