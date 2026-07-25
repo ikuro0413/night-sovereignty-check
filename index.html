@@ -475,8 +475,7 @@ let answered = 0;
 let maxProg = 0;
 let phaseText = '';
 let LAST = null;
-let PAID = false;           // 購入済みフラグ(localStorage)
-let CAME_FROM_PAY = false;  // 決済から戻った直後か
+let CAME_FROM_PAY = false;  // 決済から戻った直後か(完全版の所有証明はメールの専用URLに一本化)
 
 /* 本番のStripe決済リンク。発行され次第ここに設定する(空の間はテスト動作=成功リダイレクトを模擬) */
 const STRIPE_URL = '';
@@ -777,11 +776,6 @@ function renderResult(D){
     <button class="back" style="margin-top:8px" onclick="location.reload()">もう一度診断する</button>
   </div>`;
   const r=$('result'); r.innerHTML=html; r.classList.remove('hidden');
-  // 購入済みなら、価格表示を出さず完全版を最初から開いておく
-  if(PAID){
-    const prem = r.querySelector('.prem');
-    if(prem) prem.innerHTML = buildPremium(D);
-  }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -794,7 +788,14 @@ function scrollToPremium(){
 }
 const LINE_URL = 'https://lin.ee/qmNL5Rp';
 function gotoLine(){
-  window.open(LINE_URL, '_blank', 'noopener');
+  // LINEへ移動する前に、レポートへ戻る手段の確認を促す(アプリ内ブラウザだと戻れなくなるため)
+  const ok = confirm(
+    'LINEへ移動する前にご確認ください。\n\n' +
+    'このレポートは、メールでお送りした専用URLからいつでも開き直せます。\n' +
+    'メールが届いているか確認してから移動すると安心です。必要ならPDF保存もできます。\n\n' +
+    'LINEを開きますか？'
+  );
+  if(ok) window.open(LINE_URL, '_blank', 'noopener');
 }
 
 /* PDF保存。印刷が使えない環境(アプリ内ブラウザ等)では案内を出す */
@@ -813,13 +814,6 @@ function savePdf(){
 }
 function buy(){
   if(!LAST) return;
-  if(PAID){
-    // 購入済み: その場で完全版を開く
-    const prem = document.querySelector('.prem');
-    prem.innerHTML = buildPremium(LAST);
-    prem.scrollIntoView({behavior:'smooth', block:'start'});
-    return;
-  }
   if(REPORT_API){
     // メールアドレスを受け取り、専用URLを発行して送る(LINE内ブラウザで閉じても読み直せる)
     const lb = document.querySelector('.lockbar');
@@ -857,8 +851,6 @@ function submitBuy(){
     body: JSON.stringify({action:'save', email:em, result:LAST})
   }).then(function(r){ return r.json(); }).then(function(j){
     if(j && j.ok){
-      try{ localStorage.setItem('yoru_shindan_paid','1'); }catch(e){}
-      PAID = true;
       const prem = document.querySelector('.prem');
       prem.innerHTML = buildPremium(LAST);
       const body = prem.querySelector('.repbody');
@@ -946,11 +938,9 @@ function boot(){
     history.replaceState(null, '', location.pathname);
   }
   if(p.get('paid')==='1'){
-    try{ localStorage.setItem('yoru_shindan_paid','1'); }catch(e){}
     CAME_FROM_PAY = true;
     history.replaceState(null, '', location.pathname);
   }
-  try{ PAID = localStorage.getItem('yoru_shindan_paid')==='1'; }catch(e){}
   // 専用URL(?r=ID)で開かれた場合: サーバーから保存済みレポートを取得し、完全版を開いた状態で表示
   const rid = p.get('r');
   if(rid && REPORT_API){
@@ -964,8 +954,10 @@ function boot(){
         if(j && j.ok && j.result && j.result.ranked){
           state.subPt = j.result.subPt || state.subPt;
           LAST = j.result;
-          PAID = true;   // 専用URLは購入者専用=完全版を開いた状態で表示
           renderResult(LAST);
+          // 専用URLは購入者専用=完全版を開いた状態で表示
+          const prem = document.querySelector('.prem');
+          if(prem) prem.innerHTML = buildPremium(LAST);
         }else{
           r.innerHTML = '<div class="card"><p class="body">レポートが見つかりませんでした。メールに記載のURLをもう一度ご確認ください。</p><button class="back" onclick="location.href=location.pathname">診断ページへ戻る</button></div>';
         }
@@ -982,8 +974,12 @@ function boot(){
       state.subPt = saved.subPt || state.subPt;   // サブタイプ判定の内部状態も復元
       LAST = saved;
       renderResult(saved);
+      // 決済完了で戻ってきた場合のみ、完全版を開いた状態にする
       const prem = document.querySelector('.prem');
-      if(prem) setTimeout(function(){ prem.scrollIntoView({behavior:'smooth', block:'start'}); }, 400);
+      if(prem){
+        prem.innerHTML = buildPremium(saved);
+        setTimeout(function(){ prem.scrollIntoView({behavior:'smooth', block:'start'}); }, 400);
+      }
       return;
     }
   }
