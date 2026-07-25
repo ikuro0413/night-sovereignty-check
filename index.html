@@ -479,6 +479,12 @@ let CAME_FROM_PAY = false;  // 決済から戻った直後か(完全版の所有
 
 /* 本番のStripe決済リンク。発行され次第ここに設定する(空の間はテスト動作=成功リダイレクトを模擬) */
 const STRIPE_URL = '';
+/* AmazonアソシエイトのトラッキングID(例: 'xxxx-22')。発行され次第ここに設定する。
+   設定すると全ての商品リンクにタグが付き、フッターに規約上必須の開示文が表示される */
+const AMAZON_TAG = '';
+function amazonUrl(kw){
+  return 'https://www.amazon.co.jp/s?k=' + encodeURIComponent(kw) + (AMAZON_TAG ? '&tag=' + AMAZON_TAG : '');
+}
 /* GASレポートサーバーのウェブアプリURL。デプロイ後に設定する。
    設定すると: メール入力→専用URL発行→メール送信→?r=ID でいつでも完全版を開ける */
 const REPORT_API = 'https://script.google.com/macros/s/AKfycbyAFuwyEavpj48RaKZtkCgVIgav_JANkdrsNQd8oxlzZr8wFF8N2pmhAY9LC_QSxQH9uQ/exec';
@@ -681,7 +687,7 @@ function diagCard(d, i, sev, withGoods){
   const feat = sub.acts[fi];
   const rest = sub.acts.filter((_,j)=>j!==fi).map(a=>`<li>${a}</li>`).join('');
   const goods = withGoods ? (GOODS[d]||[]).map(g=>{
-    const url = 'https://www.amazon.co.jp/s?k=' + encodeURIComponent(g.kw);
+    const url = amazonUrl(g.kw);
     return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　<a class="amz" href="${url}" target="_blank" rel="noopener">Amazonで見る</a><br><span class="gn">${g.note}</span></li>`;
   }).join('') : '';
   return `<div class="diag">
@@ -880,7 +886,7 @@ function buildPremium(D){
   const targets = (flagged.length?flagged:ranked.slice(0,3).map(r=>r.d));
   const sections = targets.map((d,i)=>{
     const goods = (GOODS[d]||[]).map(g=>{
-      const url = 'https://www.amazon.co.jp/s?k=' + encodeURIComponent(g.kw);
+      const url = amazonUrl(g.kw);
       return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　<a class="amz" href="${url}" target="_blank" rel="noopener">Amazonで見る</a><br><span class="gn">${g.note}</span></li>`;
     }).join('');
     const s = SVC[d];
@@ -931,7 +937,8 @@ function buildPremium(D){
 $('globalDisc').innerHTML =
  '本サービスは行動習慣のセルフチェックであり、医学的な診断・治療・効果を保証するものではありません。'+
  '紹介している研究は一般的な知見であり、個人への効果を保証するものではありません。'+
- '睡眠に関する不調が続く場合、または心身の強い不調がある場合は、医療機関にご相談ください。';
+ '睡眠に関する不調が続く場合、または心身の強い不調がある場合は、医療機関にご相談ください。'+
+ (AMAZON_TAG ? 'Amazonのアソシエイトとして、当サイトは適格販売により収入を得ています。' : '');
 
 /* 起動処理。
    - 決済成功で ?paid=1 付きで戻ってきたら: 購入フラグを保存→保存済みの診断結果を復元→完全版を自動で開く
