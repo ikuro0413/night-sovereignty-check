@@ -499,6 +499,11 @@ const state = {
 };
 DOMS.forEach(d=>{ state.scale[d]=[]; state.subPt[d]={}; });
 
+/* 回答明細: 設問1問ごとの回答記録。診断完了時にまとめてレポートサーバーへ送り、
+   スプレッドシートに蓄積して分析に使う */
+let 回答明細 = [];
+let 診断開始時刻 = null;
+
 const $ = id => document.getElementById(id);
 
 /* 入口の質問の出題順。共感しやすい質問を先頭に(判定ロジックには影響しない) */
@@ -507,17 +512,19 @@ const SCREEN_ORDER = ['hotcold','commit','default','present','fatigue','sunk','l
 function init(){
   queue = SCREEN_ORDER.map(d=>({dom:d, type:'scale', text:DOMAINS[d].screen, isScreen:true}));
   phaseText = 'まずは全体を見ています';
+  診断開始時刻 = Date.now();
   render();
 }
 
 function snapshot(){
-  snapshots.push(JSON.stringify({queue, answered, phaseText, state, maxProg, built: stateBuiltDeep}));
+  snapshots.push(JSON.stringify({queue, answered, phaseText, state, maxProg, built: stateBuiltDeep, meisai: 回答明細}));
 }
 function goBack(){
   if(!snapshots.length) return;
   const s = JSON.parse(snapshots.pop());
   queue = s.queue; answered = s.answered; phaseText = s.phaseText; maxProg = s.maxProg;
   stateBuiltDeep = s.built;
+  回答明細 = s.meisai || [];
   Object.assign(state, s.state);
   render();
 }
@@ -549,6 +556,8 @@ function answerScale(q, v){
   state.scale[q.dom].push(v);
   if(q.isScreen) state.screen[q.dom]=v;
   if(q.sub && v>=3) state.subPt[q.dom][q.sub]=(state.subPt[q.dom][q.sub]||0)+1;
+  回答明細.push({dom:q.dom, kind:q.isScreen?'入口':'深掘り4件法', text:q.text,
+    label:(LIKERT.filter(o=>o.v===v)[0]||{}).t||'', value:v, sub:q.sub||''});
   queue.shift(); answered++;
   afterAnswer();
 }
@@ -556,6 +565,7 @@ function answerChoice(q, i){
   snapshot();
   const c = q.choices[i];
   if(c.sub) state.subPt[q.dom][c.sub]=(state.subPt[q.dom][c.sub]||0)+2;
+  回答明細.push({dom:q.dom, kind:'深掘り選択', text:q.text, label:c.label, value:'', sub:c.sub||''});
   queue.shift(); answered++;
   if(c.skip) queue.splice(0, c.skip);   // 分岐で不要になった質問を飛ばす
   afterAnswer();
@@ -604,7 +614,59 @@ function finish(){
   LAST = {sev, flagged, ranked, sovereign, hist, subPt: state.subPt};
   // 決済ページへ飛んでも結果が消えないよう保存(戻ってきたら復元して自動解錠)
   try{ localStorage.setItem('yoru_shindan_last', JSON.stringify(LAST)); }catch(e){}
+  診断ログ送信(LAST);
   renderResult(LAST);
+}
+
+/* ============================================================
+   回答ログの蓄積（分析用・匿名）
+   診断完了ごとに、全回答とスコアをレポートサーバーへ送って
+   スプレッドシートに蓄積する。表示や診断結果には影響しない
+============================================================ */
+function 回答者ID(){
+  let id = '';
+  try{
+    id = localStorage.getItem('yoru_shindan_uid') || '';
+    if(!id){
+      id = 'u' + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+      localStorage.setItem('yoru_shindan_uid', id);
+    }
+  }catch(e){ id = 'u_noLS'; }
+  return id;
+}
+function 診断ログ送信(D){
+  if(!REPORT_API) return;
+  try{
+    let histLen = 0;
+    try{ histLen = (JSON.parse(localStorage.getItem('yoru_shindan_history')||'[]')).length; }catch(e){}
+    const subPicked = {};
+    (D.flagged.length ? D.flagged : [D.ranked[0].d]).forEach(d=>{ subPicked[d] = pickSub(d); });
+    const body = JSON.stringify({
+      action:'log',
+      uid: 回答者ID(),
+      sovereign: D.sovereign,
+      typeName: buildTypeName(D.sovereign, D.flagged, D.ranked),
+      sev: D.sev,
+      screen: state.screen,
+      flagged: D.flagged,
+      subPicked: subPicked,
+      subPt: state.subPt,
+      answers: 回答明細,
+      durationSec: 診断開始時刻 ? Math.round((Date.now()-診断開始時刻)/1000) : '',
+      histCount: histLen,
+      referrer: document.referrer || '',
+      ua: navigator.userAgent || '',
+      lang: navigator.language || '',
+      screenW: (window.screen && window.screen.width) || ''
+    });
+    // sendBeacon: 画面遷移やタブ閉じでも送信が生き残る。使えない環境はfetchで代替
+    if(navigator.sendBeacon){
+      const sent = navigator.sendBeacon(REPORT_API, new Blob([body], {type:'text/plain'}));
+      if(sent) return;
+    }
+    fetch(REPORT_API, {method:'POST', headers:{'Content-Type':'text/plain'}, body:body, keepalive:true})
+      .catch(function(){});
+  }catch(e){ /* ログ送信の失敗は診断表示に影響させない */ }
 }
 
 /* 点数の帯。強さのラベルと、いまの段階の一手の選択に使う。
@@ -876,7 +938,7 @@ function submitBuy(){
   fetch(REPORT_API, {
     method:'POST',
     headers:{'Content-Type':'text/plain'},
-    body: JSON.stringify({action:'save', email:em, result:LAST})
+    body: JSON.stringify({action:'save', email:em, result:LAST, uid:回答者ID()})
   }).then(function(r){ return r.json(); }).then(function(j){
     if(j && j.ok){
       const prem = document.querySelector('.prem');
