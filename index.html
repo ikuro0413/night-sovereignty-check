@@ -482,7 +482,7 @@ let CAME_FROM_PAY = false;  // 決済から戻った直後か
 const STRIPE_URL = '';
 /* GASレポートサーバーのウェブアプリURL。デプロイ後に設定する。
    設定すると: メール入力→専用URL発行→メール送信→?r=ID でいつでも完全版を開ける */
-const REPORT_API = '';
+const REPORT_API = 'https://script.google.com/macros/s/AKfycbyAFuwyEavpj48RaKZtkCgVIgav_JANkdrsNQd8oxlzZr8wFF8N2pmhAY9LC_QSxQH9uQ/exec';
 
 const state = {
   scale:{},   // dom -> [値,...]（入口と深掘りの4件法）
