@@ -925,8 +925,15 @@ function savePdf(){
 }
 function buy(){
   if(!LAST) return;
+  if(STRIPE_URL){
+    // 本番: Stripe決済へ。Payment Linkの決済完了後は ?paid=1 付きでこのページへ戻る設定にする。
+    // client_reference_id に回答者IDを渡し、Stripe側の決済記録と回答ログを突合できるようにする
+    const sep = STRIPE_URL.indexOf('?')===-1 ? '?' : '&';
+    location.href = STRIPE_URL + sep + 'client_reference_id=' + encodeURIComponent(回答者ID());
+    return;
+  }
   if(REPORT_API){
-    // メールアドレスを受け取り、専用URLを発行して送る(LINE内ブラウザで閉じても読み直せる)
+    // テスト動線(STRIPE_URL未設定時): 決済なしでメールアドレスを受け取り、専用URLを発行して送る
     const lb = document.querySelector('.lockbar');
     lb.innerHTML = `
       <div class="price">¥980 <small>／ 買い切り</small></div>
@@ -938,13 +945,25 @@ function buy(){
     if(input) input.focus();
     return;
   }
-  if(STRIPE_URL){
-    // 本番: Stripe決済へ。成功後は ?paid=1 付きでこのページへ戻る設定にする
-    location.href = STRIPE_URL;
-  }else{
-    // テスト動作: 決済成功後の戻りを模擬する(結果は保存済みなので消えない)
-    location.href = location.pathname + '?paid=1';
-  }
+  // テスト動作: 決済成功後の戻りを模擬する(結果は保存済みなので消えない)
+  location.href = location.pathname + '?paid=1';
+}
+
+/* 決済完了後の完全版の先頭に、専用URLをメールで受け取る入口を差し込む。
+   発行はsubmitBuy(保存+メール送信)を使い回す */
+function 専用URL発行ブロック(prem){
+  if(!REPORT_API || !prem) return;
+  const rb = prem.querySelector('.repbody');
+  if(!rb || document.getElementById('buyMail')) return;
+  const div = document.createElement('div');
+  div.className = 'sec noprint';
+  div.innerHTML = `
+    <h3>専用URLをメールで受け取る</h3>
+    <p class="mech" style="font-size:13.5px">この画面を閉じても読み直せるよう、完全版レポートの専用URLをメールでお送りします。LINEなどアプリ内ブラウザの方は、先に受け取っておくと安心です。</p>
+    <input class="mailin" id="buyMail" type="email" placeholder="メールアドレス" autocomplete="email">
+    <button class="btn" style="margin-top:10px" onclick="submitBuy()">専用URLを受け取る</button>
+    <p class="gn" id="buyMsg" style="font-size:12.5px;margin-top:8px"></p>`;
+  rb.insertBefore(div, rb.firstChild);
 }
 
 function submitBuy(){
@@ -959,7 +978,7 @@ function submitBuy(){
   fetch(REPORT_API, {
     method:'POST',
     headers:{'Content-Type':'text/plain'},
-    body: JSON.stringify({action:'save', email:em, result:LAST, uid:回答者ID()})
+    body: JSON.stringify({action:'save', email:em, result:LAST, uid:回答者ID(), paid:CAME_FROM_PAY})
   }).then(function(r){ return r.json(); }).then(function(j){
     if(j && j.ok){
       const prem = document.querySelector('.prem');
@@ -1005,7 +1024,7 @@ function buildPremium(D){
   const allCards = targets.map((d,i)=>diagCard(d,i,sev)).join('');
   return `
     <div class="head">
-      <div class="t">完全版レポート　テスト表示中</div>
+      <div class="t">完全版レポート${CAME_FROM_PAY?'':'　テスト表示中'}</div>
       <div class="s">すべての診断と、続けるための30日設計・毎日のサポート</div>
     </div>
     <div class="repbody">
@@ -1027,7 +1046,7 @@ function buildPremium(D){
         <ul class="rep"><li>同じ診断にもう一度答えると、睡眠力スコアの変化を確認できます。行動の定着には平均66日かかるという研究報告があります。60日を過ぎたあたりでの再診断がおすすめです。</li></ul>
         <button class="btn noprint" style="margin-top:14px" onclick="savePdf()">この完全版レポートをPDFで保存する</button>
         <p class="gn noprint" style="font-size:11.5px;color:var(--sub);margin-top:8px;text-align:center">印刷画面が開いたら、送信先で「PDFに保存」を選んでください。白背景の読みやすいレポートとして保存されます。<br>※LINEなどアプリ内のブラウザでは印刷画面が開かないことがあります。その場合はSafariやChromeでこのページを開いてからお試しください。</p>
-        <p class="testnote">※現在はテスト動作です(決済なしで解錠されます)。本番ではStripe決済 ¥980 の完了後に、専用URLの発行とメール送信を行います。</p>
+        ${CAME_FROM_PAY?'':'<p class="testnote">※現在はテスト動作です(決済なしで解錠されます)。本番ではStripe決済 ¥980 の完了後に、専用URLの発行とメール送信を行います。</p>'}
       </div>
     </div>`;
 }
@@ -1086,10 +1105,11 @@ function boot(){
       state.subPt = saved.subPt || state.subPt;   // サブタイプ判定の内部状態も復元
       LAST = saved;
       renderResult(saved);
-      // 決済完了で戻ってきた場合のみ、完全版を開いた状態にする
+      // 決済完了で戻ってきた場合のみ、完全版を開いた状態にし、専用URLの発行入口を出す
       const prem = document.querySelector('.prem');
       if(prem){
         prem.innerHTML = buildPremium(saved);
+        専用URL発行ブロック(prem);
         setTimeout(function(){ prem.scrollIntoView({behavior:'smooth', block:'start'}); }, 400);
       }
       return;
