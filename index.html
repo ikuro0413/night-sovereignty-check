@@ -444,7 +444,7 @@ const GOODS = {
     {name:'卓上ホワイトボード', price:'¥1,000〜2,000', kw:'卓上 ホワイトボード', note:'朝のうちに「今夜はこうする」と書いて、夜必ず目に入る場所に置く。朝の自分の字で夜の自分に指示が届く'},
     {name:'光目覚まし時計', price:'約¥6,000〜8,000', kw:'光目覚まし時計', note:'YABAEなど手頃なもの。設定時刻に強い光で起こし、起床を固定しやすくする'}],
   sunk:[
-    {name:'タイムタイマー', price:'¥3,000〜5,000', kw:'タイムタイマー', note:'残り時間が赤い円で減っていくのが見える視覚タイマー。終わりが目に見えると切り上げやすい'},
+    {name:'残り時間が見える作業用タイマー', price:'¥3,000〜5,000', kw:'タイムタイマー', note:'残り時間が赤い円で減っていくのが目で見えるタイマー。終わりが見えると切り上げやすい'},
     {name:'スマホ用タイムロックボックス', price:'¥2,900〜3,980', kw:'タイムロッキングコンテナ', note:'時間が来るまで開かない。あと少しを物理的に断つ'},
     {name:'キッチンタイマー', price:'数百円〜', kw:'キッチンタイマー', note:'区切りを機械に任せる、いちばん安い道具'}],
   loop:[
@@ -672,13 +672,18 @@ function buildWhy(sovereign, flagged, ranked){
     body:`複数の要因が重なって、夜がかなり乱れています。中でも ${names} の影響が大きい状態です。ただ、これはあなたの意志が弱いからではありません。<b style="color:var(--accent2)">今の状況を作っているのは仕組みのほう</b>です。責める必要はまったくなく、一度に全部ではなく、上から一つずつ変えれば必ず変わります。`};
 }
 
-/* 診断カード1枚を生成。無料と完全版の両方から使う */
-function diagCard(d, i, sev){
+/* 診断カード1枚を生成。無料と完全版の両方から使う。
+   withGoods=true でおすすめグッズも表示(無料カード用。完全版は専用セクションがあるので重複させない) */
+function diagCard(d, i, sev, withGoods){
   const sub = SUB[d][pickSub(d)];
   const band = bandInfo(sev[d]);
   const fi = band.idx % sub.acts.length;   // スコア帯で最初の一手が入れ替わる
   const feat = sub.acts[fi];
   const rest = sub.acts.filter((_,j)=>j!==fi).map(a=>`<li>${a}</li>`).join('');
+  const goods = withGoods ? (GOODS[d]||[]).map(g=>{
+    const url = 'https://www.amazon.co.jp/s?k=' + encodeURIComponent(g.kw);
+    return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　<a class="amz" href="${url}" target="_blank" rel="noopener">Amazonで見る</a><br><span class="gn">${g.note}</span></li>`;
+  }).join('') : '';
   return `<div class="diag">
     <div class="dh">
       <div class="dt">${sub.name}${i===0?'<span class="pri">最優先</span>':''}</div>
@@ -690,6 +695,7 @@ function diagCard(d, i, sev){
       <div class="feat">${feat}</div>
       <div class="lab">あわせてできること</div>
       <ul class="acts">${rest}</ul>
+      ${goods?`<div class="lab">おすすめグッズ　価格は実売の目安</div><ul class="goods">${goods}</ul>`:''}
     </div>
   </div>`;
 }
@@ -711,7 +717,7 @@ function renderResult(D){
   const freeDoms = flagged.slice(0,2);   // 無料はスコア上位2枚まで。同点が並ぶ場合は並び順の2つ
   const restCount = Math.max(0, flagged.length - freeDoms.length);
   if(flagged.length){
-    cards = freeDoms.map((d,i)=>diagCard(d,i,sev)).join('');
+    cards = freeDoms.map((d,i)=>diagCard(d,i,sev,true)).join('');
     if(restCount>0){
       cards += `<p class="body" style="font-size:13.5px;color:var(--sub);margin-top:4px">ほかに ${restCount} 項目の診断が見つかっています。残りは下の完全版レポートで読めます。</p>`;
     }
