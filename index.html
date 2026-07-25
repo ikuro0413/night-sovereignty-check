@@ -43,7 +43,7 @@
   .back{background:none;border:none;color:var(--sub);font-family:inherit;font-size:13px;cursor:pointer;margin-top:18px}
   .score-wrap{text-align:center;margin:4px 0 20px}
   .typeimg-wrap{text-align:center;margin:16px 0 6px}
-  .typeimg{width:min(320px,85%);border-radius:16px;background:#fff;box-shadow:0 10px 34px rgba(0,0,0,.4)}
+  .typeimg{width:min(320px,85%);filter:drop-shadow(0 12px 26px rgba(0,0,0,.5))}
   .score-num{font-size:56px;font-weight:700;color:var(--accent);line-height:1}
   .score-lab{font-size:13px;color:var(--sub);letter-spacing:.2em;margin-top:6px}
   .delta{font-size:14px;margin-top:8px;font-weight:600}
@@ -709,13 +709,13 @@ function stemOf(d){ const s=STEM[d]||{}; return s[pickSub(d)]||s.gen||DOMAINS[d]
 
 /* タイプ画像。主因×副因の無順序ペアキー(ソート済み"a|b")→ファイル。制作済みの組み合わせのみ */
 const TYPE_IMG = {
-  'commit_drift|present_scroll':'img/commit_drift-present_scroll.jpg',
-  'default_charge|loop_notif':'img/default_charge-loop_notif.jpg',
-  'hotcold_tomorrow|present_scroll':'img/hotcold_tomorrow-present_scroll.jpg',
-  'commit_revenge|sunk_fomo':'img/commit_revenge-sunk_fomo.jpg',
-  'commit_none|fatigue_nightwork':'img/commit_none-fatigue_nightwork.jpg',
-  'commit_drift|loop_idle':'img/commit_drift-loop_idle.jpg',
-  'default_media|rhythm_weekend':'img/default_media-rhythm_weekend.jpg',
+  'commit_drift|present_scroll':'img/commit_drift-present_scroll.png',
+  'default_charge|loop_notif':'img/default_charge-loop_notif.png',
+  'hotcold_tomorrow|present_scroll':'img/hotcold_tomorrow-present_scroll.png',
+  'commit_revenge|sunk_fomo':'img/commit_revenge-sunk_fomo.png',
+  'commit_none|fatigue_nightwork':'img/commit_none-fatigue_nightwork.png',
+  'commit_drift|loop_idle':'img/commit_drift-loop_idle.png',
+  'default_media|rhythm_weekend':'img/default_media-rhythm_weekend.png',
 };
 function typeImgFor(flagged){
   if(flagged.length < 2) return '';
