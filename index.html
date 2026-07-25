@@ -105,6 +105,10 @@
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   @media(max-width:480px){.q{font-size:17px}.score-num{font-size:46px}}
   .paidnote{background:#15251b;border:1px solid var(--good);color:var(--good);border-radius:10px;padding:10px 14px;font-size:13.5px;margin-bottom:14px;text-align:center}
+  .mailin{display:block;width:100%;margin-top:12px;padding:13px 14px;border-radius:10px;border:1px solid var(--line);
+    background:#0f1522;color:var(--ink);font-family:inherit;font-size:15px}
+  .mailin:focus{outline:none;border-color:var(--accent2)}
+  .mailin::placeholder{color:#5d6577}
   /* PDF保存用: 印刷時は白背景・黒文字に変換し、操作ボタン類を隠す */
   @media print{
     body{background:#fff !important;color:#111;padding:0}
@@ -476,6 +480,9 @@ let CAME_FROM_PAY = false;  // 決済から戻った直後か
 
 /* 本番のStripe決済リンク。発行され次第ここに設定する(空の間はテスト動作=成功リダイレクトを模擬) */
 const STRIPE_URL = '';
+/* GASレポートサーバーのウェブアプリURL。デプロイ後に設定する。
+   設定すると: メール入力→専用URL発行→メール送信→?r=ID でいつでも完全版を開ける */
+const REPORT_API = '';
 
 const state = {
   scale:{},   // dom -> [値,...]（入口と深掘りの4件法）
@@ -789,6 +796,21 @@ const LINE_URL = 'https://lin.ee/qmNL5Rp';
 function gotoLine(){
   window.open(LINE_URL, '_blank', 'noopener');
 }
+
+/* PDF保存。印刷が使えない環境(アプリ内ブラウザ等)では案内を出す */
+function savePdf(){
+  let opened = false;
+  try{
+    if(typeof window.print === 'function'){
+      window.onafterprint = function(){ opened = true; };
+      window.print();
+      opened = true;
+    }
+  }catch(e){ opened = false; }
+  if(!opened){
+    alert('この画面ではPDF保存を利用できないようです。\nSafariやChromeなどのブラウザでこのページを開いてから、もう一度お試しください。');
+  }
+}
 function buy(){
   if(!LAST) return;
   if(PAID){
@@ -798,6 +820,19 @@ function buy(){
     prem.scrollIntoView({behavior:'smooth', block:'start'});
     return;
   }
+  if(REPORT_API){
+    // メールアドレスを受け取り、専用URLを発行して送る(LINE内ブラウザで閉じても読み直せる)
+    const lb = document.querySelector('.lockbar');
+    lb.innerHTML = `
+      <div class="price">¥980 <small>／ 買い切り</small></div>
+      <p class="gn" style="font-size:12.5px;color:var(--sub);margin-top:8px;text-align:left">完全版レポートの専用URLをメールでお送りします。この画面を閉じても、メールのリンクからいつでも読み直せます。</p>
+      <input class="mailin" id="buyMail" type="email" placeholder="メールアドレス" autocomplete="email">
+      <button class="btn" style="margin-top:10px" onclick="submitBuy()">メールで完全版を受け取る</button>
+      <p class="gn" id="buyMsg" style="font-size:12.5px;margin-top:8px"></p>`;
+    const input = document.getElementById('buyMail');
+    if(input) input.focus();
+    return;
+  }
   if(STRIPE_URL){
     // 本番: Stripe決済へ。成功後は ?paid=1 付きでこのページへ戻る設定にする
     location.href = STRIPE_URL;
@@ -805,6 +840,42 @@ function buy(){
     // テスト動作: 決済成功後の戻りを模擬する(結果は保存済みなので消えない)
     location.href = location.pathname + '?paid=1';
   }
+}
+
+function submitBuy(){
+  const input = document.getElementById('buyMail');
+  const msg = document.getElementById('buyMsg');
+  const em = (input && input.value || '').trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){
+    if(msg) msg.textContent = 'メールアドレスの形式を確認してください。';
+    return;
+  }
+  if(msg) msg.textContent = '送信しています…';
+  fetch(REPORT_API, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({action:'save', email:em, result:LAST})
+  }).then(function(r){ return r.json(); }).then(function(j){
+    if(j && j.ok){
+      try{ localStorage.setItem('yoru_shindan_paid','1'); }catch(e){}
+      PAID = true;
+      const prem = document.querySelector('.prem');
+      prem.innerHTML = buildPremium(LAST);
+      const body = prem.querySelector('.repbody');
+      if(body){
+        const note = document.createElement('p');
+        note.className = 'paidnote';
+        note.style.margin = '18px 18px 0';
+        note.innerHTML = '専用URLを <b>'+em+'</b> に送りました。メールのリンクから、いつでもこのレポートを開けます。';
+        body.insertBefore(note, body.firstChild);
+      }
+      prem.scrollIntoView({behavior:'smooth', block:'start'});
+    }else{
+      if(msg) msg.textContent = '送信に失敗しました。時間をおいてもう一度お試しください。';
+    }
+  }).catch(function(){
+    if(msg) msg.textContent = '通信に失敗しました。電波の良い場所でもう一度お試しください。';
+  });
 }
 function buildPremium(D){
   const {sev, flagged, ranked} = D;
@@ -851,9 +922,9 @@ function buildPremium(D){
       <div class="sec">
         <h3>3ヶ月後の再診断</h3>
         <ul class="rep"><li>同じ診断にもう一度答えると、睡眠力スコアの変化を確認できます。行動の定着には平均66日かかるという研究報告があります。60日を過ぎたあたりでの再診断がおすすめです。</li></ul>
-        <button class="btn noprint" style="margin-top:14px" onclick="window.print()">この完全版レポートをPDFで保存する</button>
-        <p class="gn noprint" style="font-size:11.5px;color:var(--sub);margin-top:8px;text-align:center">印刷画面が開いたら、送信先で「PDFに保存」を選んでください。白背景の読みやすいレポートとして保存されます。</p>
-        <p class="testnote">※現在はテスト動作です。「完全版レポートを見る」を押すと決済成功後の戻りを模擬して解錠しています。本番ではここにStripe決済 ¥980 を接続し、決済を完了した人だけが解錠されます。</p>
+        <button class="btn noprint" style="margin-top:14px" onclick="savePdf()">この完全版レポートをPDFで保存する</button>
+        <p class="gn noprint" style="font-size:11.5px;color:var(--sub);margin-top:8px;text-align:center">印刷画面が開いたら、送信先で「PDFに保存」を選んでください。白背景の読みやすいレポートとして保存されます。<br>※LINEなどアプリ内のブラウザでは印刷画面が開かないことがあります。その場合はSafariやChromeでこのページを開いてからお試しください。</p>
+        <p class="testnote">※現在はテスト動作です(決済なしで解錠されます)。本番ではStripe決済 ¥980 の完了後に、専用URLの発行とメール送信を行います。</p>
       </div>
     </div>`;
 }
@@ -880,6 +951,30 @@ function boot(){
     history.replaceState(null, '', location.pathname);
   }
   try{ PAID = localStorage.getItem('yoru_shindan_paid')==='1'; }catch(e){}
+  // 専用URL(?r=ID)で開かれた場合: サーバーから保存済みレポートを取得し、完全版を開いた状態で表示
+  const rid = p.get('r');
+  if(rid && REPORT_API){
+    $('quiz').classList.add('hidden');
+    const r = $('result');
+    r.classList.remove('hidden');
+    r.innerHTML = '<div class="card"><p class="body" style="text-align:center">保存されたレポートを読み込んでいます…</p></div>';
+    fetch(REPORT_API + '?id=' + encodeURIComponent(rid))
+      .then(function(res){ return res.json(); })
+      .then(function(j){
+        if(j && j.ok && j.result && j.result.ranked){
+          state.subPt = j.result.subPt || state.subPt;
+          LAST = j.result;
+          PAID = true;   // 専用URLは購入者専用=完全版を開いた状態で表示
+          renderResult(LAST);
+        }else{
+          r.innerHTML = '<div class="card"><p class="body">レポートが見つかりませんでした。メールに記載のURLをもう一度ご確認ください。</p><button class="back" onclick="location.href=location.pathname">診断ページへ戻る</button></div>';
+        }
+      })
+      .catch(function(){
+        r.innerHTML = '<div class="card"><p class="body">読み込みに失敗しました。通信環境の良い場所で、もう一度開いてみてください。</p></div>';
+      });
+    return;
+  }
   if(CAME_FROM_PAY){
     let saved = null;
     try{ saved = JSON.parse(localStorage.getItem('yoru_shindan_last')||'null'); }catch(e){}
