@@ -903,26 +903,12 @@ function gotoLine(){
   const ok = confirm(
     'LINEへ移動する前にご確認ください。\n\n' +
     'このレポートは、メールでお送りした専用URLからいつでも開き直せます。\n' +
-    'メールが届いているか確認してから移動すると安心です。必要ならPDF保存もできます。\n\n' +
+    'メールが届いているか確認してから移動すると安心です。見つからない場合は迷惑メールフォルダもご確認ください。\n\n' +
     'LINEを開きますか？'
   );
   if(ok) window.open(LINE_URL, '_blank', 'noopener');
 }
 
-/* PDF保存。印刷が使えない環境(アプリ内ブラウザ等)では案内を出す */
-function savePdf(){
-  let opened = false;
-  try{
-    if(typeof window.print === 'function'){
-      window.onafterprint = function(){ opened = true; };
-      window.print();
-      opened = true;
-    }
-  }catch(e){ opened = false; }
-  if(!opened){
-    alert('この画面ではPDF保存を利用できないようです。\nSafariやChromeなどのブラウザでこのページを開いてから、もう一度お試しください。');
-  }
-}
 function buy(){
   if(!LAST) return;
   if(STRIPE_URL){
@@ -988,7 +974,7 @@ function submitBuy(){
         const note = document.createElement('p');
         note.className = 'paidnote';
         note.style.margin = '18px 18px 0';
-        note.innerHTML = '専用URLを <b>'+em+'</b> に送りました。メールのリンクから、いつでもこのレポートを開けます。';
+        note.innerHTML = '専用URLを <b>'+em+'</b> に送りました。メールのリンクから、いつでもこのレポートを開けます。<br>届いていない場合は、迷惑メールフォルダもご確認ください。';
         body.insertBefore(note, body.firstChild);
       }
       prem.scrollIntoView({behavior:'smooth', block:'start'});
@@ -1044,8 +1030,11 @@ function buildPremium(D){
       <div class="sec">
         <h3>3ヶ月後の再診断</h3>
         <ul class="rep"><li>同じ診断にもう一度答えると、睡眠力スコアの変化を確認できます。行動の定着には平均66日かかるという研究報告があります。60日を過ぎたあたりでの再診断がおすすめです。</li></ul>
-        <button class="btn noprint" style="margin-top:14px" onclick="savePdf()">この完全版レポートをPDFで保存する</button>
-        <p class="gn noprint" style="font-size:11.5px;color:var(--sub);margin-top:8px;text-align:center">印刷画面が開いたら、送信先で「PDFに保存」を選んでください。白背景の読みやすいレポートとして保存されます。<br>※LINEなどアプリ内のブラウザでは印刷画面が開かないことがあります。その場合はSafariやChromeでこのページを開いてからお試しください。</p>
+        <div class="feat noprint" style="margin-top:14px">
+          この画面を一度閉じると、再び表示することはできません。商品の性質上、閲覧済みのレポートの返金にも応じられません。<br>
+          上部の<b>「専用URLをメールで受け取る」</b>から専用URLの送信を済ませ、<b>メールが届いているかを今この場でご確認ください</b>。メールのリンクからは、いつでもこのレポートを開き直せます。<br>
+          メールが見つからない場合は、<b>迷惑メールフォルダ</b>もあわせてご確認ください。
+        </div>
         ${CAME_FROM_PAY?'':'<p class="testnote">※現在はテスト動作です(決済なしで解錠されます)。本番ではStripe決済 ¥980 の完了後に、専用URLの発行とメール送信を行います。</p>'}
       </div>
     </div>`;
