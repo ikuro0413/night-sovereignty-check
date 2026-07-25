@@ -758,8 +758,6 @@ function renderResult(D){
   }
 
   const hist = D.hist || {delta:null, chips:[]};
-  const deltaHtml = hist.delta!==null
-    ? `<div class="delta ${hist.delta>=0?'up':'down'}">前回から ${hist.delta>=0?'+':''}${hist.delta}点</div>` : '';
   const chipsHtml = hist.chips.length>1
     ? `<div class="hist">${hist.chips.map(c=>`<span>${c.d}　${c.s}</span>`).join('')}</div>` : '';
 
@@ -769,7 +767,6 @@ function renderResult(D){
     <div class="score-wrap">
       <div class="score-num">${sovereign}</div>
       <div class="score-lab">睡眠力スコア　100点満点・高いほど良好</div>
-      ${deltaHtml}
       ${chipsHtml}
     </div>
 
