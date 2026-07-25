@@ -65,6 +65,8 @@
   .diag .dh .ds{font-size:12px;color:var(--sub);margin-top:2px}
   .diag .dh .pri{display:inline-block;font-size:11px;color:#1a1305;background:var(--accent);border-radius:6px;padding:1px 8px;margin-left:8px;vertical-align:2px}
   .diag .db{padding:16px 18px}
+  .fact{background:#1a2130;border-left:3px solid var(--accent);border-radius:0 10px 10px 0;
+    padding:12px 14px;font-size:14px;color:#e8e1cb;line-height:1.9;margin-bottom:14px}
   .diag .mech{font-size:14px;color:#d2cec2;line-height:1.85;margin-bottom:12px}
   .lab{font-size:12px;letter-spacing:.15em;color:var(--accent2);margin:12px 0 6px}
   .acts{list-style:none;font-size:14px;color:#d8d4c8}
@@ -125,6 +127,7 @@
     .diag .dh,.prem .head{background:#f2f2f2;border-color:#ccc}
     .diag .dh .dt,.prem .head .t,.prem h3{color:#111}
     .diag .dh .ds,.prem .head .s,.lab,.sec .sc,.goods .gn{color:#555}
+    .fact{background:#f7f7f7;border-color:#888;color:#222}
     .feat{background:#f7f7f7;border-color:#999;color:#111}
     .svc2{background:#f7f7f7;border-color:#bbb;color:#222}
     .svc2 b{color:#2c7a4b}
@@ -681,6 +684,18 @@ function buildWhy(sovereign, flagged, ranked){
     body:`複数の要因が重なって、夜がかなり乱れています。中でも ${names} の影響が大きい状態です。ただ、これはあなたの意志が弱いからではありません。<b style="color:var(--accent2)">今の状況を作っているのは仕組みのほう</b>です。責める必要はまったくなく、一度に全部ではなく、上から一つずつ変えれば必ず変わります。`};
 }
 
+/* 主因ごとの権威データ。出典をほのめかしつつ、データ→意味→本人への接続の3文で厚みを出す */
+const FACT = {
+  hotcold:'イスラエルの裁判所を対象にしたダンジガーらの研究によると、同じ裁判官でも休憩直後は仮釈放をおよそ65%認めるのに、疲れがたまる時間帯には許可率がほぼ0%まで下がっていたという。人の判断は、本人が思っている以上に「いつ判断するか」で別人のように変わる。朝のあなたと夜のあなたの決意が食い違うのは、性格の問題ではなく、人間の仕様に近い。',
+  commit:'OECDの国際調査によると、日本人の睡眠時間は加盟33カ国のなかで最下位の7時間22分。加盟国の平均と比べて1時間以上も短い。つまりこの国では、意識して眠りを確保しない限り、放っておくだけで「世界でいちばん眠らない側」へ流されていく。',
+  default:'テキサス大学のワードらの実験によると、スマホは電源を切って机に置いてあるだけでも、そばにいる人の認知能力を下げていたという。見ていなくても、脳の一部は「そこにあるスマホ」に割かれ続けている。寝室にスマホがある限り、あなたの夜は静かに削られている。',
+  present:'アメリカの通信比較サイトWhistleOutの調査によると、人は一生のうちおよそ8.7年をスマホの画面を見て過ごす計算になるという。さらに動画配信大手Netflixの経営トップは「われわれの最大の競合は睡眠だ」と公言している。あなたの夜は、世界最高の頭脳たちが本気で奪いにきている時間でもある。',
+  fatigue:'コーネル大学の研究によると、人は食べ物に関することだけで1日およそ226回もの決断をしているという。仕事や家庭の判断まで含めれば、夜に決断力が残っていないのはむしろ当然のこと。夜のあなたが流されやすいのは怠けではなく、消耗の結果に近い。',
+  sunk:'ノーベル経済学賞を受けたカーネマンらの研究によると、人は「失う痛み」を「得る喜び」のおよそ2倍強く感じるという。「ここでやめたらもったいない」という感覚は、実際の2倍の力であなたを画面に引き留めている。切り上げられないのは、脳の設計に沿った自然な結果でもある。',
+  loop:'アメリカの調査会社dscoutの計測によると、人は1日に平均2,617回スマホに触れている。ヘビーユーザーでは5,427回にのぼる。しかもカリフォルニア大学のマークらの研究では、一度途切れた集中が戻るまで平均23分かかるとされる。無意識のひと触りは、思っているよりずっと高くつく。',
+  rhythm:'ハーバード大学のチェイスラーらの研究によると、人の体内時計は24時間ちょうどではなく、およそ24.2時間だという。毎朝の光でリセットしなければ、生活は放っておくだけで毎日少しずつ後ろへずれていく。夜型化は堕落ではなく重力のように働く現象で、だからこそ毎朝の固定が効く。',
+};
+
 /* 診断カード1枚を生成。無料と完全版の両方から使う。
    withGoods=true でおすすめグッズも表示(無料カード用。完全版は専用セクションがあるので重複させない) */
 function diagCard(d, i, sev, withGoods){
@@ -699,6 +714,7 @@ function diagCard(d, i, sev, withGoods){
       <div class="ds">${DOMAINS[d].name}　${sev[d]}点・${band.label}</div>
     </div>
     <div class="db">
+      ${FACT[d]?`<p class="fact">${FACT[d]}</p>`:''}
       <p class="mech">${sub.mech}</p>
       <div class="lab">いまの段階の一手</div>
       <div class="feat">${feat}</div>
