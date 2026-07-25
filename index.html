@@ -422,8 +422,8 @@ const GOODS = {
     {name:'光目覚まし時計', price:'約¥6,000〜8,000', kw:'光目覚まし時計', note:'YABAEなど。設定時刻の光で起床をそろえる道具'}],
 };
 const SVC = {
-  present:{title:'LINEでやめる時刻を宣言→その時刻に合図', body:'Botに「今夜◯時にやめる」と宣言すると、その時刻に合図が届きます。意志ではなく、外からの合図で区切ります。', cta:'LINEでやめる時刻を宣言する'},
-  commit:{title:'LINEで寝る時刻を宣言→毎晩リマインド', body:'Botに寝る時刻を宣言すると、毎晩その時刻にリマインドが届きます。「おやすみ」と送れば就寝時刻を記録し、守れた日が積み上がって推移も見られます。', cta:'LINEで寝る時刻を宣言する'},
+  present:{title:'LINEでやめる時刻を宣言→その時刻に合図', body:'専用LINEに「今夜◯時にやめる」と宣言すると、その時刻に合図が届きます。意志ではなく、外からの合図で区切ります。', cta:'LINEでやめる時刻を宣言する'},
+  commit:{title:'LINEで寝る時刻を宣言→毎晩リマインド', body:'専用LINEに寝る時刻を宣言すると、毎晩その時刻にリマインドが届きます。「おやすみ」と送れば就寝時刻を記録し、守れた日が積み上がって推移も見られます。', cta:'LINEで寝る時刻を宣言する'},
   default:{title:'LINEで寝室スマホなしを毎晩チェック', body:'「今夜、スマホを寝室の外に置けた？」を毎晩1タップで記録。続いた日数が見えることで、環境の変更が習慣として定着します。', cta:'LINEで毎晩のチェックを受ける'},
   fatigue:{title:'LINEが毎晩、終わりの合図を自動送信', body:'あなたが判断しなくても、毎晩決まった時刻に「今日はここまで」の合図が届きます。夜に意志を使わせません。', cta:'LINEで終わりの合図を受け取る'},
   hotcold:{title:'朝の宣言を夜に届けるLINE', body:'朝のうちに「今夜はこうする」と宣言すると、夜にあなた自身の言葉として届きます。夜の自分に、朝の決意を渡します。', cta:'LINEで朝の宣言を夜に届ける'},
@@ -575,26 +575,57 @@ function historyUpdate(score){
   return {delta:delta, chips:h.slice(-8)};
 }
 
-/* 総評。8段階に細分化。スコアが10点前後動くたびに見出しと本文が変わる。
-   時期では変えない。同じスコアなら常に同じ文章 */
+/* タイプ名の核。主因のサブタイプごとの短い呼び名 */
+const STEM = {
+  present:{autoplay:'自動再生ながされ', scroll:'無限スクロール', game:'もう一戦', chat:'夜ふけトーク', gen:'夜ふかし誘惑'},
+  commit:{none:'就寝ノープラン', push:'タスク押し出され', revenge:'ごほうび夜ふかし', drift:'ずるずる夜', gen:'就寝あいまい'},
+  default:{charge:'枕元スマホ', alarm:'スマホ目覚まし', media:'寝室シアター', gen:'夜ふかし環境'},
+  fatigue:{inertia:'夜ながされ', nightwork:'夜残業', gen:'夜判断ぎれ'},
+  hotcold:{vague:'決意ふわふわ', tomorrow:'明日から', gen:'朝夜ギャップ'},
+  sunk:{sunkcost:'もったいない', fomo:'見逃しこわい', gen:'区切りなし'},
+  loop:{notif:'通知反射', idle:'手ぐせスマホ', place:'定位置スマホ', gen:'無意識スマホ'},
+  rhythm:{weekend:'週末時差ぼけ', shift:'不規則シフト', light:'朝日不足', gen:'リズムばらばら'},
+};
+function stemOf(d){ const s=STEM[d]||{}; return s[pickSub(d)]||s.gen||DOMAINS[d].name; }
+
+/* 採点結果からタイプ名を組み立てる。
+   主因と副因のサブタイプの掛け合わせ×強さの接頭語で、結果ごとに細かく名前が変わる */
+function buildTypeName(sovereign, flagged, ranked){
+  if(!flagged.length){
+    if(sovereign>=90) return '睡眠力マスタータイプ';
+    return stemOf(ranked[0].d)+'予備軍タイプ';
+  }
+  const s1 = stemOf(flagged[0]);
+  const s2 = flagged.length>1? stemOf(flagged[1]) : null;
+  const core = s2? s1+'×'+s2 : s1;
+  let prefix = '';
+  if(sovereign>=60) prefix = 'プチ';
+  else if(sovereign>=25 && sovereign<40) prefix = 'がっつり';
+  else if(sovereign<25) prefix = 'どっぷり';
+  return prefix+core+'タイプ';
+}
+
+/* 総評。見出しは採点結果から組んだタイプ名、本文は8段階でスコアに応じて変わる。
+   時期では変えない。同じスコアなら常に同じ内容 */
 function buildWhy(sovereign, flagged, ranked){
   const tops = (flagged.length?flagged:[ranked[0].d]).slice(0,2);
   const names = tops.map(d=>'<b style="color:var(--accent)">'+DOMAINS[d].name+'</b>').join(' と ');
-  if(sovereign>=90) return {head:'夜は、ほぼ完全にあなたのものです',
+  const head = 'あなたは「'+buildTypeName(sovereign, flagged, ranked)+'」';
+  if(sovereign>=90) return {head,
     body:`ここまで整った夜は、なかなかありません。もう直すところを探す段階ではなく、この状態を崩さないことだけが課題です。生活が変わる時期、繁忙期や引っ越しの前後だけ、また確認しに来てください。`};
-  if(sovereign>=80) return {head:'あなたの夜は、しっかり守られています',
+  if(sovereign>=80) return {head,
     body:`夜の主導権は、はっきりあなたの側にあります。残っているのは ${names} のごく小さな揺らぎだけです。仕上げとして下の一手を押さえれば、満点の夜まであと一歩です。`};
-  if(sovereign>=70) return {head:'あなたの夜は、よく守れています',
+  if(sovereign>=70) return {head,
     body:`大きな乱れは見当たりません。強いて挙げるなら ${names} に少し余地がある程度です。下の内容は、今の良さをさらに安定させるための調整として読んでください。`};
-  if(sovereign>=60) return {head:'夜の主導権は、おおむねあなたの側にあります',
+  if(sovereign>=60) return {head,
     body:`夜の骨格はできています。ただ ${names} のところで、ときどき主導権を手放している日があります。崩れる日の共通点はこの2つに絞られているので、狙いを定めて整えやすい状態です。`};
-  if(sovereign>=50) return {head:'保てている日と、崩れる日が半々です',
+  if(sovereign>=50) return {head,
     body:`いまのあなたの夜は、良い日と崩れる日のちょうど境目にいます。分かれ目を作っているのは ${names} です。ここは意志ではなく仕組みの問題なので、下の対処で境目を良い側に固定できます。`};
-  if(sovereign>=40) return {head:'夜の主導権が、少しずつ向こう側に渡っています',
+  if(sovereign>=40) return {head,
     body:`まだ立て直せる位置ですが、${names} を起点に、夜が崩れる日の方が増え始めています。放っておくと型として固まっていく段階なので、いまが動きどきです。下の最優先の一手から始めてください。`};
-  if(sovereign>=25) return {head:'なぜ、あなたの夜は乱れるのか',
+  if(sovereign>=25) return {head,
     body:`${names} を中心に、いくつかの要因が夜を乱しています。ただしこれは<b style="color:var(--accent2)">意志ではなく仕組みの問題</b>です。裏を返せば、下の対処で仕組みを変えれば必ず動きます。`};
-  return {head:'なぜ、あなたの夜は乱れるのか',
+  return {head,
     body:`複数の要因が重なって、夜がかなり乱れています。中でも ${names} の影響が大きい状態です。ただ、これはあなたの意志が弱いからではありません。<b style="color:var(--accent2)">今の状況を作っているのは仕組みのほう</b>です。責める必要はまったくなく、一度に全部ではなく、上から一つずつ変えれば必ず変わります。`};
 }
 
@@ -757,6 +788,9 @@ function buildPremium(D){
       </div>
       <div class="sec">
         <h3>30日の進め方</h3>
+        <p class="mech">${targets.length>1
+          ? DOMAINS[targets[0]].name+'と'+DOMAINS[targets[1]].name+'に原因があるあなたのための、30日の立て直しロードマップです。影響の大きいところから、週にひとつずつ仕組みを変えていきます。'
+          : DOMAINS[targets[0]].name+'に原因があるあなたのための、30日の立て直しロードマップです。焦らず、週にひとつずつ仕組みを変えていきます。'}</p>
         <ol class="rep">${weeks}</ol>
       </div>
       ${sections}
