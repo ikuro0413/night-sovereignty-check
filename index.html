@@ -498,8 +498,11 @@ DOMS.forEach(d=>{ state.scale[d]=[]; state.subPt[d]={}; });
 
 const $ = id => document.getElementById(id);
 
+/* 入口の質問の出題順。共感しやすい質問を先頭に(判定ロジックには影響しない) */
+const SCREEN_ORDER = ['hotcold','commit','default','present','fatigue','sunk','loop','rhythm'];
+
 function init(){
-  queue = DOMS.map(d=>({dom:d, type:'scale', text:DOMAINS[d].screen, isScreen:true}));
+  queue = SCREEN_ORDER.map(d=>({dom:d, type:'scale', text:DOMAINS[d].screen, isScreen:true}));
   phaseText = 'まずは全体を見ています';
   render();
 }
