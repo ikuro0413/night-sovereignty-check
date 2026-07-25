@@ -1056,7 +1056,11 @@ $('globalDisc').innerHTML =
  '本サービスは行動習慣のセルフチェックであり、医学的な診断・治療・効果を保証するものではありません。'+
  '紹介している研究は一般的な知見であり、個人への効果を保証するものではありません。'+
  '睡眠に関する不調が続く場合、または心身の強い不調がある場合は、医療機関にご相談ください。'+
- (AMAZON_TAG ? 'Amazonのアソシエイトとして、当サイトは適格販売により収入を得ています。' : '');
+ (AMAZON_TAG ? 'Amazonのアソシエイトとして、当サイトは適格販売により収入を得ています。' : '')+
+ '<span style="display:block;text-align:center;margin-top:12px">'+
+ '<a href="privacy.html" style="color:var(--accent2);text-decoration:none">プライバシーポリシー</a>'+
+ '<span style="margin:0 8px">｜</span>'+
+ '<a href="legal.html" style="color:var(--accent2);text-decoration:none">運営者情報・特定商取引法に基づく表記</a></span>';
 
 /* 起動処理。
    - 決済成功で ?paid=1 付きで戻ってきたら: 購入フラグを保存→保存済みの診断結果を復元→完全版を自動で開く
