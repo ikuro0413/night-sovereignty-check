@@ -990,9 +990,6 @@ function renderResult(D){
       </ul></div></div>`;
   }
 
-  const hist = D.hist || {delta:null, chips:[]};
-  const chipsHtml = hist.chips.length>1
-    ? `<div class="hist">${hist.chips.map(c=>`<span>${c.d}　${c.s}</span>`).join('')}</div>` : '';
   const timg = typeImgFor(flagged);
 
   const html = `
@@ -1001,7 +998,6 @@ function renderResult(D){
     <div class="score-wrap">
       <div class="score-num">${sovereign}</div>
       <div class="score-lab">睡眠力スコア　100点満点・高いほど良好</div>
-      ${chipsHtml}
     </div>
 
     <h2>${w.head}</h2>
@@ -1045,7 +1041,7 @@ function renderResult(D){
       </div>
     </div>
 
-    <p class="body" style="font-size:13px;color:var(--sub);margin-top:18px">この診断は、スコアが変わると出てくる文章と一手も変わります。生活を少し変えて、また試しに来てください。スコアの推移はこの画面に積み上がっていきます。</p>
+    <p class="body" style="font-size:13px;color:var(--sub);margin-top:18px">この診断は、スコアが変わると出てくる文章と一手も変わります。生活を少し変えて、また試しに来てください。</p>
     <button class="back" style="margin-top:8px" onclick="location.reload()">もう一度診断する</button>
   </div>`;
   const r=$('result'); r.innerHTML=html; r.classList.remove('hidden');
