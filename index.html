@@ -28,6 +28,10 @@
   .btn:hover{transform:translateY(-1px)} .btn:active{transform:translateY(0)}
   .prog{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:14px}
   .prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0;transition:width .3s}
+  .intro-note{font-size:13.5px;color:#c9c5b8;line-height:1.9;background:#131a28;border:1px solid var(--line);
+    border-radius:12px;padding:14px 16px;margin-bottom:18px}
+  .intro-note b{color:var(--accent)}
+  .intro-note p+p{margin-top:8px}
   .qhead{text-align:center;font-size:19px;font-weight:600;letter-spacing:.06em;margin-bottom:6px;color:var(--ink)}
   .phase{text-align:center;font-size:12px;color:var(--accent2);letter-spacing:.1em;margin-bottom:16px;min-height:18px}
   .q{font-size:19px;font-weight:600;margin:6px 0 22px;letter-spacing:.02em;min-height:64px;display:flex;align-items:center}
@@ -149,6 +153,10 @@
   <div class="brand">現代を生きる"睡眠力"診断</div>
 
   <section id="quiz" class="card fade">
+    <div id="intro" class="intro-note">
+      <p>これは、睡眠を妨げる<b>行動のクセ</b>を読み解く、無料のセルフチェックです。眠りの深さや体質ではなく「なぜ夜ふかししてしまうのか」という行動の側から、あなたの夜を乱している原因を特定します。</p>
+      <p>回答が終わると、<b>睡眠力スコア（100点満点）</b>と8つの行動要因の内訳、あなたのタイプ、そして<b>今夜から実行できる具体的な一手</b>が表示されます。気になるところだけを深掘りする方式なので、1〜3分で終わります。</p>
+    </div>
     <div class="qhead">あなたの睡眠を、読み解く</div>
     <div class="phase" id="phase"></div>
     <div class="prog"><i id="pbar"></i></div>
@@ -265,6 +273,72 @@ const DOMAINS = {
       {type:'scale', text:'朝、起きてから太陽の光を浴びる習慣がない', sub:'light'},
     ]},
 };
+
+/* ---- 確認設問（レア設問）。習慣が乱れている人でも「さすがにそれはない」と答える
+   極端な行動を混ぜ、全設問に「当てはまる」を付けるいたずら回答を見分ける。
+   領域スコアには算入しない。深刻な内容（希死念慮等）は、正直な回答者を
+   誤分類するうえ相談窓口の案内義務が生じるため使わない ---- */
+const RARE_QS = [
+  { text:'布団に入ってから朝まで一睡もせず、スマホを見続けている夜が毎晩続いている',
+    follow:{ text:'その夜は、どのくらいの期間続いていますか',
+      choices:[
+        {label:'ここ数日のこと'},
+        {label:'2〜3週間続いている'},
+        {label:'1ヶ月以上続いている', persistent:true},
+      ]}},
+  { text:'夜のスマホやゲームを続けるために、仕事や学校を当日欠勤することが月に何度もある',
+    follow:{ text:'お休みしてしまうことは、どのくらいの期間続いていますか',
+      choices:[
+        {label:'今月が初めて'},
+        {label:'2〜3ヶ月続いている', persistent:true},
+        {label:'半年以上続いている', persistent:true},
+      ]}},
+];
+
+/* ---- 守りのコンテンツ。該当しなかった領域を空白にせず、
+   強みカード（良い順に2枚）と維持カードとして完全版に表示する ---- */
+const KEEP = {
+  present:{
+    strength:'目の前の誘惑に流されず、夜を自分で切り上げられています。これは意志が強いというより、終わりを決める習慣が身についている状態です。',
+    trigger:'新しい配信サービスやゲームに出会った直後は、この強みが揺らぎやすくなります。',
+    keep:['動画の自動再生はオフのまま保つ','新しいアプリを入れた週だけ、寝る前の利用時間を意識して見る']},
+  commit:{
+    strength:'寝る時刻の約束を、自分と結べています。就寝時刻が決まっている人は、夜全体の設計が崩れにくいことが知られています。',
+    trigger:'繁忙期や生活の変化で、就寝時刻の約束は静かに流れていきます。',
+    keep:['忙しい週こそ、守れる時刻まで一時的に緩めて約束そのものは維持する','就寝30分前のアラームを消さずに残しておく']},
+  default:{
+    strength:'寝室が、眠るための場所として保たれています。環境の強みは意志と違って消耗しないため、最も崩れにくい土台です。',
+    trigger:'引っ越しや模様替え、新しい機器の導入で充電器の位置が変わった時が要注意です。',
+    keep:['充電器の定位置を寝室の外に保ち続ける','寝室に新しい画面（テレビやタブレット）を持ち込まない']},
+  fatigue:{
+    strength:'夜に重い判断を持ち込まず、考えなくても夜が進む流れができています。',
+    trigger:'仕事の繁忙期に作業が夜へはみ出すと、この型は崩れ始めます。',
+    keep:['夜の行動の順番を変えずに保つ','持ち帰り作業が出た週は「夜やらず朝へ回す」原則だけ守る']},
+  hotcold:{
+    strength:'朝の決意と夜の行動がつながっています。決めたことを夜の自分が実行できるのは、計画が具体的である証拠です。',
+    trigger:'新しい目標を大きく立てた直後は、決意が漠然としがちです。',
+    keep:['新しい習慣は「時刻＋行動」の形にしてから始める','決めたことは紙に書いて見える場所に残す']},
+  sunk:{
+    strength:'「ここまで見たから」に引きずられず、途中で切り上げられています。',
+    trigger:'続き物のドラマや大型の配信イベントが始まると、切り上げる力は試されます。',
+    keep:['再生する前に本数を決める習慣を保つ','夜に新しいシリーズを見始めない。初回は休日の昼に']},
+  loop:{
+    strength:'スマホを無意識に開く回数が少なく、注意が細切れになっていません。',
+    trigger:'通知の多い新しいアプリを入れた時に崩れやすくなります。',
+    keep:['新しいアプリの通知は、入れたその日にオフにする','スマホの置き場所を今のまま保つ']},
+  rhythm:{
+    strength:'起きる時刻がそろっていて、体の時計が安定しています。これは他の7つの領域すべてを下支えする、土台の強みです。',
+    trigger:'連休や長期休暇、季節の変わり目に、週末の寝坊から崩れ始めます。',
+    keep:['連休中も起床は平日プラス1時間以内に収める','朝の光を浴びる習慣を続ける']},
+};
+
+/* 該当領域が4つ未満でも30日設計が常に4週になるよう、守りの週メニューで埋める */
+const KEEP_WEEKS = [
+  '起床時刻を毎日そろえ、起きたら朝の光を浴びる。夜は朝で作られる',
+  '寝室と充電器の位置を点検し、環境の型を固定する',
+  '就寝時刻を守れた日をカレンダーに記録する。見える化が定着を支える',
+  '同じ診断にもう一度答えて、スコアの推移を確かめる',
+];
 
 /* ---- サブタイプ別の診断文と行動例。研究知見を根拠として添える ---- */
 const SUB = {
@@ -505,6 +579,8 @@ DOMS.forEach(d=>{ state.scale[d]=[]; state.subPt[d]={}; });
    スプレッドシートに蓄積して分析に使う */
 let 回答明細 = [];
 let 診断開始時刻 = null;
+let いたずら点 = 0;   // 確認設問に「当てはまる」を付けたが、深掘りで継続性が示されなかった数。信頼性判定に使う
+let 深刻点 = 0;       // 確認設問の深掘りで長期間の継続が示された数。深刻ケースとして扱う
 
 const $ = id => document.getElementById(id);
 
@@ -513,13 +589,16 @@ const SCREEN_ORDER = ['hotcold','commit','default','present','fatigue','sunk','l
 
 function init(){
   queue = SCREEN_ORDER.map(d=>({dom:d, type:'scale', text:DOMAINS[d].screen, isScreen:true}));
+  // 確認設問を入口の途中に混ぜる(見た目は通常の設問と同じ。スコアには入らない)
+  queue.splice(3, 0, {rare:true, type:'scale', text:RARE_QS[0].text, follow:RARE_QS[0].follow});
+  queue.splice(7, 0, {rare:true, type:'scale', text:RARE_QS[1].text, follow:RARE_QS[1].follow});
   phaseText = 'まずは全体を見ています';
   診断開始時刻 = Date.now();
   render();
 }
 
 function snapshot(){
-  snapshots.push(JSON.stringify({queue, answered, phaseText, state, maxProg, built: stateBuiltDeep, meisai: 回答明細}));
+  snapshots.push(JSON.stringify({queue, answered, phaseText, state, maxProg, built: stateBuiltDeep, meisai: 回答明細, itzr: いたずら点, skk: 深刻点}));
 }
 function goBack(){
   if(!snapshots.length) return;
@@ -527,6 +606,8 @@ function goBack(){
   queue = s.queue; answered = s.answered; phaseText = s.phaseText; maxProg = s.maxProg;
   stateBuiltDeep = s.built;
   回答明細 = s.meisai || [];
+  いたずら点 = s.itzr || 0;
+  深刻点 = s.skk || 0;
   Object.assign(state, s.state);
   render();
 }
@@ -538,6 +619,9 @@ function render(){
   maxProg = Math.max(maxProg, prog);
   $('pbar').style.width = (maxProg*100)+'%';
   $('phase').textContent = phaseText;
+  // 説明文は最初の設問ページにだけ表示する
+  const intro = $('intro');
+  if(intro) intro.style.display = answered===0 ? '' : 'none';
   $('qtext').textContent = q.text;
   const box = $('opts'); box.innerHTML='';
   const options = q.type==='scale'
@@ -555,6 +639,18 @@ function render(){
 
 function answerScale(q, v){
   snapshot();
+  if(q.rare){
+    // 確認設問: 領域スコアには入れず、信頼性判定と回答ログにだけ使う。
+    // 「当てはまる」なら継続期間の深掘りを1問挟み、本当に深刻なケースといたずらを見分ける
+    回答明細.push({dom:'rare', kind:'確認設問', text:q.text,
+      label:(LIKERT.filter(o=>o.v===v)[0]||{}).t||'', value:v, sub:''});
+    queue.shift(); answered++;
+    if(v>=3 && q.follow){
+      queue.unshift({rareFollow:true, type:'choice', text:q.follow.text, choices:q.follow.choices});
+    }
+    afterAnswer();
+    return;
+  }
   state.scale[q.dom].push(v);
   if(q.isScreen) state.screen[q.dom]=v;
   if(q.sub && v>=3) state.subPt[q.dom][q.sub]=(state.subPt[q.dom][q.sub]||0)+1;
@@ -566,6 +662,14 @@ function answerScale(q, v){
 function answerChoice(q, i){
   snapshot();
   const c = q.choices[i];
+  if(q.rareFollow){
+    // 確認設問の深掘り: 長期間の継続なら深刻ケース、そうでなければ信頼性の減点として扱う
+    if(c.persistent) 深刻点++; else いたずら点++;
+    回答明細.push({dom:'rare', kind:'確認深掘り', text:q.text, label:c.label, value:'', sub:c.persistent?'persistent':''});
+    queue.shift(); answered++;
+    afterAnswer();
+    return;
+  }
   if(c.sub) state.subPt[q.dom][c.sub]=(state.subPt[q.dom][c.sub]||0)+2;
   回答明細.push({dom:q.dom, kind:'深掘り選択', text:q.text, label:c.label, value:'', sub:c.sub||''});
   queue.shift(); answered++;
@@ -583,7 +687,7 @@ function afterAnswer(){
     });
     if(queue.length) phaseText = '気になるところを深掘りしています';
   }
-  if(queue.length && !queue[0].isScreen){
+  if(queue.length && !queue[0].isScreen && !queue[0].rare && !queue[0].rareFollow){
     phaseText = '深掘り中：'+DOMAINS[queue[0].dom].name;
   }
   render();
@@ -613,7 +717,8 @@ function finish(){
   const ranked = DOMS.map(d=>({d, s:sev[d]})).sort((a,b)=>b.s-a.s);
   const sovereign = Math.max(0, 100 - Math.round(DOMS.reduce((a,d)=>a+sev[d],0)/DOMS.length));
   const hist = historyUpdate(sovereign);
-  LAST = {sev, flagged, ranked, sovereign, hist, subPt: state.subPt};
+  const trust = いたずら点>=2 ? '低' : (いたずら点===1 ? '中' : '高');
+  LAST = {sev, flagged, ranked, sovereign, hist, subPt: state.subPt, trust, serious: 深刻点>0};
   // 決済ページへ飛んでも結果が消えないよう保存(戻ってきたら復元して自動解錠)
   try{ localStorage.setItem('yoru_shindan_last', JSON.stringify(LAST)); }catch(e){}
   診断ログ送信(LAST);
@@ -656,6 +761,9 @@ function 診断ログ送信(D){
       answers: 回答明細,
       durationSec: 診断開始時刻 ? Math.round((Date.now()-診断開始時刻)/1000) : '',
       histCount: histLen,
+      trust: D.trust || '',
+      rarePts: いたずら点,
+      seriousPts: 深刻点,
       referrer: document.referrer || '',
       ua: navigator.userAgent || '',
       lang: navigator.language || '',
@@ -869,6 +977,14 @@ function renderResult(D){
     <h2>8つの行動要因の内訳</h2>
     <div class="bars">${bars}</div>
 
+    ${D.serious?`<div class="diag" style="border-color:var(--accent2);margin-top:18px">
+      <div class="dh"><div class="dt">まず、これだけお伝えさせてください</div>
+      <div class="ds">回答から、かなり消耗した状態がうかがえます</div></div>
+      <div class="db">
+        <p class="mech">眠れないまま朝を迎える夜が長く続いていたり、夜の習慣が仕事や学校に影響し始めている場合、それは意志や工夫だけで立て直す段階を越えていることがあります。がんばりが足りないのではなく、体と脳が限界のサインを出している状態です。</p>
+        <p class="mech">下の行動例は取り入れつつ、<b style="color:var(--accent2)">睡眠外来や心療内科など、専門家への相談</b>を強くおすすめします。眠りの問題は、相談すれば具体的な治療の選択肢がある分野です。ひとりで抱え込まないでください。</p>
+      </div></div>`:''}
+
     <h2>あなたの診断と、今夜からできること</h2>
     ${cards}
 
@@ -880,7 +996,8 @@ function renderResult(D){
       <div class="locked">
         <ul>
           ${restCount>0?`<li>残り ${restCount} 項目の診断カード（${flagged.slice(2).map(d=>DOMAINS[d].name).join('、')}）</li>`:''}
-          <li>無料分もふくめた、すべての診断カードの完全版</li>
+          <li>無料分もふくめた、全8領域の診断カードの完全版</li>
+          <li>整っている領域の「あなたの強み」分析と、崩さないための維持カード</li>
           <li>あなた専用の30日の行動計画。週ごとに一手ずつ進める設計</li>
           <li>それぞれの対処に効く道具の選び方と、購入先の一覧</li>
           <li>毎日の実行を支えるLINEサポートへの接続</li>
@@ -995,10 +1112,31 @@ function submitBuy(){
     if(msg) msg.textContent = '通信に失敗しました。電波の良い場所でもう一度お試しください。';
   });
 }
+/* 該当しなかった領域のカード。良い順に2枚は「強み」、残りは「維持」として表示する */
+function keepCard(d, sev, isStrength){
+  const k = KEEP[d];
+  return `<div class="diag">
+    <div class="dh">
+      <div class="dt">${DOMAINS[d].name}${isStrength?'<span class="pri" style="background:var(--good)">あなたの強み</span>':''}</div>
+      <div class="ds">${sev[d]}点・${isStrength?'とても良好':'維持できています'}</div>
+    </div>
+    <div class="db">
+      <p class="mech">${k.strength}</p>
+      <div class="lab">崩れやすい引き金</div>
+      <p class="mech">${k.trigger}</p>
+      <div class="lab">保つためにできること</div>
+      <ul class="acts">${k.keep.map(a=>`<li>${a}</li>`).join('')}</ul>
+    </div>
+  </div>`;
+}
 function buildPremium(D){
   const {sev, flagged, ranked} = D;
-  const targets = (flagged.length?flagged:ranked.slice(0,3).map(r=>r.d));
-  const sections = targets.map((d,i)=>{
+  const targets = flagged;
+  // 該当しなかった領域は良い順に並べ、上位2つを強み・残りを維持カードにして全8領域を網羅する
+  const keepDoms = ranked.map(r=>r.d).filter(d=>flagged.indexOf(d)===-1).reverse();
+  const strengths = keepDoms.slice(0,2);
+  const keeps = keepDoms.slice(2);
+  let sections = targets.map((d,i)=>{
     const goods = (GOODS[d]||[]).map(g=>{
       const url = amazonUrl(g.kw);
       return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　<a class="amz" href="${url}" target="_blank" rel="noopener">Amazonで見る</a><br><span class="gn">${g.note}</span></li>`;
@@ -1013,27 +1151,45 @@ function buildPremium(D){
         <br><button class="btn2" style="margin-top:10px" onclick="gotoLine()">${s.cta}</button></div>
     </div>`;
   }).join('');
-  const weeks = targets.slice(0,4).map((d,i)=>{
+  if(!targets.length){
+    // 該当ゼロでもLINEサポートへの接続だけは案内する(起床記録=維持向き)
+    const s = SVC.rhythm;
+    sections = `<div class="sec">
+      <h3>良い状態を支えるサポート</h3>
+      <div class="svc2"><b>${s.title}</b><br>${s.body}
+        <br><button class="btn2" style="margin-top:10px" onclick="gotoLine()">${s.cta}</button></div>
+    </div>`;
+  }
+  // 30日設計は常に4週。該当領域で埋まらない週は守りのメニューで埋める
+  const weekItems = targets.slice(0,4).map((d,i)=>{
     const sub = SUB[d][pickSub(d)];
     return `<li><b>第${i+1}週　${DOMAINS[d].name}</b><br>${sub.acts[0]}</li>`;
-  }).join('');
-  const allCards = targets.map((d,i)=>diagCard(d,i,sev)).join('');
+  });
+  for(let i=weekItems.length; i<4; i++){
+    weekItems.push(`<li><b>第${i+1}週　守りを固める</b><br>${KEEP_WEEKS[i]}</li>`);
+  }
+  const weeks = weekItems.join('');
+  const allCards = targets.map((d,i)=>diagCard(d,i,sev)).join('')
+    + strengths.map(d=>keepCard(d,sev,true)).join('')
+    + keeps.map(d=>keepCard(d,sev,false)).join('');
   return `
     <div class="head">
       <div class="t">完全版レポート${CAME_FROM_PAY?'':'　テスト表示中'}</div>
       <div class="s">すべての診断と、続けるための30日設計・毎日のサポート</div>
     </div>
     <div class="repbody">
-      <p class="intro">見つかった診断カードのすべてと、それを<b style="color:var(--accent)">30日で定着させる順番</b>、<b style="color:var(--accent)">支える道具とサポート</b>をまとめました。一度に全部ではなく、週にひとつずつで十分です。</p>
+      <p class="intro">見つかった診断のすべてと、<b style="color:var(--accent)">整っている領域の強みと維持のポイント</b>、それを<b style="color:var(--accent)">30日で定着させる順番</b>、<b style="color:var(--accent)">支える道具とサポート</b>をまとめました。一度に全部ではなく、週にひとつずつで十分です。</p>
       <div class="sec">
-        <h3>すべての診断カード　完全版</h3>
+        <h3>全8領域の診断カード　完全版</h3>
         ${allCards}
       </div>
       <div class="sec">
         <h3>改善ロードマップ</h3>
         <p class="mech">${targets.length>1
           ? DOMAINS[targets[0]].name+'と'+DOMAINS[targets[1]].name+'に原因があるあなたのための、30日の立て直しロードマップです。影響の大きいところから、週にひとつずつ仕組みを変えていきます。'
-          : DOMAINS[targets[0]].name+'に原因があるあなたのための、30日の立て直しロードマップです。焦らず、週にひとつずつ仕組みを変えていきます。'}</p>
+          : targets.length===1
+            ? DOMAINS[targets[0]].name+'に原因があるあなたのための、30日の立て直しロードマップです。焦らず、週にひとつずつ仕組みを変えていきます。'
+            : '大きな崩れが見つからなかったあなたのための、良い状態を固定する30日の設計です。守りを週にひとつずつ点検していきます。'}</p>
         <ol class="rep">${weeks}</ol>
       </div>
       ${sections}
