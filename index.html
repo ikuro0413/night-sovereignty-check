@@ -32,6 +32,7 @@
     border-radius:12px;padding:14px 16px;margin-bottom:18px}
   @keyframes aiPulse{0%,100%{opacity:.55}50%{opacity:1}}
   .ai-core{animation:aiPulse 3.2s ease-in-out infinite}
+  #aiVisual .gs{opacity:0;transition:opacity 1.1s ease}
   .intro-note b{color:var(--accent)}
   .intro-note p+p{margin-top:8px}
   .qhead{text-align:center;font-size:19px;font-weight:600;letter-spacing:.06em;margin-bottom:6px;color:var(--ink)}
@@ -161,18 +162,12 @@
     <div class="qhead">現代を生きる"睡眠力"診断</div>
     <div class="phase" id="phase"></div>
     <div id="aiVisual" style="margin:2px 0 14px">
-      <svg viewBox="0 0 680 200" width="100%" role="img" aria-label="睡眠データを解析するAI頭脳のイメージ" xmlns="http://www.w3.org/2000/svg" style="display:block">
+      <svg viewBox="0 0 680 200" width="100%" role="img" aria-label="回答が進むほど成長するAI頭脳のイメージ" xmlns="http://www.w3.org/2000/svg" style="display:block">
         <defs>
           <radialGradient id="aiHalo" cx="50%" cy="46%" r="52%">
             <stop offset="0%" stop-color="#7fa6c4" stop-opacity=".3"/>
             <stop offset="60%" stop-color="#7fa6c4" stop-opacity=".1"/>
             <stop offset="100%" stop-color="#7fa6c4" stop-opacity="0"/>
-          </radialGradient>
-          <radialGradient id="sphereShade" cx="36%" cy="30%" r="75%">
-            <stop offset="0%" stop-color="#d9e6f2" stop-opacity=".32"/>
-            <stop offset="45%" stop-color="#7fa6c4" stop-opacity=".14"/>
-            <stop offset="85%" stop-color="#101a2e" stop-opacity=".55"/>
-            <stop offset="100%" stop-color="#0b0e14" stop-opacity=".7"/>
           </radialGradient>
           <radialGradient id="coreGold" cx="42%" cy="38%" r="70%">
             <stop offset="0%" stop-color="#f2e2ae"/>
@@ -189,27 +184,68 @@
           </filter>
         </defs>
 
-        <ellipse cx="340" cy="92" rx="260" ry="86" fill="url(#aiHalo)"/>
-        <!-- 床の遠近グリッド(奥行き) -->
-        <g stroke="#7fa6c4" stroke-opacity=".14" stroke-width="1" fill="none">
-          <path d="M120 196 L320 138 M220 199 L332 140 M340 199 L340 140 M460 196 L360 138 M560 199 L348 140"/>
-          <path d="M250 152 H430 M215 166 H465 M170 183 H510"/>
+        <!-- 段階0(常時): 入力の脳波とコア -->
+        <g class="gs" data-s="0">
+          <ellipse cx="340" cy="92" rx="260" ry="86" fill="url(#aiHalo)"/>
+          <path d="M24 92 H140 l12 0 l9 -20 l10 38 l9 -50 l10 52 l9 -28 l11 8 H262" fill="none" stroke="url(#aiWave)" stroke-width="1.6" stroke-linejoin="round"/>
+          <circle cx="110" cy="92" r="2.2" fill="#7fa6c4" opacity=".7"/>
+          <circle cx="62" cy="92" r="1.6" fill="#7fa6c4" opacity=".45"/>
+          <g class="ai-core">
+            <circle cx="340" cy="92" r="17" fill="#c8b273" opacity=".3" filter="url(#soft)"/>
+            <circle cx="340" cy="92" r="10" fill="url(#coreGold)"/>
+            <circle cx="336" cy="88" r="3" fill="#f6ecc9" opacity=".8"/>
+          </g>
         </g>
-        <ellipse cx="340" cy="170" rx="120" ry="12" fill="#0b0e14" opacity=".55"/>
-        <ellipse cx="340" cy="170" rx="120" ry="12" fill="none" stroke="#7fa6c4" stroke-opacity=".25"/>
 
-        <!-- 睡眠の脳波がAI頭脳へ流れ込む -->
-        <path d="M24 92 H140 l12 0 l9 -20 l10 38 l9 -50 l10 52 l9 -28 l11 8 H262" fill="none" stroke="url(#aiWave)" stroke-width="1.6" stroke-linejoin="round"/>
-        <circle cx="110" cy="92" r="2.2" fill="#7fa6c4" opacity=".7"/>
-        <circle cx="62" cy="92" r="1.6" fill="#7fa6c4" opacity=".45"/>
+        <!-- 段階1: コア周辺に最初のシナプス -->
+        <g class="gs" data-s="1">
+          <g stroke="#7fa6c4" stroke-opacity=".42" stroke-width=".8" fill="none">
+            <path d="M330 84 L340 62 M330 84 L356 88 M356 88 L340 62 M316 72 L330 84 M356 88 L362 112"/>
+          </g>
+          <circle cx="330" cy="84" r="2" fill="#e9e6dc" opacity=".6"/>
+          <circle cx="340" cy="62" r="2.5" fill="#c8b273"/>
+          <circle cx="356" cy="88" r="2.8" fill="#c8b273"/>
+          <circle cx="316" cy="72" r="2.2" fill="#7fa6c4"/>
+          <circle cx="362" cy="112" r="2.6" fill="#c8b273"/>
+        </g>
 
-        <!-- AI頭脳: 点と線のニューラルクラウド(球体なし) -->
-        <g>
-          <circle cx="340" cy="92" r="54" fill="#7fa6c4" opacity=".1" filter="url(#soft)"/>
-          <!-- 外縁の淡いリング状の点群(奥行き) -->
+        <!-- 段階2: 手前のニューラルメッシュが広がる -->
+        <g class="gs" data-s="2">
+          <g stroke="#7fa6c4" stroke-opacity=".42" stroke-width=".8" fill="none">
+            <path d="M316 72 L340 62 L363 72 L377 94 L362 112 L352 130 L332 122 L316 108 L305 92 L316 72"/>
+            <path d="M330 84 L305 92 M330 84 L316 108 M356 88 L363 72 M356 88 L377 94 M316 108 L332 122 M362 112 L332 122"/>
+          </g>
+          <circle cx="363" cy="72" r="2.2" fill="#7fa6c4"/>
+          <circle cx="377" cy="94" r="2.4" fill="#7fa6c4"/>
+          <circle cx="352" cy="130" r="2" fill="#7fa6c4"/>
+          <circle cx="332" cy="122" r="2.4" fill="#7fa6c4"/>
+          <circle cx="316" cy="108" r="2.6" fill="#c8b273"/>
+          <circle cx="305" cy="92" r="2.4" fill="#7fa6c4"/>
+        </g>
+
+        <!-- 段階3: 金色のクロスリンク -->
+        <g class="gs" data-s="3" stroke="#c8b273" stroke-opacity=".3" stroke-width=".8" fill="none">
+          <path d="M340 62 L356 88 M356 88 L332 122 M305 92 L356 88 M316 72 L362 112 M316 108 L340 62 M330 84 L362 112 M356 88 L383 86"/>
+        </g>
+
+        <!-- 段階4: 中間層の点群 -->
+        <g class="gs" data-s="4">
+          <g stroke="#7fa6c4" stroke-opacity=".2" stroke-width=".7" fill="none">
+            <path d="M322 48 L352 54 L374 66 L383 86 L378 108 L360 126 L326 128 L298 110 L300 88 L312 60 L322 48"/>
+            <path d="M312 60 L352 54 M300 88 L322 48 M383 86 L352 54 M298 110 L326 128 M378 108 L383 86 M300 88 L298 110 M374 66 L378 108 M340 62 L322 48 M363 72 L374 66 M377 94 L383 86 M305 92 L300 88 M352 130 L360 126 M316 72 L312 60 M362 112 L378 108 M316 108 L298 110"/>
+          </g>
+          <g fill="#7fa6c4" opacity=".38">
+            <circle cx="322" cy="48" r="1.6"/><circle cx="352" cy="54" r="1.7"/><circle cx="374" cy="66" r="1.6"/>
+            <circle cx="383" cy="86" r="1.7"/><circle cx="378" cy="108" r="1.6"/><circle cx="360" cy="126" r="1.7"/>
+            <circle cx="326" cy="128" r="1.6"/><circle cx="298" cy="110" r="1.7"/><circle cx="300" cy="88" r="1.6"/><circle cx="312" cy="60" r="1.7"/>
+          </g>
+        </g>
+
+        <!-- 段階5: 外縁の点群と足元のグリッド -->
+        <g class="gs" data-s="5">
           <g stroke="#7fa6c4" stroke-opacity=".14" stroke-width=".7" fill="none">
             <path d="M316 42 L340 36 L364 42 L384 58 L394 78 L394 106 L382 126 L362 140 L338 146 L314 138 L296 122 L288 98 L290 74 L302 56 L316 42"/>
-            <path d="M316 42 L322 48 M340 36 L352 54 M364 42 L374 66 M384 58 L383 86 M394 106 L378 108 M382 126 L360 126 M338 146 L326 128 M296 122 L298 110 M288 98 L300 88 M290 74 L312 60 M302 56 L322 48 M362 140 L360 126 M314 138 L326 128 M394 78 L383 86"/>
+            <path d="M316 42 L322 48 M340 36 L352 54 M364 42 L374 66 M384 58 L383 86 M394 106 L378 108 M382 126 L360 126 M338 146 L326 128 M296 122 L298 110 M288 98 L300 88 M290 74 L312 60 M302 56 L322 48 M362 140 L360 126 M314 138 L326 128 M394 78 L383 86 M340 62 L340 36"/>
           </g>
           <g fill="#7fa6c4" opacity=".28">
             <circle cx="316" cy="42" r="1.3"/><circle cx="340" cy="36" r="1.5"/><circle cx="364" cy="42" r="1.3"/>
@@ -218,102 +254,71 @@
             <circle cx="314" cy="138" r="1.4"/><circle cx="296" cy="122" r="1.5"/><circle cx="288" cy="98" r="1.4"/>
             <circle cx="290" cy="74" r="1.5"/><circle cx="302" cy="56" r="1.4"/>
           </g>
-          <!-- 中間層 -->
-          <g stroke="#7fa6c4" stroke-opacity=".2" stroke-width=".7" fill="none">
-            <path d="M322 48 L352 54 L374 66 L383 86 L378 108 L360 126 L326 128 L298 110 L300 88 L312 60 L322 48"/>
-            <path d="M312 60 L352 54 M300 88 L322 48 M383 86 L352 54 M298 110 L326 128 M378 108 L383 86 M300 88 L298 110 M374 66 L378 108 M312 60 L300 88 M352 54 L374 66"/>
+          <g stroke="#7fa6c4" stroke-opacity=".14" stroke-width="1" fill="none">
+            <path d="M120 196 L320 138 M220 199 L332 140 M340 199 L340 140 M460 196 L360 138 M560 199 L348 140"/>
+            <path d="M250 152 H430 M215 166 H465 M170 183 H510"/>
           </g>
-          <g fill="#7fa6c4" opacity=".38">
-            <circle cx="322" cy="48" r="1.6"/><circle cx="352" cy="54" r="1.7"/><circle cx="374" cy="66" r="1.6"/>
-            <circle cx="383" cy="86" r="1.7"/><circle cx="378" cy="108" r="1.6"/><circle cx="360" cy="126" r="1.7"/>
-            <circle cx="326" cy="128" r="1.6"/><circle cx="298" cy="110" r="1.7"/><circle cx="300" cy="88" r="1.6"/><circle cx="312" cy="60" r="1.7"/>
+          <ellipse cx="340" cy="170" rx="120" ry="12" fill="#0b0e14" opacity=".55"/>
+          <ellipse cx="340" cy="170" rx="120" ry="12" fill="none" stroke="#7fa6c4" stroke-opacity=".25"/>
+        </g>
+
+        <!-- 段階6: 軌道リングと左の点群 -->
+        <g class="gs" data-s="6">
+          <g fill="none">
+            <g transform="rotate(-18 340 92)">
+              <ellipse cx="340" cy="92" rx="74" ry="20" stroke="#7fa6c4" stroke-opacity=".5" stroke-width="1.1"/>
+              <circle cx="266" cy="92" r="3" fill="#7fa6c4"/>
+            </g>
+            <g transform="rotate(24 340 92)">
+              <ellipse cx="340" cy="92" rx="66" ry="15" stroke="#c8b273" stroke-opacity=".4" stroke-width="1" stroke-dasharray="5 6">
+                <animateTransform attributeName="transform" type="rotate" from="0 340 92" to="360 340 92" dur="26s" repeatCount="indefinite"/>
+              </ellipse>
+              <circle cx="406" cy="92" r="2.6" fill="#c8b273"/>
+            </g>
           </g>
-          <!-- 手前の層: ニューラルメッシュ -->
-          <g stroke="#7fa6c4" stroke-opacity=".42" stroke-width=".8" fill="none">
-            <path d="M316 72 L340 62 L363 72 L377 94 L362 112 L352 130 L332 122 L316 108 L305 92 L316 72"/>
-            <path d="M316 72 L330 84 M330 84 L340 62 M330 84 L305 92 M330 84 L316 108 M330 84 L356 88 M356 88 L363 72 M356 88 L377 94 M356 88 L362 112 M316 108 L332 122 M362 112 L332 122 M340 62 L322 48 M363 72 L374 66 M377 94 L383 86 M305 92 L300 88 M352 130 L360 126 M340 62 L340 36 M316 72 L312 60 M362 112 L378 108 M316 108 L298 110"/>
+          <g stroke="#7fa6c4" stroke-opacity=".22" stroke-width=".8" fill="none">
+            <path d="M58 58 L96 72 L130 54 M96 72 L122 92 M58 58 L84 44 M130 54 L122 92"/>
+            <path d="M74 122 L108 132 L142 118 M108 132 L120 112"/>
           </g>
-          <g stroke="#c8b273" stroke-opacity=".3" stroke-width=".8" fill="none">
-            <path d="M340 62 L356 88 M356 88 L332 122 M305 92 L356 88 M316 72 L362 112 M316 108 L340 62 M330 84 L362 112 M356 88 L383 86"/>
+          <g fill="#7fa6c4" opacity=".55">
+            <circle cx="58" cy="58" r="1.8"/><circle cx="96" cy="72" r="2.2"/><circle cx="130" cy="54" r="1.8"/>
+            <circle cx="122" cy="92" r="1.6"/><circle cx="84" cy="44" r="1.4"/>
+            <circle cx="74" cy="122" r="1.6"/><circle cx="108" cy="132" r="2"/><circle cx="142" cy="118" r="1.6"/><circle cx="120" cy="112" r="1.4"/>
+          </g>
+        </g>
+
+        <!-- 段階7: 右の解析ネットワークと夜空 -->
+        <g class="gs" data-s="7">
+          <g stroke="#7fa6c4" stroke-opacity=".45" stroke-width="1" fill="none">
+            <path d="M388 78 L426 56 L462 68 L500 50 L540 62 L576 44"/>
+            <path d="M390 102 L440 114 L484 100 L524 118 L566 104 L604 116"/>
+            <path d="M426 56 L440 114 M462 68 L484 100 M500 50 L484 100 M540 62 L524 118 M540 62 L566 104 M576 44 L566 104 M462 68 L440 114"/>
+          </g>
+          <g stroke="#c8b273" stroke-opacity=".28" stroke-width=".8" fill="none">
+            <path d="M426 56 L484 100 M500 50 L566 104 M440 114 L524 118"/>
           </g>
           <g>
-            <circle cx="316" cy="72" r="2.2" fill="#7fa6c4"/>
-            <circle cx="340" cy="62" r="2.5" fill="#c8b273"/>
-            <circle cx="363" cy="72" r="2.2" fill="#7fa6c4"/>
-            <circle cx="377" cy="94" r="2.4" fill="#7fa6c4"/>
-            <circle cx="362" cy="112" r="2.6" fill="#c8b273"/>
-            <circle cx="352" cy="130" r="2" fill="#7fa6c4"/>
-            <circle cx="332" cy="122" r="2.4" fill="#7fa6c4"/>
-            <circle cx="316" cy="108" r="2.6" fill="#c8b273"/>
-            <circle cx="305" cy="92" r="2.4" fill="#7fa6c4"/>
-            <circle cx="330" cy="84" r="2" fill="#e9e6dc" opacity=".6"/>
-            <circle cx="356" cy="88" r="2.8" fill="#c8b273"/>
+            <circle cx="426" cy="56" r="3" fill="#7fa6c4"/>
+            <circle cx="440" cy="114" r="2.4" fill="#c8b273"/>
+            <circle cx="462" cy="68" r="2.4" fill="#c8b273"/>
+            <circle cx="484" cy="100" r="3" fill="#7fa6c4"/>
+            <circle cx="500" cy="50" r="2.4" fill="#7fa6c4"/>
+            <circle cx="524" cy="118" r="2.6" fill="#c8b273"/>
+            <circle cx="540" cy="62" r="2.2" fill="#c8b273"/>
+            <circle cx="566" cy="104" r="3" fill="#7fa6c4"/>
+            <circle cx="576" cy="44" r="2.2" fill="#7fa6c4"/>
+            <circle cx="604" cy="116" r="2.6" fill="#c8b273"/>
+            <circle cx="592" cy="66" r="1.5" fill="#e9e6dc" opacity=".45"/>
+            <circle cx="452" cy="88" r="1.4" fill="#e9e6dc" opacity=".4"/>
+            <circle cx="516" cy="78" r="1.4" fill="#e9e6dc" opacity=".4"/>
           </g>
-          <!-- 中心コア -->
-          <g class="ai-core">
-            <circle cx="340" cy="92" r="17" fill="#c8b273" opacity=".3" filter="url(#soft)"/>
-            <circle cx="340" cy="92" r="10" fill="url(#coreGold)"/>
-            <circle cx="336" cy="88" r="3" fill="#f6ecc9" opacity=".8"/>
-          </g>
+          <path d="M614 26 a15 15 0 1 0 6 29 a12 12 0 1 1 -6 -29 z" fill="#c8b273" opacity=".9"/>
+          <path d="M574 40 l2.4 5 l5 2.4 l-5 2.4 l-2.4 5 l-2.4 -5 l-5 -2.4 l5 -2.4 z" fill="#7fa6c4" opacity=".8"/>
+          <circle cx="552" cy="26" r="1.6" fill="#e9e6dc" opacity=".6"/>
+          <circle cx="644" cy="78" r="1.6" fill="#e9e6dc" opacity=".5"/>
+          <circle cx="58" cy="44" r="1.6" fill="#e9e6dc" opacity=".45"/>
+          <circle cx="116" cy="30" r="1.3" fill="#7fa6c4" opacity=".5"/>
         </g>
-
-        <!-- ジャイロリング(回転) -->
-        <g fill="none">
-          <g transform="rotate(-18 340 92)">
-            <ellipse cx="340" cy="92" rx="74" ry="20" stroke="#7fa6c4" stroke-opacity=".5" stroke-width="1.1"/>
-            <circle cx="266" cy="92" r="3" fill="#7fa6c4"/>
-          </g>
-          <g transform="rotate(24 340 92)">
-            <ellipse cx="340" cy="92" rx="66" ry="15" stroke="#c8b273" stroke-opacity=".4" stroke-width="1" stroke-dasharray="5 6">
-              <animateTransform attributeName="transform" type="rotate" from="0 340 92" to="360 340 92" dur="26s" repeatCount="indefinite"/>
-            </ellipse>
-            <circle cx="406" cy="92" r="2.6" fill="#c8b273"/>
-          </g>
-        </g>
-
-        <!-- 解析ネットワーク(右) -->
-        <g stroke="#7fa6c4" stroke-opacity=".45" stroke-width="1" fill="none">
-          <path d="M388 78 L426 56 L462 68 L500 50 L540 62 L576 44"/>
-          <path d="M390 102 L440 114 L484 100 L524 118 L566 104 L604 116"/>
-          <path d="M426 56 L440 114 M462 68 L484 100 M500 50 L484 100 M540 62 L524 118 M540 62 L566 104 M576 44 L566 104 M462 68 L440 114"/>
-        </g>
-        <g stroke="#c8b273" stroke-opacity=".28" stroke-width=".8" fill="none">
-          <path d="M426 56 L484 100 M500 50 L566 104 M440 114 L524 118"/>
-        </g>
-        <g>
-          <circle cx="426" cy="56" r="3" fill="#7fa6c4"/>
-          <circle cx="440" cy="114" r="2.4" fill="#c8b273"/>
-          <circle cx="462" cy="68" r="2.4" fill="#c8b273"/>
-          <circle cx="484" cy="100" r="3" fill="#7fa6c4"/>
-          <circle cx="500" cy="50" r="2.4" fill="#7fa6c4"/>
-          <circle cx="524" cy="118" r="2.6" fill="#c8b273"/>
-          <circle cx="540" cy="62" r="2.2" fill="#c8b273"/>
-          <circle cx="566" cy="104" r="3" fill="#7fa6c4"/>
-          <circle cx="576" cy="44" r="2.2" fill="#7fa6c4"/>
-          <circle cx="604" cy="116" r="2.6" fill="#c8b273"/>
-          <circle cx="592" cy="66" r="1.5" fill="#e9e6dc" opacity=".45"/>
-          <circle cx="452" cy="88" r="1.4" fill="#e9e6dc" opacity=".4"/>
-          <circle cx="516" cy="78" r="1.4" fill="#e9e6dc" opacity=".4"/>
-        </g>
-
-        <!-- 左側の小さなネットワーク -->
-        <g stroke="#7fa6c4" stroke-opacity=".22" stroke-width=".8" fill="none">
-          <path d="M58 58 L96 72 L130 54 M96 72 L122 92 M58 58 L84 44 M130 54 L122 92"/>
-          <path d="M74 122 L108 132 L142 118 M108 132 L120 112"/>
-        </g>
-        <g fill="#7fa6c4" opacity=".55">
-          <circle cx="58" cy="58" r="1.8"/><circle cx="96" cy="72" r="2.2"/><circle cx="130" cy="54" r="1.8"/>
-          <circle cx="122" cy="92" r="1.6"/><circle cx="84" cy="44" r="1.4"/>
-          <circle cx="74" cy="122" r="1.6"/><circle cx="108" cy="132" r="2"/><circle cx="142" cy="118" r="1.6"/><circle cx="120" cy="112" r="1.4"/>
-        </g>
-
-        <!-- 月と星 -->
-        <path d="M614 26 a15 15 0 1 0 6 29 a12 12 0 1 1 -6 -29 z" fill="#c8b273" opacity=".9"/>
-        <path d="M574 40 l2.4 5 l5 2.4 l-5 2.4 l-2.4 5 l-2.4 -5 l-5 -2.4 l5 -2.4 z" fill="#7fa6c4" opacity=".8"/>
-        <circle cx="552" cy="26" r="1.6" fill="#e9e6dc" opacity=".6"/>
-        <circle cx="644" cy="78" r="1.6" fill="#e9e6dc" opacity=".5"/>
-        <circle cx="58" cy="44" r="1.6" fill="#e9e6dc" opacity=".45"/>
-        <circle cx="116" cy="30" r="1.3" fill="#7fa6c4" opacity=".5"/>
       </svg>
     </div>
     <div class="prog"><i id="pbar"></i></div>
@@ -786,11 +791,15 @@ function render(){
   maxProg = Math.max(maxProg, prog);
   $('pbar').style.width = (maxProg*100)+'%';
   $('phase').textContent = phaseText;
-  // 説明文とAIイラストは最初の設問ページにだけ表示する
+  // 説明文は最初の設問ページにだけ表示する
   const intro = $('intro');
   if(intro) intro.style.display = answered===0 ? '' : 'none';
+  // AIイラストは全設問ページに表示し、回答が進むほど点と線が増えて成長する
   const aiv = $('aiVisual');
-  if(aiv) aiv.style.display = answered===0 ? '' : 'none';
+  if(aiv){
+    const vis = Math.min(8, Math.floor(maxProg*8) + 1);
+    aiv.querySelectorAll('.gs').forEach(el=>{ el.style.opacity = (+el.dataset.s < vis) ? 1 : 0; });
+  }
   $('qtext').textContent = q.text;
   const box = $('opts'); box.innerHTML='';
   const options = q.type==='scale'
