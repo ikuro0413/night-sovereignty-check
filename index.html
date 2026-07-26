@@ -1413,7 +1413,7 @@ function renderResult(D){
         </ul>
       </div>
       <div class="lockbar">
-        <div style="font-size:13px;color:var(--sub)"><s>通常価格 ¥1,560</s>　<span style="color:var(--bad);font-weight:700">今だけ半額</span></div>
+        <div style="font-size:13px;color:var(--sub)"><s>通常価格 ¥1,560</s>　<span style="color:var(--bad);font-weight:700">リリース記念価格</span></div>
         <div class="price">¥780 <small>／ 買い切り</small></div>
         <button class="btn" style="margin-top:12px" onclick="buy()">完全版レポートを見る</button>
       </div>
@@ -1463,7 +1463,7 @@ function buy(){
     // テスト動線(STRIPE_URL未設定時): 決済なしでメールアドレスを受け取り、専用URLを発行して送る
     const lb = document.querySelector('.lockbar');
     lb.innerHTML = `
-      <div style="font-size:13px;color:var(--sub)"><s>通常価格 ¥1,560</s>　<span style="color:var(--bad);font-weight:700">今だけ半額</span></div>
+      <div style="font-size:13px;color:var(--sub)"><s>通常価格 ¥1,560</s>　<span style="color:var(--bad);font-weight:700">リリース記念価格</span></div>
       <div class="price">¥780 <small>／ 買い切り</small></div>
       <p class="gn" style="font-size:12.5px;color:var(--sub);margin-top:8px;text-align:left">完全版レポートの専用URLをメールでお送りします。この画面を閉じても、メールのリンクからいつでも読み直せます。</p>
       <input class="mailin" id="buyMail" type="email" placeholder="メールアドレス" autocomplete="email">
