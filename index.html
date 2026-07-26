@@ -161,57 +161,124 @@
     <div class="qhead">現代を生きる"睡眠力"診断</div>
     <div class="phase" id="phase"></div>
     <div id="aiVisual" style="margin:2px 0 14px">
-      <svg viewBox="0 0 680 150" width="100%" role="img" aria-label="AIが睡眠の行動データを解析するイメージ" xmlns="http://www.w3.org/2000/svg" style="display:block">
+      <svg viewBox="0 0 680 200" width="100%" role="img" aria-label="睡眠データを解析するAI頭脳のイメージ" xmlns="http://www.w3.org/2000/svg" style="display:block">
         <defs>
-          <radialGradient id="aiGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#7fa6c4" stop-opacity=".25"/>
+          <radialGradient id="aiHalo" cx="50%" cy="46%" r="52%">
+            <stop offset="0%" stop-color="#7fa6c4" stop-opacity=".3"/>
+            <stop offset="60%" stop-color="#7fa6c4" stop-opacity=".1"/>
             <stop offset="100%" stop-color="#7fa6c4" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="sphereShade" cx="36%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#d9e6f2" stop-opacity=".32"/>
+            <stop offset="45%" stop-color="#7fa6c4" stop-opacity=".14"/>
+            <stop offset="85%" stop-color="#101a2e" stop-opacity=".55"/>
+            <stop offset="100%" stop-color="#0b0e14" stop-opacity=".7"/>
+          </radialGradient>
+          <radialGradient id="coreGold" cx="42%" cy="38%" r="70%">
+            <stop offset="0%" stop-color="#f2e2ae"/>
+            <stop offset="55%" stop-color="#c8b273"/>
+            <stop offset="100%" stop-color="#8a7846"/>
           </radialGradient>
           <linearGradient id="aiWave" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#7fa6c4" stop-opacity="0"/>
             <stop offset="55%" stop-color="#7fa6c4" stop-opacity=".9"/>
             <stop offset="100%" stop-color="#c8b273" stop-opacity=".2"/>
           </linearGradient>
+          <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="4"/>
+          </filter>
         </defs>
-        <ellipse cx="340" cy="75" rx="250" ry="70" fill="url(#aiGlow)"/>
-        <!-- 睡眠の脳波がAIコアへ流れ込む -->
-        <path d="M28 78 H150 l14 0 l9 -20 l10 38 l9 -50 l10 52 l9 -28 l11 8 H306" fill="none" stroke="url(#aiWave)" stroke-width="1.6" stroke-linejoin="round"/>
-        <circle cx="120" cy="78" r="2.2" fill="#7fa6c4" opacity=".7"/>
-        <circle cx="70" cy="78" r="1.6" fill="#7fa6c4" opacity=".45"/>
-        <!-- AIコア -->
-        <g class="ai-core">
-          <circle cx="340" cy="75" r="32" fill="none" stroke="#7fa6c4" stroke-opacity=".5" stroke-width="1"/>
-          <circle cx="340" cy="75" r="22" fill="none" stroke="#c8b273" stroke-width="1.2" stroke-dasharray="4 5"/>
-          <circle cx="340" cy="75" r="8" fill="#c8b273"/>
-          <circle cx="340" cy="75" r="13" fill="none" stroke="#c8b273" stroke-opacity=".35" stroke-width="3"/>
+
+        <ellipse cx="340" cy="92" rx="260" ry="86" fill="url(#aiHalo)"/>
+        <!-- 床の遠近グリッド(奥行き) -->
+        <g stroke="#7fa6c4" stroke-opacity=".14" stroke-width="1" fill="none">
+          <path d="M120 196 L320 138 M220 199 L332 140 M340 199 L340 140 M460 196 L360 138 M560 199 L348 140"/>
+          <path d="M250 152 H430 M215 166 H465 M170 183 H510"/>
         </g>
-        <ellipse cx="340" cy="75" rx="52" ry="15" fill="none" stroke="#7fa6c4" stroke-opacity=".35" stroke-width="1" transform="rotate(-16 340 75)"/>
-        <circle cx="292" cy="88" r="2.6" fill="#7fa6c4"/>
-        <circle cx="389" cy="63" r="2.2" fill="#c8b273"/>
-        <!-- 解析ネットワーク -->
+        <ellipse cx="340" cy="170" rx="120" ry="12" fill="#0b0e14" opacity=".55"/>
+        <ellipse cx="340" cy="170" rx="120" ry="12" fill="none" stroke="#7fa6c4" stroke-opacity=".25"/>
+
+        <!-- 睡眠の脳波がAI頭脳へ流れ込む -->
+        <path d="M24 92 H140 l12 0 l9 -20 l10 38 l9 -50 l10 52 l9 -28 l11 8 H262" fill="none" stroke="url(#aiWave)" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="110" cy="92" r="2.2" fill="#7fa6c4" opacity=".7"/>
+        <circle cx="62" cy="92" r="1.6" fill="#7fa6c4" opacity=".45"/>
+
+        <!-- AI頭脳: ワイヤーフレーム球体 -->
+        <g>
+          <circle cx="340" cy="92" r="52" fill="#7fa6c4" opacity=".18" filter="url(#soft)"/>
+          <circle cx="340" cy="92" r="48" fill="url(#sphereShade)" stroke="#7fa6c4" stroke-opacity=".65" stroke-width="1.1"/>
+          <!-- 経線(縦) -->
+          <g fill="none" stroke="#7fa6c4">
+            <ellipse cx="340" cy="92" rx="48" ry="48" stroke-opacity=".18"/>
+            <ellipse cx="340" cy="92" rx="34" ry="48" stroke-opacity=".3"/>
+            <ellipse cx="340" cy="92" rx="18" ry="48" stroke-opacity=".38"/>
+            <ellipse cx="340" cy="92" rx="4" ry="48" stroke-opacity=".3"/>
+          </g>
+          <!-- 緯線(横) -->
+          <g fill="none" stroke="#7fa6c4">
+            <ellipse cx="340" cy="66" rx="38" ry="9" stroke-opacity=".3"/>
+            <ellipse cx="340" cy="92" rx="48" ry="11" stroke-opacity=".4"/>
+            <ellipse cx="340" cy="118" rx="38" ry="9" stroke-opacity=".3"/>
+          </g>
+          <!-- 球面上のシナプス(奥は小さく暗く、手前は大きく明るく) -->
+          <g stroke="#c8b273" stroke-opacity=".28" stroke-width=".8" fill="none">
+            <path d="M310 70 L332 82 L316 100 L342 112 M332 82 L358 74 L368 96 L342 112 M358 74 L352 58"/>
+          </g>
+          <g>
+            <circle cx="352" cy="58" r="1.6" fill="#e9e6dc" opacity=".4"/>
+            <circle cx="310" cy="70" r="2" fill="#7fa6c4" opacity=".6"/>
+            <circle cx="358" cy="74" r="2.2" fill="#c8b273" opacity=".7"/>
+            <circle cx="316" cy="100" r="2.4" fill="#7fa6c4"/>
+            <circle cx="368" cy="96" r="2.6" fill="#c8b273"/>
+            <circle cx="332" cy="82" r="2" fill="#e9e6dc" opacity=".55"/>
+            <circle cx="342" cy="112" r="2.8" fill="#7fa6c4"/>
+          </g>
+          <!-- 中心コア -->
+          <g class="ai-core">
+            <circle cx="340" cy="92" r="17" fill="#c8b273" opacity=".3" filter="url(#soft)"/>
+            <circle cx="340" cy="92" r="10" fill="url(#coreGold)"/>
+            <circle cx="336" cy="88" r="3" fill="#f6ecc9" opacity=".8"/>
+          </g>
+        </g>
+
+        <!-- ジャイロリング(回転) -->
+        <g fill="none">
+          <g transform="rotate(-18 340 92)">
+            <ellipse cx="340" cy="92" rx="74" ry="20" stroke="#7fa6c4" stroke-opacity=".5" stroke-width="1.1"/>
+            <circle cx="266" cy="92" r="3" fill="#7fa6c4"/>
+          </g>
+          <g transform="rotate(24 340 92)">
+            <ellipse cx="340" cy="92" rx="66" ry="15" stroke="#c8b273" stroke-opacity=".4" stroke-width="1" stroke-dasharray="5 6">
+              <animateTransform attributeName="transform" type="rotate" from="0 340 92" to="360 340 92" dur="26s" repeatCount="indefinite"/>
+            </ellipse>
+            <circle cx="406" cy="92" r="2.6" fill="#c8b273"/>
+          </g>
+        </g>
+
+        <!-- 解析ネットワーク(右) -->
         <g stroke="#7fa6c4" stroke-opacity=".45" stroke-width="1" fill="none">
-          <path d="M372 70 L420 52 L472 64 L522 44"/>
-          <path d="M372 82 L432 96 L490 86 L540 100 L596 88"/>
-          <path d="M420 52 L432 96"/>
-          <path d="M472 64 L490 86"/>
-          <path d="M522 44 L540 100"/>
+          <path d="M388 78 L438 58 L492 70 L540 48"/>
+          <path d="M390 102 L448 116 L506 104 L556 118 L608 104"/>
+          <path d="M438 58 L448 116"/>
+          <path d="M492 70 L506 104"/>
         </g>
         <g>
-          <circle cx="420" cy="52" r="3" fill="#7fa6c4"/>
-          <circle cx="432" cy="96" r="2.4" fill="#c8b273"/>
-          <circle cx="472" cy="64" r="2.4" fill="#c8b273"/>
-          <circle cx="490" cy="86" r="3" fill="#7fa6c4"/>
-          <circle cx="522" cy="44" r="2.4" fill="#7fa6c4"/>
-          <circle cx="540" cy="100" r="2.4" fill="#c8b273"/>
-          <circle cx="596" cy="88" r="3" fill="#c8b273"/>
+          <circle cx="438" cy="58" r="3" fill="#7fa6c4"/>
+          <circle cx="448" cy="116" r="2.4" fill="#c8b273"/>
+          <circle cx="492" cy="70" r="2.4" fill="#c8b273"/>
+          <circle cx="506" cy="104" r="3" fill="#7fa6c4"/>
+          <circle cx="540" cy="48" r="2.4" fill="#7fa6c4"/>
+          <circle cx="556" cy="118" r="2.4" fill="#c8b273"/>
+          <circle cx="608" cy="104" r="3" fill="#c8b273"/>
         </g>
+
         <!-- 月と星 -->
-        <path d="M622 22 a15 15 0 1 0 6 29 a12 12 0 1 1 -6 -29 z" fill="#c8b273" opacity=".9"/>
-        <path d="M580 34 l2.4 5 l5 2.4 l-5 2.4 l-2.4 5 l-2.4 -5 l-5 -2.4 l5 -2.4 z" fill="#7fa6c4" opacity=".8"/>
-        <circle cx="556" cy="22" r="1.6" fill="#e9e6dc" opacity=".6"/>
-        <circle cx="648" cy="70" r="1.6" fill="#e9e6dc" opacity=".5"/>
-        <circle cx="62" cy="40" r="1.6" fill="#e9e6dc" opacity=".45"/>
-        <circle cx="120" cy="26" r="1.3" fill="#7fa6c4" opacity=".5"/>
+        <path d="M614 26 a15 15 0 1 0 6 29 a12 12 0 1 1 -6 -29 z" fill="#c8b273" opacity=".9"/>
+        <path d="M574 40 l2.4 5 l5 2.4 l-5 2.4 l-2.4 5 l-2.4 -5 l-5 -2.4 l5 -2.4 z" fill="#7fa6c4" opacity=".8"/>
+        <circle cx="552" cy="26" r="1.6" fill="#e9e6dc" opacity=".6"/>
+        <circle cx="644" cy="78" r="1.6" fill="#e9e6dc" opacity=".5"/>
+        <circle cx="58" cy="44" r="1.6" fill="#e9e6dc" opacity=".45"/>
+        <circle cx="116" cy="30" r="1.3" fill="#7fa6c4" opacity=".5"/>
       </svg>
     </div>
     <div class="prog"><i id="pbar"></i></div>
