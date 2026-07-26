@@ -938,7 +938,7 @@ const FACT = {
 
 /* 診断カード1枚を生成。無料と完全版の両方から使う。
    withGoods=true でおすすめグッズも表示(無料カード用。完全版は専用セクションがあるので重複させない) */
-function diagCard(d, i, sev, withGoods){
+function diagCard(d, i, sev, withGoods, withSupport){
   const sub = SUB[d][pickSub(d)];
   const band = bandInfo(sev[d]);
   const fi = band.idx % sub.acts.length;   // スコア帯で最初の一手が入れ替わる
@@ -948,10 +948,15 @@ function diagCard(d, i, sev, withGoods){
     const url = amazonUrl(g.kw);
     return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　<a class="amz" href="${url}" target="_blank" rel="noopener">Amazonで見る</a><br><span class="gn">${g.note}</span></li>`;
   }).join('') : '';
+  const s = SVC[d];
+  const support = (withSupport && s) ? `
+      <div class="lab">毎日の実行を支えるサポート</div>
+      <div class="svc2"><b>${s.title}</b><br>${s.body}
+        <br><button class="btn2" style="margin-top:10px" onclick="gotoLine()">${s.cta}</button></div>` : '';
   return `<div class="diag">
     <div class="dh">
-      <div class="dt">${sub.name}${i===0?'<span class="pri">最優先</span>':''}</div>
-      <div class="ds">${DOMAINS[d].name}　${点数表示(100-sev[d])}<span style="margin-left:8px">クセの強さ: ${band.label}</span></div>
+      <div class="dt">${DOMAINS[d].name}　${点数表示(100-sev[d])}<span style="margin-left:8px;font-size:13px;font-weight:400;color:var(--sub)">クセの強さ: ${band.label}</span></div>
+      ${i===0?'<div class="ds" style="margin-top:4px"><span class="pri" style="margin-left:0;vertical-align:0">最優先</span></div>':''}
     </div>
     <div class="db">
       ${FACT[d]?`<p class="fact">${FACT[d]}</p>`:''}
@@ -961,6 +966,7 @@ function diagCard(d, i, sev, withGoods){
       <div class="lab">あわせてできること</div>
       <ul class="acts">${rest}</ul>
       ${goods?`<div class="lab">おすすめグッズ　価格は実売の目安</div><ul class="goods">${goods}</ul>`:''}
+      ${support}
     </div>
   </div>`;
 }
@@ -1158,12 +1164,21 @@ function submitBuy(){
   });
 }
 /* 該当しなかった領域のカード。良い順に2枚は「強み」、残りは「維持」として表示する */
-function keepCard(d, sev, isStrength){
+function keepCard(d, sev, isStrength, withSupport){
   const k = KEEP[d];
+  const goods = withSupport ? (GOODS[d]||[]).map(g=>{
+    const url = amazonUrl(g.kw);
+    return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　<a class="amz" href="${url}" target="_blank" rel="noopener">Amazonで見る</a><br><span class="gn">${g.note}</span></li>`;
+  }).join('') : '';
+  const s = SVC[d];
+  const support = (withSupport && s) ? `
+      <div class="lab">毎日の実行を支えるサポート</div>
+      <div class="svc2"><b>${s.title}</b><br>${s.body}
+        <br><button class="btn2" style="margin-top:10px" onclick="gotoLine()">${s.cta}</button></div>` : '';
   return `<div class="diag">
     <div class="dh">
-      <div class="dt">${DOMAINS[d].name}${isStrength?'<span class="pri" style="background:var(--good)">あなたの強み</span>':''}</div>
-      <div class="ds">${点数表示(100-sev[d])}<span style="margin-left:8px">${isStrength?'とても良好':'維持できています'}</span></div>
+      <div class="dt">${DOMAINS[d].name}　${点数表示(100-sev[d])}<span style="margin-left:8px;font-size:13px;font-weight:400;color:var(--sub)">${isStrength?'とても良好':'維持できています'}</span></div>
+      ${isStrength?'<div class="ds" style="margin-top:4px"><span class="pri" style="margin-left:0;vertical-align:0;background:var(--good)">あなたの強み</span></div>':''}
     </div>
     <div class="db">
       <p class="mech">${k.strength}</p>
@@ -1171,6 +1186,8 @@ function keepCard(d, sev, isStrength){
       <p class="mech">${k.trigger}</p>
       <div class="lab">保つためにできること</div>
       <ul class="acts">${k.keep.map(a=>`<li>${a}</li>`).join('')}</ul>
+      ${goods?`<div class="lab">保つのに効く道具　価格は実売の目安</div><ul class="goods">${goods}</ul>`:''}
+      ${support}
     </div>
   </div>`;
 }
@@ -1181,30 +1198,7 @@ function buildPremium(D){
   const keepDoms = ranked.map(r=>r.d).filter(d=>flagged.indexOf(d)===-1).reverse();
   const strengths = keepDoms.slice(0,2);
   const keeps = keepDoms.slice(2);
-  let sections = targets.map((d,i)=>{
-    const goods = (GOODS[d]||[]).map(g=>{
-      const url = amazonUrl(g.kw);
-      return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　<a class="amz" href="${url}" target="_blank" rel="noopener">Amazonで見る</a><br><span class="gn">${g.note}</span></li>`;
-    }).join('');
-    const s = SVC[d];
-    return `<div class="sec">
-      <h3>${i+1}．${DOMAINS[d].name}　${点数表示(100-sev[d])}<span class="sc">${i===0?'　最優先':''}</span></h3>
-      <div class="lab">効く道具　価格は実売の目安</div>
-      <ul class="goods">${goods||'<li>道具よりも、無料の行動例をそのまま実行するのが近道です</li>'}</ul>
-      <div class="lab">毎日の実行を支えるサポート</div>
-      <div class="svc2"><b>${s.title}</b><br>${s.body}
-        <br><button class="btn2" style="margin-top:10px" onclick="gotoLine()">${s.cta}</button></div>
-    </div>`;
-  }).join('');
-  if(!targets.length){
-    // 該当ゼロでもLINEサポートへの接続だけは案内する(起床記録=維持向き)
-    const s = SVC.rhythm;
-    sections = `<div class="sec">
-      <h3>良い状態を支えるサポート</h3>
-      <div class="svc2"><b>${s.title}</b><br>${s.body}
-        <br><button class="btn2" style="margin-top:10px" onclick="gotoLine()">${s.cta}</button></div>
-    </div>`;
-  }
+  // グッズとLINEサポートは各カード内に埋め込む(別セクションは持たない)
   // 30日設計は常に4週。該当領域で埋まらない週は守りのメニューで埋める
   const weekItems = targets.slice(0,4).map((d,i)=>{
     const sub = SUB[d][pickSub(d)];
@@ -1214,9 +1208,9 @@ function buildPremium(D){
     weekItems.push(`<li><b>第${i+1}週　守りを固める</b><br>${KEEP_WEEKS[i]}</li>`);
   }
   const weeks = weekItems.join('');
-  const allCards = targets.map((d,i)=>diagCard(d,i,sev)).join('')
-    + strengths.map(d=>keepCard(d,sev,true)).join('')
-    + keeps.map(d=>keepCard(d,sev,false)).join('');
+  const allCards = targets.map((d,i)=>diagCard(d,i,sev,true,true)).join('')
+    + strengths.map(d=>keepCard(d,sev,true,true)).join('')
+    + keeps.map(d=>keepCard(d,sev,false,true)).join('');
   return `
     <div class="head">
       <div class="t">完全版レポート${CAME_FROM_PAY?'':'　テスト表示中'}</div>
@@ -1237,7 +1231,6 @@ function buildPremium(D){
             : '大きな崩れが見つからなかったあなたのための、良い状態を固定する30日の設計です。守りを週にひとつずつ点検していきます。'}</p>
         <ol class="rep">${weeks}</ol>
       </div>
-      ${sections}
       <div class="sec">
         <h3>3ヶ月後の再診断</h3>
         <ul class="rep"><li>同じ診断にもう一度答えると、睡眠力スコアの変化を確認できます。行動の定着には平均66日かかるという研究報告があります。60日を過ぎたあたりでの再診断がおすすめです。</li></ul>
