@@ -194,6 +194,7 @@ const DOMAINS = {
           {label:'SNSやニュース', sub:'scroll'},
           {label:'ゲーム', sub:'game'},
           {label:'チャットやメッセージのやり取り', sub:'chat'},
+          {label:'どれも特に当てはまらない'},
         ]},
       {type:'scale', text:'次のコンテンツが自動で始まると、そのまま見続けてしまう'},
       {type:'scale', text:'「スマホをやめよう」と思ってから、実際にやめるまで30分以上かかることがある'},
@@ -205,12 +206,14 @@ const DOMAINS = {
         choices:[
           {label:'そもそも決めていない', sub:'none', skip:1},
           {label:'決めているが、守れない', },
+          {label:'決めていて、だいたい守れている', skip:1},
         ]},
       {type:'choice', text:'寝る時刻を守れない一番の理由は何ですか',
         choices:[
           {label:'仕事や家事が終わらない', sub:'push'},
           {label:'一日の中で自分の時間が夜しかない', sub:'revenge'},
           {label:'理由はないが、なんとなく夜更かししてしまう', sub:'drift'},
+          {label:'その他・よくわからない'},
         ]},
     ]},
   default:{ name:'夜更かししやすい環境',
@@ -227,6 +230,7 @@ const DOMAINS = {
         choices:[
           {label:'帰宅してから寝るまで、なんとなくスマホやテレビで過ぎていく', sub:'inertia'},
           {label:'夜に仕事や重要な決め事を持ち込みがちだ', sub:'nightwork'},
+          {label:'どちらも当てはまらない'},
         ]},
       {type:'scale', text:'寝る準備を始めるタイミングを、毎晩その場の気分で決めている'},
     ]},
@@ -237,6 +241,7 @@ const DOMAINS = {
         choices:[
           {label:'決意はするが、具体的に何時に何をするかまでは決めていない', sub:'vague'},
           {label:'夜になると「今日は疲れたから明日から」と思ってしまう', sub:'tomorrow'},
+          {label:'どちらも当てはまらない'},
         ]},
       {type:'scale', text:'決めたことを、紙やアプリに書き残していない'},
     ]},
@@ -247,6 +252,7 @@ const DOMAINS = {
         choices:[
           {label:'「ここまで見たから最後まで」と思って続けてしまう', sub:'sunkcost'},
           {label:'見ておかないと話題や情報に取り残される気がする', sub:'fomo'},
+          {label:'どちらも当てはまらない'},
         ]},
       {type:'scale', text:'動画やSNSは、明日見ても同じ内容だと分かっていても、今夜見てしまう'},
     ]},
@@ -258,6 +264,7 @@ const DOMAINS = {
           {label:'通知が来たとき', sub:'notif'},
           {label:'手持ち無沙汰になった瞬間', sub:'idle'},
           {label:'ソファや布団など、決まった場所に着いたとき', sub:'place'},
+          {label:'その他・特に決まっていない'},
         ]},
       {type:'scale', text:'スマホを開いたあと、当初の目的と関係ないアプリまで見ている'},
     ]},
@@ -269,6 +276,7 @@ const DOMAINS = {
         choices:[
           {label:'日中のほぼ決まった時間に働いている', },
           {label:'交代勤務や夜勤がある', sub:'shift'},
+          {label:'どちらでもない（不定・働いていない など）'},
         ]},
       {type:'scale', text:'朝、起きてから太陽の光を浴びる習慣がない', sub:'light'},
     ]},
@@ -781,6 +789,14 @@ function 診断ログ送信(D){
   }catch(e){ /* ログ送信の失敗は診断表示に影響させない */ }
 }
 
+/* 領域スコアの表示。内部計算は「高いほど問題が強い」のままだが、
+   表示は 100-点数 に反転して「100点=良い/0点=悪い」で統一する。
+   点数は大きめ太字+スコア帯で色分け(良い=緑/中間=金/悪い=赤) */
+function 点数表示(良い点){
+  const c = 良い点>=60 ? 'var(--good)' : (良い点>=40 ? 'var(--accent)' : 'var(--bad)');
+  return `<span style="font-size:17px;font-weight:700;color:${c}">${良い点}点</span>`;
+}
+
 /* 点数の帯。強さのラベルと、いまの段階の一手の選択に使う。
    帯別の定型文は出さない（複数カードで同文が並ぶと定型文に見えるため廃止） */
 function bandInfo(s){
@@ -924,7 +940,7 @@ function diagCard(d, i, sev, withGoods){
   return `<div class="diag">
     <div class="dh">
       <div class="dt">${sub.name}${i===0?'<span class="pri">最優先</span>':''}</div>
-      <div class="ds">${DOMAINS[d].name}　${sev[d]}点・${band.label}</div>
+      <div class="ds">${DOMAINS[d].name}　${点数表示(100-sev[d])}<span style="margin-left:8px">クセの強さ: ${band.label}</span></div>
     </div>
     <div class="db">
       ${FACT[d]?`<p class="fact">${FACT[d]}</p>`:''}
@@ -945,9 +961,11 @@ function renderResult(D){
 
   const bars = ranked.map(r=>{
     const isTop = flagged.indexOf(r.d)!==-1 && r.s>=40;
+    const good = 100 - r.s;   // 表示は「100点=良い」に反転
+    const c = good>=60 ? 'var(--good)' : (good>=40 ? 'var(--accent)' : 'var(--bad)');
     return `<div class="bar ${isTop?'top':''}">
-      <div class="bl"><span>${isTop?'<b>':''}${DOMAINS[r.d].name}${isTop?'</b>':''}</span><span>${r.s}</span></div>
-      <div class="bt"><div class="bf" style="width:${r.s}%"></div></div></div>`;
+      <div class="bl"><span>${isTop?'<b>':''}${DOMAINS[r.d].name}${isTop?'</b>':''}</span><span style="font-weight:700;color:${c}">${good}</span></div>
+      <div class="bt"><div class="bf" style="width:${good}%"></div></div></div>`;
   }).join('');
 
   // 無料の診断カード。引っかかった領域すべてに、サブタイプ別の詳しい診断と行動例
@@ -989,6 +1007,7 @@ function renderResult(D){
     <p class="body">${w.body}</p>
 
     <h2>8つの行動要因の内訳</h2>
+    <p class="body" style="font-size:12.5px;color:var(--sub);margin-bottom:2px">各領域とも100点満点。高いほど整っています。</p>
     <div class="bars">${bars}</div>
 
     ${D.serious?`<div class="diag" style="border-color:var(--accent2);margin-top:18px">
@@ -1137,7 +1156,7 @@ function keepCard(d, sev, isStrength){
   return `<div class="diag">
     <div class="dh">
       <div class="dt">${DOMAINS[d].name}${isStrength?'<span class="pri" style="background:var(--good)">あなたの強み</span>':''}</div>
-      <div class="ds">${sev[d]}点・${isStrength?'とても良好':'維持できています'}</div>
+      <div class="ds">${点数表示(100-sev[d])}<span style="margin-left:8px">${isStrength?'とても良好':'維持できています'}</span></div>
     </div>
     <div class="db">
       <p class="mech">${k.strength}</p>
@@ -1162,7 +1181,7 @@ function buildPremium(D){
     }).join('');
     const s = SVC[d];
     return `<div class="sec">
-      <h3>${i+1}．${DOMAINS[d].name}　<span class="sc">${sev[d]}点${i===0?'・最優先':''}</span></h3>
+      <h3>${i+1}．${DOMAINS[d].name}　${点数表示(100-sev[d])}<span class="sc">${i===0?'　最優先':''}</span></h3>
       <div class="lab">効く道具　価格は実売の目安</div>
       <ul class="goods">${goods||'<li>道具よりも、無料の行動例をそのまま実行するのが近道です</li>'}</ul>
       <div class="lab">毎日の実行を支えるサポート</div>
