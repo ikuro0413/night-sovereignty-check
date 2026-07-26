@@ -1368,7 +1368,8 @@ function renderResult(D){
         </ul>
       </div>
       <div class="lockbar">
-        <div class="price">¥980 <small>／ 買い切り</small></div>
+        <div style="font-size:13px;color:var(--sub)"><s>通常価格 ¥1,560</s>　<span style="color:var(--bad);font-weight:700">今だけ半額</span></div>
+        <div class="price">¥780 <small>／ 買い切り</small></div>
         <button class="btn" style="margin-top:12px" onclick="buy()">完全版レポートを見る</button>
       </div>
     </div>
@@ -1417,7 +1418,8 @@ function buy(){
     // テスト動線(STRIPE_URL未設定時): 決済なしでメールアドレスを受け取り、専用URLを発行して送る
     const lb = document.querySelector('.lockbar');
     lb.innerHTML = `
-      <div class="price">¥980 <small>／ 買い切り</small></div>
+      <div style="font-size:13px;color:var(--sub)"><s>通常価格 ¥1,560</s>　<span style="color:var(--bad);font-weight:700">今だけ半額</span></div>
+      <div class="price">¥780 <small>／ 買い切り</small></div>
       <p class="gn" style="font-size:12.5px;color:var(--sub);margin-top:8px;text-align:left">完全版レポートの専用URLをメールでお送りします。この画面を閉じても、メールのリンクからいつでも読み直せます。</p>
       <input class="mailin" id="buyMail" type="email" placeholder="メールアドレス" autocomplete="email">
       <button class="btn" style="margin-top:10px" onclick="submitBuy()">メールで完全版を受け取る</button>
@@ -1556,7 +1558,7 @@ function buildPremium(D){
           上部の<b>「専用URLをメールで受け取る」</b>から専用URLの送信を済ませ、<b>メールが届いているかを今この場でご確認ください</b>。メールのリンクからは、いつでもこのレポートを開き直せます。<br>
           メールが見つからない場合は、<b>迷惑メールフォルダ</b>もあわせてご確認ください。
         </div>
-        ${CAME_FROM_PAY?'':'<p class="testnote">※現在はテスト動作です(決済なしで解錠されます)。本番ではStripe決済 ¥980 の完了後に、専用URLの発行とメール送信を行います。</p>'}
+        ${CAME_FROM_PAY?'':'<p class="testnote">※現在はテスト動作です(決済なしで解錠されます)。本番ではStripe決済 ¥780 の完了後に、専用URLの発行とメール送信を行います。</p>'}
       </div>
     </div>`;
 }
