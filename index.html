@@ -203,35 +203,40 @@
         <circle cx="110" cy="92" r="2.2" fill="#7fa6c4" opacity=".7"/>
         <circle cx="62" cy="92" r="1.6" fill="#7fa6c4" opacity=".45"/>
 
-        <!-- AI頭脳: ワイヤーフレーム球体 -->
+        <!-- AI頭脳: 点と線のニューラル球体 -->
         <g>
           <circle cx="340" cy="92" r="52" fill="#7fa6c4" opacity=".18" filter="url(#soft)"/>
-          <circle cx="340" cy="92" r="48" fill="url(#sphereShade)" stroke="#7fa6c4" stroke-opacity=".65" stroke-width="1.1"/>
-          <!-- 経線(縦) -->
-          <g fill="none" stroke="#7fa6c4">
-            <ellipse cx="340" cy="92" rx="48" ry="48" stroke-opacity=".18"/>
-            <ellipse cx="340" cy="92" rx="34" ry="48" stroke-opacity=".3"/>
-            <ellipse cx="340" cy="92" rx="18" ry="48" stroke-opacity=".38"/>
-            <ellipse cx="340" cy="92" rx="4" ry="48" stroke-opacity=".3"/>
+          <circle cx="340" cy="92" r="48" fill="url(#sphereShade)" stroke="#7fa6c4" stroke-opacity=".35" stroke-width="1"/>
+          <!-- 奥の層: 暗く小さい点と線で奥行きを出す -->
+          <g stroke="#7fa6c4" stroke-opacity=".16" stroke-width=".7" fill="none">
+            <path d="M322 48 L352 54 L374 66 L383 86 L378 108 L360 126 L326 128 L298 110 L300 88 L312 60 L322 48"/>
+            <path d="M312 60 L352 54 M300 88 L322 48 M383 86 L352 54 M298 110 L326 128 M378 108 L383 86 M300 88 L298 110 M374 66 L378 108"/>
           </g>
-          <!-- 緯線(横) -->
-          <g fill="none" stroke="#7fa6c4">
-            <ellipse cx="340" cy="66" rx="38" ry="9" stroke-opacity=".3"/>
-            <ellipse cx="340" cy="92" rx="48" ry="11" stroke-opacity=".4"/>
-            <ellipse cx="340" cy="118" rx="38" ry="9" stroke-opacity=".3"/>
+          <g fill="#7fa6c4" opacity=".3">
+            <circle cx="322" cy="48" r="1.4"/><circle cx="352" cy="54" r="1.5"/><circle cx="374" cy="66" r="1.4"/>
+            <circle cx="383" cy="86" r="1.5"/><circle cx="378" cy="108" r="1.4"/><circle cx="360" cy="126" r="1.5"/>
+            <circle cx="326" cy="128" r="1.4"/><circle cx="298" cy="110" r="1.5"/><circle cx="300" cy="88" r="1.4"/><circle cx="312" cy="60" r="1.5"/>
           </g>
-          <!-- 球面上のシナプス(奥は小さく暗く、手前は大きく明るく) -->
-          <g stroke="#c8b273" stroke-opacity=".28" stroke-width=".8" fill="none">
-            <path d="M310 70 L332 82 L316 100 L342 112 M332 82 L358 74 L368 96 L342 112 M358 74 L352 58"/>
+          <!-- 手前の層: ニューラルメッシュ -->
+          <g stroke="#7fa6c4" stroke-opacity=".38" stroke-width=".8" fill="none">
+            <path d="M316 72 L340 62 L363 72 L377 94 L362 112 L352 130 L332 122 L316 108 L305 92 L316 72"/>
+            <path d="M316 72 L330 84 M330 84 L340 62 M330 84 L305 92 M330 84 L316 108 M330 84 L356 88 M356 88 L363 72 M356 88 L377 94 M356 88 L362 112 M316 108 L332 122 M362 112 L332 122 M340 62 L322 48 M363 72 L374 66 M377 94 L383 86 M305 92 L300 88 M352 130 L360 126"/>
+          </g>
+          <g stroke="#c8b273" stroke-opacity=".3" stroke-width=".8" fill="none">
+            <path d="M340 62 L356 88 M356 88 L332 122 M305 92 L356 88 M316 72 L362 112 M316 108 L340 62"/>
           </g>
           <g>
-            <circle cx="352" cy="58" r="1.6" fill="#e9e6dc" opacity=".4"/>
-            <circle cx="310" cy="70" r="2" fill="#7fa6c4" opacity=".6"/>
-            <circle cx="358" cy="74" r="2.2" fill="#c8b273" opacity=".7"/>
-            <circle cx="316" cy="100" r="2.4" fill="#7fa6c4"/>
-            <circle cx="368" cy="96" r="2.6" fill="#c8b273"/>
-            <circle cx="332" cy="82" r="2" fill="#e9e6dc" opacity=".55"/>
-            <circle cx="342" cy="112" r="2.8" fill="#7fa6c4"/>
+            <circle cx="316" cy="72" r="2.2" fill="#7fa6c4"/>
+            <circle cx="340" cy="62" r="2.5" fill="#c8b273"/>
+            <circle cx="363" cy="72" r="2.2" fill="#7fa6c4"/>
+            <circle cx="377" cy="94" r="2.4" fill="#7fa6c4"/>
+            <circle cx="362" cy="112" r="2.6" fill="#c8b273"/>
+            <circle cx="352" cy="130" r="2" fill="#7fa6c4"/>
+            <circle cx="332" cy="122" r="2.4" fill="#7fa6c4"/>
+            <circle cx="316" cy="108" r="2.6" fill="#c8b273"/>
+            <circle cx="305" cy="92" r="2.4" fill="#7fa6c4"/>
+            <circle cx="330" cy="84" r="2" fill="#e9e6dc" opacity=".6"/>
+            <circle cx="356" cy="88" r="2.8" fill="#c8b273"/>
           </g>
           <!-- 中心コア -->
           <g class="ai-core">
@@ -257,19 +262,38 @@
 
         <!-- 解析ネットワーク(右) -->
         <g stroke="#7fa6c4" stroke-opacity=".45" stroke-width="1" fill="none">
-          <path d="M388 78 L438 58 L492 70 L540 48"/>
-          <path d="M390 102 L448 116 L506 104 L556 118 L608 104"/>
-          <path d="M438 58 L448 116"/>
-          <path d="M492 70 L506 104"/>
+          <path d="M388 78 L426 56 L462 68 L500 50 L540 62 L576 44"/>
+          <path d="M390 102 L440 114 L484 100 L524 118 L566 104 L604 116"/>
+          <path d="M426 56 L440 114 M462 68 L484 100 M500 50 L484 100 M540 62 L524 118 M540 62 L566 104 M576 44 L566 104 M462 68 L440 114"/>
+        </g>
+        <g stroke="#c8b273" stroke-opacity=".28" stroke-width=".8" fill="none">
+          <path d="M426 56 L484 100 M500 50 L566 104 M440 114 L524 118"/>
         </g>
         <g>
-          <circle cx="438" cy="58" r="3" fill="#7fa6c4"/>
-          <circle cx="448" cy="116" r="2.4" fill="#c8b273"/>
-          <circle cx="492" cy="70" r="2.4" fill="#c8b273"/>
-          <circle cx="506" cy="104" r="3" fill="#7fa6c4"/>
-          <circle cx="540" cy="48" r="2.4" fill="#7fa6c4"/>
-          <circle cx="556" cy="118" r="2.4" fill="#c8b273"/>
-          <circle cx="608" cy="104" r="3" fill="#c8b273"/>
+          <circle cx="426" cy="56" r="3" fill="#7fa6c4"/>
+          <circle cx="440" cy="114" r="2.4" fill="#c8b273"/>
+          <circle cx="462" cy="68" r="2.4" fill="#c8b273"/>
+          <circle cx="484" cy="100" r="3" fill="#7fa6c4"/>
+          <circle cx="500" cy="50" r="2.4" fill="#7fa6c4"/>
+          <circle cx="524" cy="118" r="2.6" fill="#c8b273"/>
+          <circle cx="540" cy="62" r="2.2" fill="#c8b273"/>
+          <circle cx="566" cy="104" r="3" fill="#7fa6c4"/>
+          <circle cx="576" cy="44" r="2.2" fill="#7fa6c4"/>
+          <circle cx="604" cy="116" r="2.6" fill="#c8b273"/>
+          <circle cx="592" cy="66" r="1.5" fill="#e9e6dc" opacity=".45"/>
+          <circle cx="452" cy="88" r="1.4" fill="#e9e6dc" opacity=".4"/>
+          <circle cx="516" cy="78" r="1.4" fill="#e9e6dc" opacity=".4"/>
+        </g>
+
+        <!-- 左側の小さなネットワーク -->
+        <g stroke="#7fa6c4" stroke-opacity=".22" stroke-width=".8" fill="none">
+          <path d="M58 58 L96 72 L130 54 M96 72 L122 92 M58 58 L84 44 M130 54 L122 92"/>
+          <path d="M74 122 L108 132 L142 118 M108 132 L120 112"/>
+        </g>
+        <g fill="#7fa6c4" opacity=".55">
+          <circle cx="58" cy="58" r="1.8"/><circle cx="96" cy="72" r="2.2"/><circle cx="130" cy="54" r="1.8"/>
+          <circle cx="122" cy="92" r="1.6"/><circle cx="84" cy="44" r="1.4"/>
+          <circle cx="74" cy="122" r="1.6"/><circle cx="108" cy="132" r="2"/><circle cx="142" cy="118" r="1.6"/><circle cx="120" cy="112" r="1.4"/>
         </g>
 
         <!-- 月と星 -->
