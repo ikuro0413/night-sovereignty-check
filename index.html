@@ -203,27 +203,38 @@
         <circle cx="110" cy="92" r="2.2" fill="#7fa6c4" opacity=".7"/>
         <circle cx="62" cy="92" r="1.6" fill="#7fa6c4" opacity=".45"/>
 
-        <!-- AI頭脳: 点と線のニューラル球体 -->
+        <!-- AI頭脳: 点と線のニューラルクラウド(球体なし) -->
         <g>
-          <circle cx="340" cy="92" r="52" fill="#7fa6c4" opacity=".18" filter="url(#soft)"/>
-          <circle cx="340" cy="92" r="48" fill="url(#sphereShade)" stroke="#7fa6c4" stroke-opacity=".35" stroke-width="1"/>
-          <!-- 奥の層: 暗く小さい点と線で奥行きを出す -->
-          <g stroke="#7fa6c4" stroke-opacity=".16" stroke-width=".7" fill="none">
-            <path d="M322 48 L352 54 L374 66 L383 86 L378 108 L360 126 L326 128 L298 110 L300 88 L312 60 L322 48"/>
-            <path d="M312 60 L352 54 M300 88 L322 48 M383 86 L352 54 M298 110 L326 128 M378 108 L383 86 M300 88 L298 110 M374 66 L378 108"/>
+          <circle cx="340" cy="92" r="54" fill="#7fa6c4" opacity=".1" filter="url(#soft)"/>
+          <!-- 外縁の淡いリング状の点群(奥行き) -->
+          <g stroke="#7fa6c4" stroke-opacity=".14" stroke-width=".7" fill="none">
+            <path d="M316 42 L340 36 L364 42 L384 58 L394 78 L394 106 L382 126 L362 140 L338 146 L314 138 L296 122 L288 98 L290 74 L302 56 L316 42"/>
+            <path d="M316 42 L322 48 M340 36 L352 54 M364 42 L374 66 M384 58 L383 86 M394 106 L378 108 M382 126 L360 126 M338 146 L326 128 M296 122 L298 110 M288 98 L300 88 M290 74 L312 60 M302 56 L322 48 M362 140 L360 126 M314 138 L326 128 M394 78 L383 86"/>
           </g>
-          <g fill="#7fa6c4" opacity=".3">
-            <circle cx="322" cy="48" r="1.4"/><circle cx="352" cy="54" r="1.5"/><circle cx="374" cy="66" r="1.4"/>
-            <circle cx="383" cy="86" r="1.5"/><circle cx="378" cy="108" r="1.4"/><circle cx="360" cy="126" r="1.5"/>
-            <circle cx="326" cy="128" r="1.4"/><circle cx="298" cy="110" r="1.5"/><circle cx="300" cy="88" r="1.4"/><circle cx="312" cy="60" r="1.5"/>
+          <g fill="#7fa6c4" opacity=".28">
+            <circle cx="316" cy="42" r="1.3"/><circle cx="340" cy="36" r="1.5"/><circle cx="364" cy="42" r="1.3"/>
+            <circle cx="384" cy="58" r="1.4"/><circle cx="394" cy="78" r="1.5"/><circle cx="394" cy="106" r="1.4"/>
+            <circle cx="382" cy="126" r="1.4"/><circle cx="362" cy="140" r="1.5"/><circle cx="338" cy="146" r="1.3"/>
+            <circle cx="314" cy="138" r="1.4"/><circle cx="296" cy="122" r="1.5"/><circle cx="288" cy="98" r="1.4"/>
+            <circle cx="290" cy="74" r="1.5"/><circle cx="302" cy="56" r="1.4"/>
+          </g>
+          <!-- 中間層 -->
+          <g stroke="#7fa6c4" stroke-opacity=".2" stroke-width=".7" fill="none">
+            <path d="M322 48 L352 54 L374 66 L383 86 L378 108 L360 126 L326 128 L298 110 L300 88 L312 60 L322 48"/>
+            <path d="M312 60 L352 54 M300 88 L322 48 M383 86 L352 54 M298 110 L326 128 M378 108 L383 86 M300 88 L298 110 M374 66 L378 108 M312 60 L300 88 M352 54 L374 66"/>
+          </g>
+          <g fill="#7fa6c4" opacity=".38">
+            <circle cx="322" cy="48" r="1.6"/><circle cx="352" cy="54" r="1.7"/><circle cx="374" cy="66" r="1.6"/>
+            <circle cx="383" cy="86" r="1.7"/><circle cx="378" cy="108" r="1.6"/><circle cx="360" cy="126" r="1.7"/>
+            <circle cx="326" cy="128" r="1.6"/><circle cx="298" cy="110" r="1.7"/><circle cx="300" cy="88" r="1.6"/><circle cx="312" cy="60" r="1.7"/>
           </g>
           <!-- 手前の層: ニューラルメッシュ -->
-          <g stroke="#7fa6c4" stroke-opacity=".38" stroke-width=".8" fill="none">
+          <g stroke="#7fa6c4" stroke-opacity=".42" stroke-width=".8" fill="none">
             <path d="M316 72 L340 62 L363 72 L377 94 L362 112 L352 130 L332 122 L316 108 L305 92 L316 72"/>
-            <path d="M316 72 L330 84 M330 84 L340 62 M330 84 L305 92 M330 84 L316 108 M330 84 L356 88 M356 88 L363 72 M356 88 L377 94 M356 88 L362 112 M316 108 L332 122 M362 112 L332 122 M340 62 L322 48 M363 72 L374 66 M377 94 L383 86 M305 92 L300 88 M352 130 L360 126"/>
+            <path d="M316 72 L330 84 M330 84 L340 62 M330 84 L305 92 M330 84 L316 108 M330 84 L356 88 M356 88 L363 72 M356 88 L377 94 M356 88 L362 112 M316 108 L332 122 M362 112 L332 122 M340 62 L322 48 M363 72 L374 66 M377 94 L383 86 M305 92 L300 88 M352 130 L360 126 M340 62 L340 36 M316 72 L312 60 M362 112 L378 108 M316 108 L298 110"/>
           </g>
           <g stroke="#c8b273" stroke-opacity=".3" stroke-width=".8" fill="none">
-            <path d="M340 62 L356 88 M356 88 L332 122 M305 92 L356 88 M316 72 L362 112 M316 108 L340 62"/>
+            <path d="M340 62 L356 88 M356 88 L332 122 M305 92 L356 88 M316 72 L362 112 M316 108 L340 62 M330 84 L362 112 M356 88 L383 86"/>
           </g>
           <g>
             <circle cx="316" cy="72" r="2.2" fill="#7fa6c4"/>
@@ -1053,6 +1064,8 @@ const TYPE_IMG = {
   'loop_notif|present_autoplay':'img/loop_notif-present_autoplay.png',
   'loop_idle|present_autoplay':'img/loop_idle-present_autoplay.png',
   'loop_place|present_autoplay':'img/loop_place-present_autoplay.png',
+  'present_autoplay|rhythm_weekend':'img/present_autoplay-rhythm_weekend.png',
+  'present_autoplay|rhythm_shift':'img/present_autoplay-rhythm_shift.png',
 };
 function typeImgFor(flagged){
   if(flagged.length < 2) return '';
