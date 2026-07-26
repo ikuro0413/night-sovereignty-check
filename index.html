@@ -794,6 +794,7 @@ let 回答明細 = [];
 let 診断開始時刻 = null;
 let いたずら点 = 0;   // 確認設問に「当てはまる」を付けたが、深掘りで継続性が示されなかった数。信頼性判定に使う
 let 深刻点 = 0;       // 確認設問の深掘りで長期間の継続が示された数。深刻ケースとして扱う
+let 成長段階 = 0;     // AIイラストの表示済み成長段階(巻き戻らない)
 
 const $ = id => document.getElementById(id);
 
@@ -835,10 +836,18 @@ function render(){
   // 説明文は最初の設問ページにだけ表示する
   const intro = $('intro');
   if(intro) intro.style.display = answered===0 ? '' : 'none';
-  // AIイラストは全設問ページに表示し、回答が進むほど点と線が増えて成長する
+  // AIイラストは全設問ページに表示し、回答が進むほど点と線が増えて成長する。
+  // 入口フェーズではまだ積まれていない深掘り分を見込んで分母を補正し、
+  // 序盤で成長しきらず最後の設問まで進化が続くようにする(段階は巻き戻らない)
   const aiv = $('aiVisual');
   if(aiv){
-    const vis = Math.min(12, Math.floor(maxProg*12) + 1);
+    let est = answered + queue.length;
+    if(!stateBuiltDeep){
+      const flaggedNow = DOMS.filter(d=>state.screen[d]>=3).length;
+      est += Math.round(flaggedNow * 2.5);
+    }
+    const vis = Math.max(成長段階, Math.min(12, Math.floor((answered/Math.max(est,1))*12) + 1));
+    成長段階 = vis;
     aiv.querySelectorAll('.gs').forEach(el=>{ el.style.opacity = (+el.dataset.s < vis) ? 1 : 0; });
   }
   $('qtext').textContent = q.text;
