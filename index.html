@@ -150,14 +150,13 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="brand">現代を生きる"睡眠力"診断</div>
 
   <section id="quiz" class="card fade">
     <div id="intro" class="intro-note">
       <p style="font-size:15.5px;color:var(--ink)">これは、睡眠を妨げる<b>行動のクセ</b>を読み解く、無料のセルフチェックです。</p>
       <p>眠りの深さや体質ではなく<b style="color:var(--bad)">「なぜ睡眠の満足度が低いのか」</b>という行動の側から、あなたの夜を乱している原因を特定します。気になるところだけを深掘りする方式なので、1〜3分で終わります。</p>
     </div>
-    <div class="qhead">あなたの睡眠を、読み解く</div>
+    <div class="qhead">現代を生きる"睡眠力"診断</div>
     <div class="phase" id="phase"></div>
     <div class="prog"><i id="pbar"></i></div>
     <div class="q" id="qtext"></div>
@@ -899,6 +898,7 @@ const TYPE_IMG = {
   'hotcold_vague|present_autoplay':'img/hotcold_vague-present_autoplay.png',
   'hotcold_tomorrow|present_autoplay':'img/hotcold_tomorrow-present_autoplay.png',
   'hotcold_gen|present_autoplay':'img/hotcold_gen-present_autoplay.png',
+  'present_autoplay|sunk_cost':'img/present_autoplay-sunk_cost.png',
 };
 function typeImgFor(flagged){
   if(flagged.length < 2) return '';
