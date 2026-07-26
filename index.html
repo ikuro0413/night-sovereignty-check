@@ -30,6 +30,8 @@
   .prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0;transition:width .3s}
   .intro-note{font-size:13.5px;color:#c9c5b8;line-height:1.9;background:#131a28;border:1px solid var(--line);
     border-radius:12px;padding:14px 16px;margin-bottom:18px}
+  @keyframes aiPulse{0%,100%{opacity:.55}50%{opacity:1}}
+  .ai-core{animation:aiPulse 3.2s ease-in-out infinite}
   .intro-note b{color:var(--accent)}
   .intro-note p+p{margin-top:8px}
   .qhead{text-align:center;font-size:19px;font-weight:600;letter-spacing:.06em;margin-bottom:6px;color:var(--ink)}
@@ -155,6 +157,60 @@
     <div id="intro" class="intro-note">
       <p style="font-size:15.5px;color:var(--ink)">これは、睡眠を妨げる<b>行動のクセ</b>を読み解く、無料のセルフチェックです。</p>
       <p>眠りの深さや体質ではなく<b style="color:var(--bad)">「なぜ睡眠の満足度が低いのか」</b>という行動の側から、原因を分析します。気になるところだけを深掘りする方式なので、1〜3分で終わります。</p>
+    </div>
+    <div id="aiVisual" style="margin:2px 0 14px">
+      <svg viewBox="0 0 680 150" width="100%" role="img" aria-label="AIが睡眠の行動データを解析するイメージ" xmlns="http://www.w3.org/2000/svg" style="display:block">
+        <defs>
+          <radialGradient id="aiGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#7fa6c4" stop-opacity=".25"/>
+            <stop offset="100%" stop-color="#7fa6c4" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="aiWave" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#7fa6c4" stop-opacity="0"/>
+            <stop offset="55%" stop-color="#7fa6c4" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="#c8b273" stop-opacity=".2"/>
+          </linearGradient>
+        </defs>
+        <ellipse cx="340" cy="75" rx="250" ry="70" fill="url(#aiGlow)"/>
+        <!-- 睡眠の脳波がAIコアへ流れ込む -->
+        <path d="M28 78 H150 l14 0 l9 -20 l10 38 l9 -50 l10 52 l9 -28 l11 8 H306" fill="none" stroke="url(#aiWave)" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="120" cy="78" r="2.2" fill="#7fa6c4" opacity=".7"/>
+        <circle cx="70" cy="78" r="1.6" fill="#7fa6c4" opacity=".45"/>
+        <!-- AIコア -->
+        <g class="ai-core">
+          <circle cx="340" cy="75" r="32" fill="none" stroke="#7fa6c4" stroke-opacity=".5" stroke-width="1"/>
+          <circle cx="340" cy="75" r="22" fill="none" stroke="#c8b273" stroke-width="1.2" stroke-dasharray="4 5"/>
+          <circle cx="340" cy="75" r="8" fill="#c8b273"/>
+          <circle cx="340" cy="75" r="13" fill="none" stroke="#c8b273" stroke-opacity=".35" stroke-width="3"/>
+        </g>
+        <ellipse cx="340" cy="75" rx="52" ry="15" fill="none" stroke="#7fa6c4" stroke-opacity=".35" stroke-width="1" transform="rotate(-16 340 75)"/>
+        <circle cx="292" cy="88" r="2.6" fill="#7fa6c4"/>
+        <circle cx="389" cy="63" r="2.2" fill="#c8b273"/>
+        <!-- 解析ネットワーク -->
+        <g stroke="#7fa6c4" stroke-opacity=".45" stroke-width="1" fill="none">
+          <path d="M372 70 L420 52 L472 64 L522 44"/>
+          <path d="M372 82 L432 96 L490 86 L540 100 L596 88"/>
+          <path d="M420 52 L432 96"/>
+          <path d="M472 64 L490 86"/>
+          <path d="M522 44 L540 100"/>
+        </g>
+        <g>
+          <circle cx="420" cy="52" r="3" fill="#7fa6c4"/>
+          <circle cx="432" cy="96" r="2.4" fill="#c8b273"/>
+          <circle cx="472" cy="64" r="2.4" fill="#c8b273"/>
+          <circle cx="490" cy="86" r="3" fill="#7fa6c4"/>
+          <circle cx="522" cy="44" r="2.4" fill="#7fa6c4"/>
+          <circle cx="540" cy="100" r="2.4" fill="#c8b273"/>
+          <circle cx="596" cy="88" r="3" fill="#c8b273"/>
+        </g>
+        <!-- 月と星 -->
+        <path d="M622 22 a15 15 0 1 0 6 29 a12 12 0 1 1 -6 -29 z" fill="#c8b273" opacity=".9"/>
+        <path d="M580 34 l2.4 5 l5 2.4 l-5 2.4 l-2.4 5 l-2.4 -5 l-5 -2.4 l5 -2.4 z" fill="#7fa6c4" opacity=".8"/>
+        <circle cx="556" cy="22" r="1.6" fill="#e9e6dc" opacity=".6"/>
+        <circle cx="648" cy="70" r="1.6" fill="#e9e6dc" opacity=".5"/>
+        <circle cx="62" cy="40" r="1.6" fill="#e9e6dc" opacity=".45"/>
+        <circle cx="120" cy="26" r="1.3" fill="#7fa6c4" opacity=".5"/>
+      </svg>
     </div>
     <div class="qhead">現代を生きる"睡眠力"診断</div>
     <div class="phase" id="phase"></div>
@@ -628,9 +684,11 @@ function render(){
   maxProg = Math.max(maxProg, prog);
   $('pbar').style.width = (maxProg*100)+'%';
   $('phase').textContent = phaseText;
-  // 説明文は最初の設問ページにだけ表示する
+  // 説明文とAIイラストは最初の設問ページにだけ表示する
   const intro = $('intro');
   if(intro) intro.style.display = answered===0 ? '' : 'none';
+  const aiv = $('aiVisual');
+  if(aiv) aiv.style.display = answered===0 ? '' : 'none';
   $('qtext').textContent = q.text;
   const box = $('opts'); box.innerHTML='';
   const options = q.type==='scale'
