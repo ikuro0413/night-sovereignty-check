@@ -846,7 +846,8 @@ function render(){
       const flaggedNow = DOMS.filter(d=>state.screen[d]>=3).length;
       est += Math.round(flaggedNow * 2.5);
     }
-    const vis = Math.max(成長段階, Math.min(12, Math.floor((answered/Math.max(est,1))*12) + 1));
+    let vis = Math.max(成長段階, Math.min(12, Math.floor((answered/Math.max(est,1))*12) + 1));
+    if(est - answered <= 1 && answered > 0) vis = 12;   // 見込み残り1問(=最後の設問)では全開にする
     成長段階 = vis;
     aiv.querySelectorAll('.gs').forEach(el=>{ el.style.opacity = (+el.dataset.s < vis) ? 1 : 0; });
   }
