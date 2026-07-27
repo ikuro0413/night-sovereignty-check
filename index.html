@@ -448,11 +448,11 @@ const DOMAINS = {
   commit:{ name:'就寝時刻の曖昧さ',
     screen:'寝る時刻を決めていない、または決めても守れないことが多い',
     deep:[
-      {type:'choice', text:'寝る時刻について、近いのはどちらですか',
+      {type:'choice', text:'寝る時刻について、近いのはどれですか',
         choices:[
           {label:'そもそも決めていない', sub:'none', skip:1},
           {label:'決めているが、守れない', },
-          {label:'決めていて、だいたい守れている', skip:1},
+          {label:'その他・どれとも言えない', skip:1},
         ]},
       {type:'choice', text:'寝る時刻を守れない一番の理由は何ですか',
         choices:[
@@ -472,11 +472,11 @@ const DOMAINS = {
   fatigue:{ name:'夜の判断疲れ',
     screen:'夜は考える気力が残っておらず、ついスマホやテレビに流されてしまう',
     deep:[
-      {type:'choice', text:'夜の過ごし方で、近いのはどちらですか',
+      {type:'choice', text:'夜の過ごし方で、近いのはどれですか',
         choices:[
           {label:'帰宅してから寝るまで、なんとなくスマホやテレビで過ぎていく', sub:'inertia'},
           {label:'夜に仕事や重要な決め事を持ち込みがちだ', sub:'nightwork'},
-          {label:'どちらも当てはまらない'},
+          {label:'どれも当てはまらない'},
         ]},
       {type:'scale', text:'寝る準備を始めるタイミングを、毎晩その場の気分で決めている'},
     ]},
@@ -494,11 +494,11 @@ const DOMAINS = {
   sunk:{ name:'切り上げられなさ',
     screen:'動画やSNSを見続けないと損な気がして、途中でやめられない',
     deep:[
-      {type:'choice', text:'動画やSNSを切り上げられないとき、近いのはどちらですか',
+      {type:'choice', text:'動画やSNSを切り上げられないとき、近いのはどれですか',
         choices:[
           {label:'「ここまで見たから最後まで」と思って続けてしまう', sub:'sunkcost'},
           {label:'見ておかないと話題や情報に取り残される気がする', sub:'fomo'},
-          {label:'どちらも当てはまらない'},
+          {label:'どれも当てはまらない'},
         ]},
       {type:'scale', text:'動画やSNSは、明日見ても同じ内容だと分かっていても、今夜見てしまう'},
     ]},
@@ -518,11 +518,11 @@ const DOMAINS = {
     screen:'寝る時刻と起きる時刻が、日によってバラバラだ',
     deep:[
       {type:'scale', text:'休日は平日より2時間以上遅く起きる', sub:'weekend'},
-      {type:'choice', text:'勤務の形はどちらに近いですか',
+      {type:'choice', text:'働き方はどれに近いですか',
         choices:[
           {label:'日中のほぼ決まった時間に働いている', },
           {label:'交代勤務や夜勤がある', sub:'shift'},
-          {label:'どちらでもない（不定・働いていない など）'},
+          {label:'どれでもない（不定・働いていない など）'},
         ]},
       {type:'scale', text:'朝、起きてから太陽の光を浴びる習慣がない', sub:'light'},
     ]},
@@ -557,7 +557,7 @@ const RARE_QS = [
   { text:'夜のスマホやゲームを続けるために、仕事や学校を当日欠勤することが月に何度もある',
     follow:{ text:'お休みしてしまうことは、どのくらいの期間続いていますか',
       choices:[
-        {label:'今月が初めて'},
+        {label:'ここ1ヶ月くらいのこと'},
         {label:'2〜3ヶ月続いている', persistent:true},
         {label:'半年以上続いている', persistent:true},
       ]}},
@@ -1129,7 +1129,7 @@ function bandInfo(s){
   if(s>=60) return {idx:3, label:'強め'};
   if(s>=40) return {idx:2, label:'中くらい'};
   if(s>=20) return {idx:1, label:'弱まっている'};
-  return {idx:0, label:'ほぼ問題なし'};
+  return {idx:0, label:'ごく弱い'};
 }
 
 /* スコア履歴。前回との差と推移を出す（この端末のブラウザに保存） */
@@ -1331,7 +1331,7 @@ function buildWhy(sovereign, flagged, ranked){
   if(sovereign>=70) return {head,
     body:`大きな乱れは見当たりません。強いて挙げるなら ${names} に少し余地がある程度です。下の内容は、今の良さをさらに安定させるための調整として読んでください。`};
   if(sovereign>=60) return {head,
-    body:`夜の骨格はできています。ただ ${names} のところで、ときどき主導権を手放している日があります。崩れる日の共通点はこの2つに絞られているので、狙いを定めて整えやすい状態です。`};
+    body:`夜の骨格はできています。ただ ${names} のところで、ときどき主導権を手放している日があります。崩れる日の共通点はここに絞られているので、狙いを定めて整えやすい状態です。`};
   if(sovereign>=50) return {head,
     body:`いまのあなたの夜は、良い日と崩れる日のちょうど境目にいます。分かれ目を作っているのは ${names} です。ここは意志ではなく仕組みの問題なので、下の対処で境目を良い側に固定できます。`};
   if(sovereign>=40) return {head,
