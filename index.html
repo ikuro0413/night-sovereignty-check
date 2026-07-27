@@ -428,6 +428,25 @@
     <button class="back" id="backbtn" onclick="goBack()">← 前の質問へ</button>
   </section>
 
+  <section id="analyzing" class="card hidden fade" style="text-align:center;padding:56px 24px">
+    <svg viewBox="0 0 120 120" width="88" height="88" style="display:block;margin:0 auto 22px" role="img" aria-label="分析中">
+      <defs>
+        <radialGradient id="anaCore" cx="45%" cy="40%" r="70%">
+          <stop offset="0%" stop-color="#f2e2ae"/>
+          <stop offset="55%" stop-color="#c8b273"/>
+          <stop offset="100%" stop-color="#8a7846"/>
+        </radialGradient>
+      </defs>
+      <circle cx="60" cy="60" r="50" fill="none" stroke="#26304a" stroke-width="3"/>
+      <circle cx="60" cy="60" r="50" fill="none" stroke="#7fa6c4" stroke-width="3" stroke-linecap="round" stroke-dasharray="70 250">
+        <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="1.1s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="60" cy="60" r="14" fill="url(#anaCore)" class="ai-core"/>
+    </svg>
+    <p style="font-size:16px;color:var(--ink);font-weight:600;margin-bottom:6px">お疲れ様でした。</p>
+    <p style="font-size:14px;color:var(--sub)">診断結果の分析がもうすぐ完了します・・・</p>
+  </section>
+
   <section id="result" class="hidden fade"></section>
 
   <p class="disc" id="globalDisc"></p>
@@ -1077,7 +1096,12 @@ function finish(){
   // 決済ページへ飛んでも結果が消えないよう保存(戻ってきたら復元して自動解錠)
   try{ localStorage.setItem('yoru_shindan_last', JSON.stringify(LAST)); }catch(e){}
   診断ログ送信(LAST);
-  renderResult(LAST);
+  // 結果を出す前に「分析中」演出を2秒はさむ
+  $('quiz').classList.add('hidden');
+  const ana = $('analyzing');
+  ana.classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(()=>{ ana.classList.add('hidden'); renderResult(LAST); }, 2000);
 }
 
 /* ============================================================
