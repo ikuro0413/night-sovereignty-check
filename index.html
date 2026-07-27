@@ -46,15 +46,9 @@
   .ti-steam2{animation:tiSteam 3s ease-out 1.5s infinite}
   @keyframes tiWaveAnim{to{transform:translateX(-60px)}}
   .ti-wave{animation:tiWaveAnim 5s linear infinite}
-  /* シナプスイラスト: 後挿入SVGのSMILはiOSで動かないためCSSアニメーションで動かす */
-  @keyframes synDrift{0%,100%{transform:translate(0,0)}50%{transform:translate(var(--dx,0px),var(--dy,0px))}}
-  .syn-dot{animation:synDrift var(--dur,6s) ease-in-out infinite}
-  @keyframes synSpin{to{transform:rotate(360deg)}}
-  .syn-rot{transform-box:view-box;transform-origin:50% 50%;animation:synSpin var(--spin,120s) linear infinite}
-  @keyframes synPulse{0%,100%{opacity:1}50%{opacity:.5}}
-  .syn-pulse{animation:synPulse var(--cd,3s) ease-in-out infinite}
-  @keyframes synFlickKf{0%,100%{opacity:1}50%{opacity:.1}}
-  .syn-flick{animation:synFlickKf var(--fd,1.2s) ease-in-out infinite}
+  /* シナプスイラスト: 後挿入SVGはSMILもCSSキーフレームも環境により動かないため、
+     Web Animations API(シナプス起動)で動かす。回転の基準点だけCSSで指定する */
+  .syn-rot{transform-box:view-box;transform-origin:50% 50%}
   .intro-note b{color:var(--accent)}
   .intro-note p+p{margin-top:8px}
   .qhead{text-align:center;font-size:19px;font-weight:600;letter-spacing:.06em;margin-bottom:6px;color:var(--ink)}
@@ -1459,19 +1453,19 @@ function タイプイラスト(sovereign){
       const extra = c > .4 && シナプス乱数(i * 31 + j * 17) > .9;   // カオス時は遠距離の交差線も足す
       if(d < maxD || extra){
         const op = Math.max(.06, (extra ? .3 : (1 - d / maxD) * .55) * (.4 + Math.min(a.z, b.z) * .6));
-        const flick = c > .5 ? ` class="syn-flick" style="--fd:${(1.4 + シナプス乱数(i + j * 3) * 2.4).toFixed(2)}s"` : '';
+        const flick = c > .5 ? ` class="syn-flick" data-fd="${(1.4 + シナプス乱数(i + j * 3) * 2.4).toFixed(2)}"` : '';
         edges += `<line${flick} x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${a.z > b.z ? a.col : b.col}" stroke-opacity="${op.toFixed(2)}" stroke-width="${(.5 + Math.min(a.z, b.z) * .9).toFixed(2)}"/>`;
       }
     }
   }
-  const dots = nodes.map(p => `<g class="syn-dot" style="--dx:${p.dx}px;--dy:${p.dy}px;--dur:${p.dur}s">
+  const dots = nodes.map(p => `<g class="syn-dot" data-dx="${p.dx}" data-dy="${p.dy}" data-dur="${p.dur}">
       <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.size.toFixed(1)}" fill="${p.col}" opacity="${p.op.toFixed(2)}"/>
     </g>`).join('');
   const coreR = 7 + c * 7;
   const coreDur = (3.4 - c * 2.5).toFixed(2);
   const spin = (130 - c * 105).toFixed(0);   // 全体の回転: 洗練=ゆっくり, カオス=速い
   const calmRing = c < .45 ? `<circle cx="${cx}" cy="${cy}" r="95" fill="none" stroke="#7fa6c4" stroke-opacity="${(.4 - c * .5).toFixed(2)}" stroke-width="1"/>` : '';
-  const chaosGlow = c > .5 ? `<circle class="syn-pulse" style="--cd:1.8s" cx="${cx}" cy="${cy}" r="${(60 + c * 40).toFixed(0)}" fill="#c98a7a" fill-opacity="${(c * .13).toFixed(2)}" filter="url(#tiSoft)"/>` : '';
+  const chaosGlow = c > .5 ? `<circle class="syn-pulse" data-cd="1.8" cx="${cx}" cy="${cy}" r="${(60 + c * 40).toFixed(0)}" fill="#c98a7a" fill-opacity="${(c * .13).toFixed(2)}" filter="url(#tiSoft)"/>` : '';
   return `<div class="typesvg-wrap"><svg viewBox="0 0 680 260" width="100%" style="display:block" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="睡眠力スコアに応じて姿を変えるシナプスのイメージ">
     <defs>
       <filter id="tiSoft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
@@ -1480,14 +1474,40 @@ function タイプイラスト(sovereign){
     <circle cx="120" cy="34" r="1.5" fill="#e9e6dc" opacity=".5"/>
     <circle cx="560" cy="160" r="1.4" fill="#7fa6c4" opacity=".5"/>
     <circle cx="610" cy="52" r="1.4" fill="#e9e6dc" opacity=".45"/>
-    <g class="syn-rot" style="--spin:${spin}s">
+    <g class="syn-rot" data-spin="${spin}">
       ${calmRing}
       ${edges}
       ${dots}
       <circle cx="${cx}" cy="${cy}" r="${(coreR * 2).toFixed(1)}" fill="#4a6fa5" fill-opacity=".25" filter="url(#tiSoft)"/>
-      <circle class="syn-pulse" style="--cd:${coreDur}s" cx="${cx}" cy="${cy}" r="${coreR.toFixed(1)}" fill="#4a6fa5"/>
+      <circle class="syn-pulse" data-cd="${coreDur}" cx="${cx}" cy="${cy}" r="${coreR.toFixed(1)}" fill="#4a6fa5"/>
     </g>
   </svg></div>`;
+}
+
+// 後から挿入したSVGは、SMILもCSSキーフレームも環境によって動かない(iOS Safari等)。
+// Web Animations API なら挿入後のSVG要素も確実に動かせるため、結果表示のたびに呼ぶ
+function シナプス起動(root){
+  if(!root || !root.querySelectorAll || !Element.prototype.animate) return;
+  root.querySelectorAll('.syn-dot').forEach(el=>{
+    const dx = parseFloat(el.dataset.dx)||0, dy = parseFloat(el.dataset.dy)||0;
+    el.animate([
+      {transform:'translate(0px,0px)'},
+      {transform:'translate('+dx+'px,'+dy+'px)'},
+      {transform:'translate(0px,0px)'},
+    ], {duration:(parseFloat(el.dataset.dur)||6)*1000, iterations:Infinity, easing:'ease-in-out'});
+  });
+  root.querySelectorAll('.syn-rot').forEach(el=>{
+    el.animate([{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],
+      {duration:(parseFloat(el.dataset.spin)||120)*1000, iterations:Infinity});
+  });
+  root.querySelectorAll('.syn-pulse').forEach(el=>{
+    el.animate([{opacity:1},{opacity:.5},{opacity:1}],
+      {duration:(parseFloat(el.dataset.cd)||3)*1000, iterations:Infinity, easing:'ease-in-out'});
+  });
+  root.querySelectorAll('.syn-flick').forEach(el=>{
+    el.animate([{opacity:1},{opacity:.1},{opacity:1}],
+      {duration:(parseFloat(el.dataset.fd)||1.2)*1000, iterations:Infinity, easing:'ease-in-out'});
+  });
 }
 
 function renderResult(D){
@@ -1579,7 +1599,7 @@ function renderResult(D){
     <p class="body" style="font-size:13px;color:var(--sub);margin-top:18px">この診断は、スコアが変わると出てくる文章と一手も変わります。生活を少し変えて、また試しに来てください。</p>
     <button class="back" style="margin-top:8px;color:var(--bad);font-size:15px;font-weight:600" onclick="location.href=location.pathname">もう一度診断する</button>
   </div>`;
-  const r=$('result'); r.innerHTML=html; r.classList.remove('hidden');
+  const r=$('result'); r.innerHTML=html; r.classList.remove('hidden'); シナプス起動(r);
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
