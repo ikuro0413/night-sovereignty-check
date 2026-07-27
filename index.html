@@ -1415,16 +1415,18 @@ function シナプス乱数(seed){
 function タイプイラスト(sovereign){
   const s = Math.max(0, Math.min(100, sovereign));
   const c = (100 - s) / 100;   // カオス度: 0=洗練, 1=カオス
-  const cx = 340, cy = 100;
+  const cx = 340, cy = 130;
   const n = Math.round(12 + c * 38);   // 点の数 12〜50
   const nodes = [];
   for(let i = 0; i < n; i++){
     const r1 = シナプス乱数(i + 1), r2 = シナプス乱数(i * 3 + 7),
           r3 = シナプス乱数(i * 7 + 13), r4 = シナプス乱数(i * 11 + 29);
-    // 整然としたリング配置とランダム配置をカオス度でブレンドする
+    // 整然とした円形リング配置と、円内に一様に散るランダム配置をカオス度でブレンドする
     const ang = (i / n) * Math.PI * 2;
-    const ringX = cx + Math.cos(ang) * 100, ringY = cy + Math.sin(ang) * 52;
-    const randX = cx + (r1 - .5) * 2 * (140 + c * 150), randY = cy + (r2 - .5) * 2 * (55 + c * 42);
+    const ringX = cx + Math.cos(ang) * 78, ringY = cy + Math.sin(ang) * 78;
+    const rr = Math.sqrt(r1) * (80 + c * 15);
+    const ra = r2 * Math.PI * 2;
+    const randX = cx + Math.cos(ra) * rr, randY = cy + Math.sin(ra) * rr;
     const x = ringX * (1 - c) + randX * c, y = ringY * (1 - c) + randY * c;
     const z = r3;   // 奥行き: 0=奥(小さく暗い) 1=手前(大きく明るい)
     const size = (.9 + z * 1.3) * (1 + c * .5);
@@ -1455,9 +1457,9 @@ function タイプイラスト(sovereign){
   const coreR = 7 + c * 7;
   const coreDur = (3.4 - c * 2.5).toFixed(2);
   const spin = (130 - c * 105).toFixed(0);   // 全体の回転: 洗練=ゆっくり, カオス=速い
-  const calmRing = c < .45 ? `<ellipse cx="${cx}" cy="${cy}" rx="118" ry="60" fill="none" stroke="#7fa6c4" stroke-opacity="${(.4 - c * .5).toFixed(2)}" stroke-width="1"/>` : '';
+  const calmRing = c < .45 ? `<circle cx="${cx}" cy="${cy}" r="95" fill="none" stroke="#7fa6c4" stroke-opacity="${(.4 - c * .5).toFixed(2)}" stroke-width="1"/>` : '';
   const chaosGlow = c > .5 ? `<circle cx="${cx}" cy="${cy}" r="${(60 + c * 40).toFixed(0)}" fill="#c98a7a" opacity="${(c * .13).toFixed(2)}" filter="url(#tiSoft)"><animate attributeName="opacity" values="${(c * .13).toFixed(2)};${(c * .04).toFixed(2)};${(c * .13).toFixed(2)}" dur="1.6s" repeatCount="indefinite"/></circle>` : '';
-  return `<div class="typesvg-wrap"><svg viewBox="0 0 680 200" width="100%" style="display:block" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="睡眠力スコアに応じて姿を変えるシナプスのイメージ">
+  return `<div class="typesvg-wrap"><svg viewBox="0 0 680 260" width="100%" style="display:block" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="睡眠力スコアに応じて姿を変えるシナプスのイメージ">
     <defs>
       <filter id="tiSoft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
     </defs>
