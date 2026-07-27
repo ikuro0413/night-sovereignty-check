@@ -33,6 +33,19 @@
   @keyframes aiPulse{0%,100%{opacity:.55}50%{opacity:1}}
   .ai-core{animation:aiPulse 3.2s ease-in-out infinite}
   #aiVisual .gs{opacity:0;transition:opacity 1.1s ease}
+  /* タイプ別イラストのアニメーション */
+  .typesvg-wrap{margin:10px 0 2px}
+  @keyframes tiScrollAnim{to{transform:translateY(-84px)}}
+  .ti-scroll{animation:tiScrollAnim 6s linear infinite}
+  @keyframes tiBlink{0%,100%{opacity:.25}50%{opacity:1}}
+  .ti-blink{animation:tiBlink 2.2s ease-in-out infinite}
+  @keyframes tiFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  .ti-float{animation:tiFloat 3.4s ease-in-out infinite}
+  @keyframes tiSteam{0%{transform:translateY(4px);opacity:0}30%{opacity:.7}100%{transform:translateY(-16px);opacity:0}}
+  .ti-steam{animation:tiSteam 3s ease-out infinite}
+  .ti-steam2{animation:tiSteam 3s ease-out 1.5s infinite}
+  @keyframes tiWaveAnim{to{transform:translateX(-60px)}}
+  .ti-wave{animation:tiWaveAnim 5s linear infinite}
   .intro-note b{color:var(--accent)}
   .intro-note p+p{margin-top:8px}
   .qhead{text-align:center;font-size:19px;font-weight:600;letter-spacing:.06em;margin-bottom:6px;color:var(--ink)}
@@ -1389,6 +1402,131 @@ function diagCard(d, i, sev, withGoods, withSupport){
   </div>`;
 }
 
+/* ============================================================
+   タイプ別イラスト(生成SVG)
+   主因領域のメインモチーフ + 副因領域のミニアイコンの掛け合わせで、
+   タイプごとに違う近未来調のイラストを画像ファイルなしで生成する。
+   動きはCSS(ti-*)とSVGのanimateTransformで付与
+============================================================ */
+const タイプ配色 = ['#c8b273','#7fa6c4','#e9e6dc','#c98a7a'];
+const モチーフ = {
+  present:{
+    main:a=>`<g transform="translate(340 95)">
+      <rect x="-40" y="-64" width="80" height="128" rx="14" fill="#0f1522" stroke="${a}" stroke-opacity=".85" stroke-width="1.5"/>
+      <clipPath id="tiClip"><rect x="-32" y="-52" width="64" height="104" rx="6"/></clipPath>
+      <g clip-path="url(#tiClip)"><g class="ti-scroll">
+        ${[0,1,2,3,4,5,6,7].map(i=>`<rect x="-30" y="${-52+i*28}" width="60" height="24" rx="5" fill="${i%3===1?a:'#7fa6c4'}" opacity="${i%3===1?'.55':'.28'}"/>`).join('')}
+      </g></g>
+    </g>`,
+    mini:`<rect x="-8" y="-13" width="16" height="26" rx="4" fill="none" stroke="#7fa6c4"/><line x1="-4" y1="-6" x2="4" y2="-6" stroke="#7fa6c4"/><line x1="-4" y1="0" x2="4" y2="0" stroke="#7fa6c4"/><line x1="-4" y1="6" x2="4" y2="6" stroke="#7fa6c4"/>`},
+  commit:{
+    main:a=>`<g transform="translate(340 95)">
+      <circle r="54" fill="#0f1522" stroke="${a}" stroke-opacity=".85" stroke-width="1.5"/>
+      <g stroke="#7fa6c4" stroke-opacity=".5"><line x1="0" y1="-54" x2="0" y2="-46"/><line x1="0" y1="54" x2="0" y2="46"/><line x1="-54" y1="0" x2="-46" y2="0"/><line x1="54" y1="0" x2="46" y2="0"/></g>
+      <g><line x1="0" y1="4" x2="0" y2="-26" stroke="#e9e6dc" stroke-width="2.4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="80s" repeatCount="indefinite"/></line></g>
+      <g><line x1="0" y1="6" x2="0" y2="-40" stroke="${a}" stroke-width="1.6" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="9s" repeatCount="indefinite"/></line></g>
+      <circle r="3.2" fill="${a}"/>
+      <text x="58" y="-42" font-size="17" fill="#7fa6c4" opacity=".8" class="ti-float">z</text>
+      <text x="72" y="-56" font-size="13" fill="#7fa6c4" opacity=".6" class="ti-float">z</text>
+    </g>`,
+    mini:`<circle r="12" fill="none" stroke="#7fa6c4"/><line x1="0" y1="0" x2="0" y2="-8" stroke="#7fa6c4"/><line x1="0" y1="0" x2="6" y2="3" stroke="#7fa6c4"/>`},
+  default:{
+    main:a=>`<g transform="translate(340 102)">
+      <path d="M-78 34 H78 M-78 34 V-8 M78 34 V4 M-78 4 H78" fill="none" stroke="#7fa6c4" stroke-opacity=".6" stroke-width="1.5"/>
+      <rect x="-68" y="-8" width="42" height="12" rx="6" fill="#7fa6c4" opacity=".35"/>
+      <g class="ti-blink"><circle cx="-38" cy="-16" r="15" fill="${a}" opacity=".3"/></g>
+      <rect x="-44" y="-27" width="12" height="20" rx="3" fill="#0f1522" stroke="${a}"/>
+      <path d="M-38 -7 C-38 8, -60 6, -66 16" fill="none" stroke="#7fa6c4" stroke-opacity=".5"/>
+      <text x="30" y="-24" font-size="15" fill="#7fa6c4" opacity=".7" class="ti-float">z z</text>
+    </g>`,
+    mini:`<path d="M-12 8 H12 M-12 8 V-2 M12 8 V0" fill="none" stroke="#7fa6c4"/><rect x="-9" y="-2" width="8" height="4" rx="2" fill="#7fa6c4" opacity=".6"/>`},
+  fatigue:{
+    main:a=>`<g transform="translate(340 95)">
+      <circle r="52" fill="#0f1522" stroke="#7fa6c4" stroke-opacity=".55" stroke-width="1.5"/>
+      <rect x="-30" y="-14" width="52" height="28" rx="5" fill="none" stroke="${a}" stroke-width="1.6"/>
+      <rect x="24" y="-6" width="7" height="12" rx="2" fill="${a}"/>
+      <rect x="-25" y="-9" width="12" height="18" rx="2" fill="#c98a7a" class="ti-blink"/>
+      <path d="M42 -36 l-7 12 h9 l-7 12" fill="none" stroke="${a}" stroke-opacity=".7" class="ti-float"/>
+    </g>`,
+    mini:`<rect x="-11" y="-7" width="18" height="14" rx="3" fill="none" stroke="#7fa6c4"/><rect x="8" y="-3" width="4" height="6" fill="#7fa6c4"/><rect x="-8" y="-4" width="5" height="8" fill="#c98a7a"/>`},
+  hotcold:{
+    main:a=>`<g transform="translate(340 95)">
+      <path d="M0 -58 V58" stroke="#26304a" stroke-dasharray="4 6"/>
+      <g transform="translate(-48 -4)"><g><circle r="17" fill="none" stroke="${a}" stroke-width="1.6"/>
+        <g stroke="${a}" stroke-opacity=".8"><line x1="0" y1="-24" x2="0" y2="-30"/><line x1="0" y1="24" x2="0" y2="30"/><line x1="-24" y1="0" x2="-30" y2="0"/><line x1="24" y1="0" x2="30" y2="0"/><line x1="17" y1="-17" x2="21" y2="-21"/><line x1="-17" y1="17" x2="-21" y2="21"/><line x1="17" y1="17" x2="21" y2="21"/><line x1="-17" y1="-17" x2="-21" y2="-21"/></g>
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="40s" repeatCount="indefinite"/></g></g>
+      <path transform="translate(48 -4)" d="M-6 -16 a16 16 0 1 0 12 28 a13 13 0 1 1 -12 -28 z" fill="#7fa6c4" opacity=".85" class="ti-float"/>
+      <path d="M-60 44 L60 30" stroke="#e9e6dc" stroke-opacity=".5"/>
+      <circle cx="-60" cy="44" r="3" fill="${a}"/><circle cx="60" cy="30" r="3" fill="#7fa6c4"/>
+    </g>`,
+    mini:`<circle cx="-6" cy="0" r="6" fill="none" stroke="#c8b273"/><path d="M6 -7 a8 8 0 1 0 6 14 a6.5 6.5 0 1 1 -6 -14 z" fill="#7fa6c4" opacity=".8"/>`},
+  sunk:{
+    main:a=>`<g transform="translate(340 95)">
+      <rect x="-66" y="-44" width="132" height="88" rx="10" fill="#0f1522" stroke="#7fa6c4" stroke-opacity=".6" stroke-width="1.5"/>
+      <path d="M-10 -14 L14 0 L-10 14 Z" fill="${a}" opacity=".8"/>
+      <line x1="-52" y1="32" x2="52" y2="32" stroke="#26304a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="-52" y1="32" x2="52" y2="32" stroke="${a}" stroke-width="3" stroke-linecap="round" stroke-dasharray="104"><animate attributeName="stroke-dashoffset" from="104" to="6" dur="4.5s" repeatCount="indefinite"/></line>
+      <circle cx="58" cy="-38" r="4" fill="${a}" class="ti-blink"/>
+    </g>`,
+    mini:`<rect x="-12" y="-9" width="24" height="18" rx="3" fill="none" stroke="#7fa6c4"/><path d="M-3 -4 L5 0 L-3 4 Z" fill="#7fa6c4"/>`},
+  loop:{
+    main:a=>`<g transform="translate(340 95)">
+      <rect x="-17" y="-30" width="34" height="60" rx="7" fill="#0f1522" stroke="#7fa6c4" stroke-opacity=".8" stroke-width="1.5"/>
+      <g><circle r="56" fill="none" stroke="${a}" stroke-opacity=".7" stroke-width="1.4" stroke-dasharray="7 9"/>
+        <path d="M0 -56 l9 -5 l-2 11 z" fill="${a}"/>
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite"/></g>
+      <circle cx="0" cy="20" r="2.4" fill="#7fa6c4"/>
+    </g>`,
+    mini:`<circle r="11" fill="none" stroke="#7fa6c4" stroke-dasharray="4 4"/><path d="M0 -11 l5 -3 l-1 6 z" fill="#7fa6c4"/>`},
+  rhythm:{
+    main:a=>`<g transform="translate(340 95)">
+      <clipPath id="tiClipW"><rect x="-72" y="-46" width="144" height="92"/></clipPath>
+      <g clip-path="url(#tiClipW)"><g class="ti-wave">
+        <path d="M-132 6 l12 -20 l10 34 l12 -46 l10 52 l12 -28 l10 10 l12 -22 l10 36 l12 -48 l10 50 l12 -26 l10 8 l12 -22 l10 36 l12 -48 l10 50 l12 -26 l10 8 l12 -20 l10 34" fill="none" stroke="${a}" stroke-width="1.6" stroke-linejoin="round"/>
+      </g></g>
+      <circle cx="-52" cy="-36" r="6" fill="#c8b273" opacity=".8"/>
+      <path d="M46 -40 a9 9 0 1 0 7 16 a7.5 7.5 0 1 1 -7 -16 z" fill="#7fa6c4" opacity=".8"/>
+    </g>`,
+    mini:`<path d="M-12 0 l4 -8 l4 14 l4 -12 l4 8 l4 -4" fill="none" stroke="#7fa6c4"/>`},
+  stimulus:{
+    main:a=>`<g transform="translate(340 100)">
+      <path d="M-30 -8 H30 L24 32 H-24 Z" fill="#0f1522" stroke="${a}" stroke-width="1.6"/>
+      <path d="M30 -2 q16 2 12 14 q-3 10 -14 8" fill="none" stroke="${a}" stroke-width="1.4"/>
+      <line x1="-40" y1="40" x2="40" y2="40" stroke="#7fa6c4" stroke-opacity=".5"/>
+      <path class="ti-steam" d="M-10 -16 q4 -8 0 -14 q-4 -6 0 -12" fill="none" stroke="#7fa6c4" stroke-width="1.4"/>
+      <path class="ti-steam2" d="M10 -16 q4 -8 0 -14 q-4 -6 0 -12" fill="none" stroke="#7fa6c4" stroke-width="1.4"/>
+    </g>`,
+    mini:`<path d="M-9 -5 H9 L7 8 H-7 Z" fill="none" stroke="#7fa6c4"/><path d="M9 -2 q6 1 4 6" fill="none" stroke="#7fa6c4"/>`},
+};
+function タイプイラスト(flagged, ranked){
+  const d1 = (flagged && flagged[0]) || ranked[0].d;
+  const d2 = (flagged && flagged[1]) || null;
+  const m1 = モチーフ[d1] || モチーフ.present;
+  const sub = pickSub(d1);
+  const a = タイプ配色[(String(sub).length + String(d1).length) % タイプ配色.length];
+  const mini = (d2 && モチーフ[d2]) ? `
+    <g transform="translate(560 66)" opacity=".9">
+      <circle r="24" fill="#0f1522" stroke="#26304a"/>
+      ${モチーフ[d2].mini}
+    </g>
+    <path d="M424 88 C470 70, 500 66, 536 66" fill="none" stroke="#7fa6c4" stroke-opacity=".3" stroke-dasharray="2 6"/>` : '';
+  return `<div class="typesvg-wrap"><svg viewBox="0 0 680 190" width="100%" style="display:block" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="あなたのタイプのイメージイラスト">
+    <defs><radialGradient id="tiHalo" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#7fa6c4" stop-opacity=".22"/><stop offset="100%" stop-color="#7fa6c4" stop-opacity="0"/>
+    </radialGradient></defs>
+    <ellipse cx="340" cy="95" rx="260" ry="82" fill="url(#tiHalo)"/>
+    <circle cx="130" cy="36" r="1.6" fill="#e9e6dc" opacity=".5"/>
+    <circle cx="196" cy="150" r="1.4" fill="#7fa6c4" opacity=".5"/>
+    <circle cx="500" cy="146" r="1.5" fill="#e9e6dc" opacity=".45"/>
+    <circle cx="596" cy="120" r="1.4" fill="#7fa6c4" opacity=".5"/>
+    <path d="M96 60 l2 4.4 l4.4 2 l-4.4 2 l-2 4.4 l-2 -4.4 l-4.4 -2 l4.4 -2 z" fill="#7fa6c4" opacity=".55"/>
+    <path d="M614 30 a12 12 0 1 0 5 23 a9.5 9.5 0 1 1 -5 -23 z" fill="#c8b273" opacity=".8"/>
+    ${m1.main(a)}
+    ${mini}
+    <path d="M190 172 H490" stroke="#26304a" stroke-width="1"/>
+  </svg></div>`;
+}
+
 function renderResult(D){
   const {sev, flagged, ranked, sovereign} = D;
   $('quiz').classList.add('hidden');
@@ -1423,7 +1561,6 @@ function renderResult(D){
       </ul></div></div>`;
   }
 
-  const timg = typeImgFor(flagged);
 
   const html = `
   <div class="card">
@@ -1433,8 +1570,9 @@ function renderResult(D){
       <div class="score-lab">睡眠力スコア　100点満点・高いほど良好</div>
     </div>
 
+    ${タイプイラスト(flagged, ranked)}
+
     <h2>${w.head}</h2>
-    ${timg?`<div class="typeimg-wrap"><img class="typeimg" src="${timg}" alt="あなたのタイプのイラスト"></div>`:''}
     <p class="body">${w.body}</p>
 
     <h2>9つの行動要因の内訳</h2>
