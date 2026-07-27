@@ -1427,9 +1427,9 @@ function タイプイラスト(sovereign){
     const randX = cx + (r1 - .5) * 2 * (140 + c * 150), randY = cy + (r2 - .5) * 2 * (55 + c * 42);
     const x = ringX * (1 - c) + randX * c, y = ringY * (1 - c) + randY * c;
     const z = r3;   // 奥行き: 0=奥(小さく暗い) 1=手前(大きく明るい)
-    const size = (1.3 + z * 2.1) * (1 + c * .8);
-    const dur = ((5.5 - c * 4.6) * (.7 + r4 * .6)).toFixed(2);
-    const amp = (2 + c * 13) * (.5 + z * .8);
+    const size = (.9 + z * 1.3) * (1 + c * .5);
+    const dur = ((8.5 - c * 3) * (.7 + r4 * .6)).toFixed(2);
+    const amp = (6 + c * 14) * (.5 + z * .8);
     const dx = ((r1 - .5) * 2 * amp).toFixed(1), dy = ((r2 - .5) * 2 * amp).toFixed(1);
     const col = (c > .55 && r4 > .55) ? '#c98a7a' : (r3 > .5 ? '#7fa6c4' : '#c8b273');
     nodes.push({x, y, z, size, dur, dx, dy, col, op: .35 + z * .55});
@@ -1450,7 +1450,7 @@ function タイプイラスト(sovereign){
   }
   const dots = nodes.map(p => `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})"><g>
       <circle r="${p.size.toFixed(1)}" fill="${p.col}" opacity="${p.op.toFixed(2)}"/>
-      <animateTransform attributeName="transform" type="translate" values="0 0; ${p.dx} ${p.dy}; 0 0" dur="${p.dur}s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="translate" values="0 0; ${p.dx} ${p.dy}; 0 0" keyTimes="0;.5;1" calcMode="spline" keySplines=".4 0 .6 1;.4 0 .6 1" dur="${p.dur}s" repeatCount="indefinite"/>
     </g></g>`).join('');
   const coreR = 7 + c * 7;
   const coreDur = (3.4 - c * 2.5).toFixed(2);
