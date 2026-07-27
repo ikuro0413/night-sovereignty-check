@@ -1456,20 +1456,19 @@ function タイプイラスト(sovereign){
       const extra = c > .4 && シナプス乱数(i * 31 + j * 17) > .9;   // カオス時は遠距離の交差線も足す
       if(d < maxD || extra){
         const op = Math.max(.06, (extra ? .3 : (1 - d / maxD) * .55) * (.4 + Math.min(a.z, b.z) * .6));
-        const flick = c > .5 ? `<animate attributeName="stroke-opacity" values="${op.toFixed(2)};${(op * .12).toFixed(2)};${op.toFixed(2)}" dur="${(.7 + シナプス乱数(i + j * 3) * 1.7).toFixed(2)}s" repeatCount="indefinite"/>` : '';
-        edges += `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${a.z > b.z ? a.col : b.col}" stroke-opacity="${op.toFixed(2)}" stroke-width="${(.5 + Math.min(a.z, b.z) * .9).toFixed(2)}">${flick}</line>`;
+        const flick = c > .5 ? ` class="syn-flick" style="--fd:${(1.4 + シナプス乱数(i + j * 3) * 2.4).toFixed(2)}s"` : '';
+        edges += `<line${flick} x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${a.z > b.z ? a.col : b.col}" stroke-opacity="${op.toFixed(2)}" stroke-width="${(.5 + Math.min(a.z, b.z) * .9).toFixed(2)}"/>`;
       }
     }
   }
-  const dots = nodes.map(p => `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})"><g>
-      <circle r="${p.size.toFixed(1)}" fill="${p.col}" opacity="${p.op.toFixed(2)}"/>
-      <animateTransform attributeName="transform" type="translate" values="0 0; ${p.dx} ${p.dy}; 0 0" keyTimes="0;.5;1" calcMode="spline" keySplines=".4 0 .6 1;.4 0 .6 1" dur="${p.dur}s" repeatCount="indefinite"/>
-    </g></g>`).join('');
+  const dots = nodes.map(p => `<g class="syn-dot" style="--dx:${p.dx}px;--dy:${p.dy}px;--dur:${p.dur}s">
+      <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.size.toFixed(1)}" fill="${p.col}" opacity="${p.op.toFixed(2)}"/>
+    </g>`).join('');
   const coreR = 7 + c * 7;
   const coreDur = (3.4 - c * 2.5).toFixed(2);
   const spin = (130 - c * 105).toFixed(0);   // 全体の回転: 洗練=ゆっくり, カオス=速い
   const calmRing = c < .45 ? `<circle cx="${cx}" cy="${cy}" r="95" fill="none" stroke="#7fa6c4" stroke-opacity="${(.4 - c * .5).toFixed(2)}" stroke-width="1"/>` : '';
-  const chaosGlow = c > .5 ? `<circle cx="${cx}" cy="${cy}" r="${(60 + c * 40).toFixed(0)}" fill="#c98a7a" opacity="${(c * .13).toFixed(2)}" filter="url(#tiSoft)"><animate attributeName="opacity" values="${(c * .13).toFixed(2)};${(c * .04).toFixed(2)};${(c * .13).toFixed(2)}" dur="1.6s" repeatCount="indefinite"/></circle>` : '';
+  const chaosGlow = c > .5 ? `<circle class="syn-pulse" style="--cd:1.8s" cx="${cx}" cy="${cy}" r="${(60 + c * 40).toFixed(0)}" fill="#c98a7a" fill-opacity="${(c * .13).toFixed(2)}" filter="url(#tiSoft)"/>` : '';
   return `<div class="typesvg-wrap"><svg viewBox="0 0 680 260" width="100%" style="display:block" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="睡眠力スコアに応じて姿を変えるシナプスのイメージ">
     <defs>
       <filter id="tiSoft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
@@ -1478,13 +1477,12 @@ function タイプイラスト(sovereign){
     <circle cx="120" cy="34" r="1.5" fill="#e9e6dc" opacity=".5"/>
     <circle cx="560" cy="160" r="1.4" fill="#7fa6c4" opacity=".5"/>
     <circle cx="610" cy="52" r="1.4" fill="#e9e6dc" opacity=".45"/>
-    <g>
+    <g class="syn-rot" style="--spin:${spin}s">
       ${calmRing}
       ${edges}
       ${dots}
-      <circle cx="${cx}" cy="${cy}" r="${(coreR * 2).toFixed(1)}" fill="#4a6fa5" opacity=".25" filter="url(#tiSoft)"/>
-      <circle cx="${cx}" cy="${cy}" r="${coreR.toFixed(1)}" fill="#4a6fa5"><animate attributeName="opacity" values="1;.55;1" dur="${coreDur}s" repeatCount="indefinite"/></circle>
-      <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="${spin}s" repeatCount="indefinite"/>
+      <circle cx="${cx}" cy="${cy}" r="${(coreR * 2).toFixed(1)}" fill="#4a6fa5" fill-opacity=".25" filter="url(#tiSoft)"/>
+      <circle class="syn-pulse" style="--cd:${coreDur}s" cx="${cx}" cy="${cy}" r="${coreR.toFixed(1)}" fill="#4a6fa5"/>
     </g>
   </svg></div>`;
 }
