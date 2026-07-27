@@ -1565,7 +1565,7 @@ function renderResult(D){
     </div>
 
     <p class="body" style="font-size:13px;color:var(--sub);margin-top:18px">この診断は、スコアが変わると出てくる文章と一手も変わります。生活を少し変えて、また試しに来てください。</p>
-    <button class="back" style="margin-top:8px" onclick="location.reload()">もう一度診断する</button>
+    <button class="back" style="margin-top:8px;color:var(--bad);font-size:15px;font-weight:600" onclick="location.href=location.pathname">もう一度診断する</button>
   </div>`;
   const r=$('result'); r.innerHTML=html; r.classList.remove('hidden');
   window.scrollTo({top:0,behavior:'smooth'});
