@@ -1239,6 +1239,7 @@ const TYPE_IMG = {
   'present_chat|rhythm_gen':'img/present_chat-rhythm_gen.png',
 };
 function typeImgFor(flagged){
+  return ''; // 診断結果イラスト一時停止中(スタイル統一のため再生成中)
   if(flagged.length < 2) return '';
   const a = flagged[0] + '_' + pickSub(flagged[0]);
   const b = flagged[1] + '_' + pickSub(flagged[1]);
