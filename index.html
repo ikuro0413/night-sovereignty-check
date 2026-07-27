@@ -1403,127 +1403,81 @@ function diagCard(d, i, sev, withGoods, withSupport){
 }
 
 /* ============================================================
-   タイプ別イラスト(生成SVG)
-   主因領域のメインモチーフ + 副因領域のミニアイコンの掛け合わせで、
-   タイプごとに違う近未来調のイラストを画像ファイルなしで生成する。
-   動きはCSS(ti-*)とSVGのanimateTransformで付与
+   タイプ別イラスト(生成SVG): スコア連動シナプス
+   睡眠力スコアが低いほどシナプスが肥大化し、カオスに激しく動く。
+   高いほど点と線が少なく整然と並び、洗練された静かな姿になる。
+   配置・動きはスコアから決定論的に生成する(同じスコアなら同じ絵)
 ============================================================ */
-const タイプ配色 = ['#c8b273','#7fa6c4','#e9e6dc','#c98a7a'];
-const モチーフ = {
-  present:{
-    main:a=>`<g transform="translate(340 95)">
-      <rect x="-40" y="-64" width="80" height="128" rx="14" fill="#0f1522" stroke="${a}" stroke-opacity=".85" stroke-width="1.5"/>
-      <clipPath id="tiClip"><rect x="-32" y="-52" width="64" height="104" rx="6"/></clipPath>
-      <g clip-path="url(#tiClip)"><g class="ti-scroll">
-        ${[0,1,2,3,4,5,6,7].map(i=>`<rect x="-30" y="${-52+i*28}" width="60" height="24" rx="5" fill="${i%3===1?a:'#7fa6c4'}" opacity="${i%3===1?'.55':'.28'}"/>`).join('')}
-      </g></g>
-    </g>`,
-    mini:`<rect x="-8" y="-13" width="16" height="26" rx="4" fill="none" stroke="#7fa6c4"/><line x1="-4" y1="-6" x2="4" y2="-6" stroke="#7fa6c4"/><line x1="-4" y1="0" x2="4" y2="0" stroke="#7fa6c4"/><line x1="-4" y1="6" x2="4" y2="6" stroke="#7fa6c4"/>`},
-  commit:{
-    main:a=>`<g transform="translate(340 95)">
-      <circle r="54" fill="#0f1522" stroke="${a}" stroke-opacity=".85" stroke-width="1.5"/>
-      <g stroke="#7fa6c4" stroke-opacity=".5"><line x1="0" y1="-54" x2="0" y2="-46"/><line x1="0" y1="54" x2="0" y2="46"/><line x1="-54" y1="0" x2="-46" y2="0"/><line x1="54" y1="0" x2="46" y2="0"/></g>
-      <g><line x1="0" y1="4" x2="0" y2="-26" stroke="#e9e6dc" stroke-width="2.4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="80s" repeatCount="indefinite"/></line></g>
-      <g><line x1="0" y1="6" x2="0" y2="-40" stroke="${a}" stroke-width="1.6" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="9s" repeatCount="indefinite"/></line></g>
-      <circle r="3.2" fill="${a}"/>
-      <text x="58" y="-42" font-size="17" fill="#7fa6c4" opacity=".8" class="ti-float">z</text>
-      <text x="72" y="-56" font-size="13" fill="#7fa6c4" opacity=".6" class="ti-float">z</text>
-    </g>`,
-    mini:`<circle r="12" fill="none" stroke="#7fa6c4"/><line x1="0" y1="0" x2="0" y2="-8" stroke="#7fa6c4"/><line x1="0" y1="0" x2="6" y2="3" stroke="#7fa6c4"/>`},
-  default:{
-    main:a=>`<g transform="translate(340 102)">
-      <path d="M-78 34 H78 M-78 34 V-8 M78 34 V4 M-78 4 H78" fill="none" stroke="#7fa6c4" stroke-opacity=".6" stroke-width="1.5"/>
-      <rect x="-68" y="-8" width="42" height="12" rx="6" fill="#7fa6c4" opacity=".35"/>
-      <g class="ti-blink"><circle cx="-38" cy="-16" r="15" fill="${a}" opacity=".3"/></g>
-      <rect x="-44" y="-27" width="12" height="20" rx="3" fill="#0f1522" stroke="${a}"/>
-      <path d="M-38 -7 C-38 8, -60 6, -66 16" fill="none" stroke="#7fa6c4" stroke-opacity=".5"/>
-      <text x="30" y="-24" font-size="15" fill="#7fa6c4" opacity=".7" class="ti-float">z z</text>
-    </g>`,
-    mini:`<path d="M-12 8 H12 M-12 8 V-2 M12 8 V0" fill="none" stroke="#7fa6c4"/><rect x="-9" y="-2" width="8" height="4" rx="2" fill="#7fa6c4" opacity=".6"/>`},
-  fatigue:{
-    main:a=>`<g transform="translate(340 95)">
-      <circle r="52" fill="#0f1522" stroke="#7fa6c4" stroke-opacity=".55" stroke-width="1.5"/>
-      <rect x="-30" y="-14" width="52" height="28" rx="5" fill="none" stroke="${a}" stroke-width="1.6"/>
-      <rect x="24" y="-6" width="7" height="12" rx="2" fill="${a}"/>
-      <rect x="-25" y="-9" width="12" height="18" rx="2" fill="#c98a7a" class="ti-blink"/>
-      <path d="M42 -36 l-7 12 h9 l-7 12" fill="none" stroke="${a}" stroke-opacity=".7" class="ti-float"/>
-    </g>`,
-    mini:`<rect x="-11" y="-7" width="18" height="14" rx="3" fill="none" stroke="#7fa6c4"/><rect x="8" y="-3" width="4" height="6" fill="#7fa6c4"/><rect x="-8" y="-4" width="5" height="8" fill="#c98a7a"/>`},
-  hotcold:{
-    main:a=>`<g transform="translate(340 95)">
-      <path d="M0 -58 V58" stroke="#26304a" stroke-dasharray="4 6"/>
-      <g transform="translate(-48 -4)"><g><circle r="17" fill="none" stroke="${a}" stroke-width="1.6"/>
-        <g stroke="${a}" stroke-opacity=".8"><line x1="0" y1="-24" x2="0" y2="-30"/><line x1="0" y1="24" x2="0" y2="30"/><line x1="-24" y1="0" x2="-30" y2="0"/><line x1="24" y1="0" x2="30" y2="0"/><line x1="17" y1="-17" x2="21" y2="-21"/><line x1="-17" y1="17" x2="-21" y2="21"/><line x1="17" y1="17" x2="21" y2="21"/><line x1="-17" y1="-17" x2="-21" y2="-21"/></g>
-        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="40s" repeatCount="indefinite"/></g></g>
-      <path transform="translate(48 -4)" d="M-6 -16 a16 16 0 1 0 12 28 a13 13 0 1 1 -12 -28 z" fill="#7fa6c4" opacity=".85" class="ti-float"/>
-      <path d="M-60 44 L60 30" stroke="#e9e6dc" stroke-opacity=".5"/>
-      <circle cx="-60" cy="44" r="3" fill="${a}"/><circle cx="60" cy="30" r="3" fill="#7fa6c4"/>
-    </g>`,
-    mini:`<circle cx="-6" cy="0" r="6" fill="none" stroke="#c8b273"/><path d="M6 -7 a8 8 0 1 0 6 14 a6.5 6.5 0 1 1 -6 -14 z" fill="#7fa6c4" opacity=".8"/>`},
-  sunk:{
-    main:a=>`<g transform="translate(340 95)">
-      <rect x="-66" y="-44" width="132" height="88" rx="10" fill="#0f1522" stroke="#7fa6c4" stroke-opacity=".6" stroke-width="1.5"/>
-      <path d="M-10 -14 L14 0 L-10 14 Z" fill="${a}" opacity=".8"/>
-      <line x1="-52" y1="32" x2="52" y2="32" stroke="#26304a" stroke-width="3" stroke-linecap="round"/>
-      <line x1="-52" y1="32" x2="52" y2="32" stroke="${a}" stroke-width="3" stroke-linecap="round" stroke-dasharray="104"><animate attributeName="stroke-dashoffset" from="104" to="6" dur="4.5s" repeatCount="indefinite"/></line>
-      <circle cx="58" cy="-38" r="4" fill="${a}" class="ti-blink"/>
-    </g>`,
-    mini:`<rect x="-12" y="-9" width="24" height="18" rx="3" fill="none" stroke="#7fa6c4"/><path d="M-3 -4 L5 0 L-3 4 Z" fill="#7fa6c4"/>`},
-  loop:{
-    main:a=>`<g transform="translate(340 95)">
-      <rect x="-17" y="-30" width="34" height="60" rx="7" fill="#0f1522" stroke="#7fa6c4" stroke-opacity=".8" stroke-width="1.5"/>
-      <g><circle r="56" fill="none" stroke="${a}" stroke-opacity=".7" stroke-width="1.4" stroke-dasharray="7 9"/>
-        <path d="M0 -56 l9 -5 l-2 11 z" fill="${a}"/>
-        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite"/></g>
-      <circle cx="0" cy="20" r="2.4" fill="#7fa6c4"/>
-    </g>`,
-    mini:`<circle r="11" fill="none" stroke="#7fa6c4" stroke-dasharray="4 4"/><path d="M0 -11 l5 -3 l-1 6 z" fill="#7fa6c4"/>`},
-  rhythm:{
-    main:a=>`<g transform="translate(340 95)">
-      <clipPath id="tiClipW"><rect x="-72" y="-46" width="144" height="92"/></clipPath>
-      <g clip-path="url(#tiClipW)"><g class="ti-wave">
-        <path d="M-132 6 l12 -20 l10 34 l12 -46 l10 52 l12 -28 l10 10 l12 -22 l10 36 l12 -48 l10 50 l12 -26 l10 8 l12 -22 l10 36 l12 -48 l10 50 l12 -26 l10 8 l12 -20 l10 34" fill="none" stroke="${a}" stroke-width="1.6" stroke-linejoin="round"/>
-      </g></g>
-      <circle cx="-52" cy="-36" r="6" fill="#c8b273" opacity=".8"/>
-      <path d="M46 -40 a9 9 0 1 0 7 16 a7.5 7.5 0 1 1 -7 -16 z" fill="#7fa6c4" opacity=".8"/>
-    </g>`,
-    mini:`<path d="M-12 0 l4 -8 l4 14 l4 -12 l4 8 l4 -4" fill="none" stroke="#7fa6c4"/>`},
-  stimulus:{
-    main:a=>`<g transform="translate(340 100)">
-      <path d="M-30 -8 H30 L24 32 H-24 Z" fill="#0f1522" stroke="${a}" stroke-width="1.6"/>
-      <path d="M30 -2 q16 2 12 14 q-3 10 -14 8" fill="none" stroke="${a}" stroke-width="1.4"/>
-      <line x1="-40" y1="40" x2="40" y2="40" stroke="#7fa6c4" stroke-opacity=".5"/>
-      <path class="ti-steam" d="M-10 -16 q4 -8 0 -14 q-4 -6 0 -12" fill="none" stroke="#7fa6c4" stroke-width="1.4"/>
-      <path class="ti-steam2" d="M10 -16 q4 -8 0 -14 q-4 -6 0 -12" fill="none" stroke="#7fa6c4" stroke-width="1.4"/>
-    </g>`,
-    mini:`<path d="M-9 -5 H9 L7 8 H-7 Z" fill="none" stroke="#7fa6c4"/><path d="M9 -2 q6 1 4 6" fill="none" stroke="#7fa6c4"/>`},
-};
-function タイプイラスト(flagged, ranked){
-  const d1 = (flagged && flagged[0]) || ranked[0].d;
-  const d2 = (flagged && flagged[1]) || null;
-  const m1 = モチーフ[d1] || モチーフ.present;
-  const sub = pickSub(d1);
-  const a = タイプ配色[(String(sub).length + String(d1).length) % タイプ配色.length];
-  const mini = (d2 && モチーフ[d2]) ? `
-    <g transform="translate(560 66)" opacity=".9">
-      <circle r="24" fill="#0f1522" stroke="#26304a"/>
-      ${モチーフ[d2].mini}
+function シナプス乱数(seed){
+  const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+}
+function タイプイラスト(sovereign){
+  const s = Math.max(0, Math.min(100, sovereign));
+  const c = (100 - s) / 100;   // カオス度: 0=洗練, 1=カオス
+  const cx = 340, cy = 100;
+  const n = Math.round(12 + c * 38);   // 点の数 12〜50
+  const nodes = [];
+  for(let i = 0; i < n; i++){
+    const r1 = シナプス乱数(i + 1), r2 = シナプス乱数(i * 3 + 7),
+          r3 = シナプス乱数(i * 7 + 13), r4 = シナプス乱数(i * 11 + 29);
+    // 整然としたリング配置とランダム配置をカオス度でブレンドする
+    const ang = (i / n) * Math.PI * 2;
+    const ringX = cx + Math.cos(ang) * 100, ringY = cy + Math.sin(ang) * 52;
+    const randX = cx + (r1 - .5) * 2 * (140 + c * 150), randY = cy + (r2 - .5) * 2 * (55 + c * 42);
+    const x = ringX * (1 - c) + randX * c, y = ringY * (1 - c) + randY * c;
+    const z = r3;   // 奥行き: 0=奥(小さく暗い) 1=手前(大きく明るい)
+    const size = (1.3 + z * 2.1) * (1 + c * .8);
+    const dur = ((5.5 - c * 4.6) * (.7 + r4 * .6)).toFixed(2);
+    const amp = (2 + c * 13) * (.5 + z * .8);
+    const dx = ((r1 - .5) * 2 * amp).toFixed(1), dy = ((r2 - .5) * 2 * amp).toFixed(1);
+    const col = (c > .55 && r4 > .55) ? '#c98a7a' : (r3 > .5 ? '#7fa6c4' : '#c8b273');
+    nodes.push({x, y, z, size, dur, dx, dy, col, op: .35 + z * .55});
+  }
+  let edges = '';
+  const maxD = 75 + c * 115;
+  for(let i = 0; i < n; i++){
+    for(let j = i + 1; j < Math.min(n, i + 7); j++){
+      const a = nodes[i], b = nodes[j];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      const extra = c > .4 && シナプス乱数(i * 31 + j * 17) > .9;   // カオス時は遠距離の交差線も足す
+      if(d < maxD || extra){
+        const op = Math.max(.06, (extra ? .3 : (1 - d / maxD) * .55) * (.4 + Math.min(a.z, b.z) * .6));
+        const flick = c > .5 ? `<animate attributeName="stroke-opacity" values="${op.toFixed(2)};${(op * .12).toFixed(2)};${op.toFixed(2)}" dur="${(.7 + シナプス乱数(i + j * 3) * 1.7).toFixed(2)}s" repeatCount="indefinite"/>` : '';
+        edges += `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${a.z > b.z ? a.col : b.col}" stroke-opacity="${op.toFixed(2)}" stroke-width="${(.5 + Math.min(a.z, b.z) * .9).toFixed(2)}">${flick}</line>`;
+      }
+    }
+  }
+  const dots = nodes.map(p => `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})"><g>
+      <circle r="${p.size.toFixed(1)}" fill="${p.col}" opacity="${p.op.toFixed(2)}"/>
+      <animateTransform attributeName="transform" type="translate" values="0 0; ${p.dx} ${p.dy}; 0 0" dur="${p.dur}s" repeatCount="indefinite"/>
+    </g></g>`).join('');
+  const coreR = 7 + c * 7;
+  const coreDur = (3.4 - c * 2.5).toFixed(2);
+  const spin = (130 - c * 105).toFixed(0);   // 全体の回転: 洗練=ゆっくり, カオス=速い
+  const calmRing = c < .45 ? `<ellipse cx="${cx}" cy="${cy}" rx="118" ry="60" fill="none" stroke="#7fa6c4" stroke-opacity="${(.4 - c * .5).toFixed(2)}" stroke-width="1"/>` : '';
+  const chaosGlow = c > .5 ? `<circle cx="${cx}" cy="${cy}" r="${(60 + c * 40).toFixed(0)}" fill="#c98a7a" opacity="${(c * .13).toFixed(2)}" filter="url(#tiSoft)"><animate attributeName="opacity" values="${(c * .13).toFixed(2)};${(c * .04).toFixed(2)};${(c * .13).toFixed(2)}" dur="1.6s" repeatCount="indefinite"/></circle>` : '';
+  return `<div class="typesvg-wrap"><svg viewBox="0 0 680 200" width="100%" style="display:block" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="睡眠力スコアに応じて姿を変えるシナプスのイメージ">
+    <defs>
+      <radialGradient id="tiHalo" cx="50%" cy="50%" r="55%">
+        <stop offset="0%" stop-color="#7fa6c4" stop-opacity=".2"/><stop offset="100%" stop-color="#7fa6c4" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="tiSoft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
+    </defs>
+    <ellipse cx="${cx}" cy="${cy}" rx="270" ry="88" fill="url(#tiHalo)"/>
+    ${chaosGlow}
+    <circle cx="120" cy="34" r="1.5" fill="#e9e6dc" opacity=".5"/>
+    <circle cx="560" cy="160" r="1.4" fill="#7fa6c4" opacity=".5"/>
+    <circle cx="610" cy="52" r="1.4" fill="#e9e6dc" opacity=".45"/>
+    <path d="M618 24 a12 12 0 1 0 5 23 a9.5 9.5 0 1 1 -5 -23 z" fill="#c8b273" opacity=".8"/>
+    <g>
+      ${calmRing}
+      ${edges}
+      ${dots}
+      <circle cx="${cx}" cy="${cy}" r="${(coreR * 2).toFixed(1)}" fill="#c8b273" opacity=".22" filter="url(#tiSoft)"/>
+      <circle cx="${cx}" cy="${cy}" r="${coreR.toFixed(1)}" fill="#c8b273"><animate attributeName="opacity" values="1;.55;1" dur="${coreDur}s" repeatCount="indefinite"/></circle>
+      <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="${spin}s" repeatCount="indefinite"/>
     </g>
-    <path d="M424 88 C470 70, 500 66, 536 66" fill="none" stroke="#7fa6c4" stroke-opacity=".3" stroke-dasharray="2 6"/>` : '';
-  return `<div class="typesvg-wrap"><svg viewBox="0 0 680 190" width="100%" style="display:block" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="あなたのタイプのイメージイラスト">
-    <defs><radialGradient id="tiHalo" cx="50%" cy="50%" r="55%">
-      <stop offset="0%" stop-color="#7fa6c4" stop-opacity=".22"/><stop offset="100%" stop-color="#7fa6c4" stop-opacity="0"/>
-    </radialGradient></defs>
-    <ellipse cx="340" cy="95" rx="260" ry="82" fill="url(#tiHalo)"/>
-    <circle cx="130" cy="36" r="1.6" fill="#e9e6dc" opacity=".5"/>
-    <circle cx="196" cy="150" r="1.4" fill="#7fa6c4" opacity=".5"/>
-    <circle cx="500" cy="146" r="1.5" fill="#e9e6dc" opacity=".45"/>
-    <circle cx="596" cy="120" r="1.4" fill="#7fa6c4" opacity=".5"/>
-    <path d="M96 60 l2 4.4 l4.4 2 l-4.4 2 l-2 4.4 l-2 -4.4 l-4.4 -2 l4.4 -2 z" fill="#7fa6c4" opacity=".55"/>
-    <path d="M614 30 a12 12 0 1 0 5 23 a9.5 9.5 0 1 1 -5 -23 z" fill="#c8b273" opacity=".8"/>
-    ${m1.main(a)}
-    ${mini}
-    <path d="M190 172 H490" stroke="#26304a" stroke-width="1"/>
   </svg></div>`;
 }
 
@@ -1570,7 +1524,7 @@ function renderResult(D){
       <div class="score-lab">睡眠力スコア　100点満点・高いほど良好</div>
     </div>
 
-    ${タイプイラスト(flagged, ranked)}
+    ${タイプイラスト(sovereign)}
 
     <h2>${w.head}</h2>
     <p class="body">${w.body}</p>
