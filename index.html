@@ -46,6 +46,15 @@
   .ti-steam2{animation:tiSteam 3s ease-out 1.5s infinite}
   @keyframes tiWaveAnim{to{transform:translateX(-60px)}}
   .ti-wave{animation:tiWaveAnim 5s linear infinite}
+  /* シナプスイラスト: 後挿入SVGのSMILはiOSで動かないためCSSアニメーションで動かす */
+  @keyframes synDrift{0%,100%{transform:translate(0,0)}50%{transform:translate(var(--dx,0px),var(--dy,0px))}}
+  .syn-dot{animation:synDrift var(--dur,6s) ease-in-out infinite}
+  @keyframes synSpin{to{transform:rotate(360deg)}}
+  .syn-rot{transform-box:view-box;transform-origin:50% 50%;animation:synSpin var(--spin,120s) linear infinite}
+  @keyframes synPulse{0%,100%{opacity:1}50%{opacity:.5}}
+  .syn-pulse{animation:synPulse var(--cd,3s) ease-in-out infinite}
+  @keyframes synFlickKf{0%,100%{opacity:1}50%{opacity:.1}}
+  .syn-flick{animation:synFlickKf var(--fd,1.2s) ease-in-out infinite}
   .intro-note b{color:var(--accent)}
   .intro-note p+p{margin-top:8px}
   .qhead{text-align:center;font-size:19px;font-weight:600;letter-spacing:.06em;margin-bottom:6px;color:var(--ink)}
@@ -87,8 +96,10 @@
   .diag .dh .ds{font-size:12px;color:var(--sub);margin-top:2px}
   .diag .dh .pri{display:inline-block;font-size:11px;color:#1a1305;background:var(--accent);border-radius:6px;padding:1px 8px;margin-left:8px;vertical-align:2px}
   .diag .db{padding:16px 18px}
-  .fact{background:#1a2130;border-left:3px solid var(--accent);border-radius:0 10px 10px 0;
-    padding:12px 14px;font-size:14px;color:#e8e1cb;line-height:1.9;margin-bottom:14px}
+  .fact{background:#1a2130;border-left:3px solid var(--accent);border-radius:0 10px 0 0;
+    padding:12px 14px;font-size:14px;color:#e8e1cb;line-height:1.9;margin-bottom:0}
+  .factimg{margin:0 0 14px;border-radius:0 0 10px 10px;overflow:hidden;border:1px solid var(--line);border-top:none}
+  .factimg img{display:block;width:100%;height:auto}
   .diag .mech{font-size:14px;color:#d2cec2;line-height:1.85;margin-bottom:12px}
   .lab{font-size:12px;letter-spacing:.15em;color:var(--accent2);margin:12px 0 6px}
   .acts{list-style:none;font-size:14px;color:#d8d4c8}
@@ -137,7 +148,7 @@
   @media print{
     body{background:#fff !important;color:#111;padding:0}
     .brand{color:#666}
-    #quiz,.back,.lockbar,.noprint,.btn,.btn2{display:none !important}
+    #quiz,.back,.lockbar,.noprint,.btn,.btn2,.factimg{display:none !important}
     .card{background:#fff;border:none;box-shadow:none;padding:0}
     .score-num{color:#111}
     .score-lab,.hist,.bar .bl{color:#444}
@@ -1390,7 +1401,7 @@ function diagCard(d, i, sev, withGoods, withSupport){
       ${i===0?'<div class="ds" style="margin-top:4px"><span class="pri" style="margin-left:0;vertical-align:0">最優先</span></div>':''}
     </div>
     <div class="db">
-      ${FACT[d]?`<p class="fact">${FACT[d]}</p>`:''}
+      ${FACT[d]?`<p class="fact">${FACT[d]}</p><div class="factimg"><img src="img/evidence/${d}.jpg" alt="" loading="lazy"></div>`:''}
       <p class="mech">${sub.mech}</p>
       <div class="lab">いまの段階の一手</div>
       <div class="feat">${feat}</div>
