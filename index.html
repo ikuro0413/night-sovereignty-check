@@ -1459,23 +1459,18 @@ function タイプイラスト(sovereign){
   const chaosGlow = c > .5 ? `<circle cx="${cx}" cy="${cy}" r="${(60 + c * 40).toFixed(0)}" fill="#c98a7a" opacity="${(c * .13).toFixed(2)}" filter="url(#tiSoft)"><animate attributeName="opacity" values="${(c * .13).toFixed(2)};${(c * .04).toFixed(2)};${(c * .13).toFixed(2)}" dur="1.6s" repeatCount="indefinite"/></circle>` : '';
   return `<div class="typesvg-wrap"><svg viewBox="0 0 680 200" width="100%" style="display:block" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="睡眠力スコアに応じて姿を変えるシナプスのイメージ">
     <defs>
-      <radialGradient id="tiHalo" cx="50%" cy="50%" r="55%">
-        <stop offset="0%" stop-color="#7fa6c4" stop-opacity=".2"/><stop offset="100%" stop-color="#7fa6c4" stop-opacity="0"/>
-      </radialGradient>
       <filter id="tiSoft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
     </defs>
-    <ellipse cx="${cx}" cy="${cy}" rx="270" ry="88" fill="url(#tiHalo)"/>
     ${chaosGlow}
     <circle cx="120" cy="34" r="1.5" fill="#e9e6dc" opacity=".5"/>
     <circle cx="560" cy="160" r="1.4" fill="#7fa6c4" opacity=".5"/>
     <circle cx="610" cy="52" r="1.4" fill="#e9e6dc" opacity=".45"/>
-    <path d="M618 24 a12 12 0 1 0 5 23 a9.5 9.5 0 1 1 -5 -23 z" fill="#c8b273" opacity=".8"/>
     <g>
       ${calmRing}
       ${edges}
       ${dots}
-      <circle cx="${cx}" cy="${cy}" r="${(coreR * 2).toFixed(1)}" fill="#c8b273" opacity=".22" filter="url(#tiSoft)"/>
-      <circle cx="${cx}" cy="${cy}" r="${coreR.toFixed(1)}" fill="#c8b273"><animate attributeName="opacity" values="1;.55;1" dur="${coreDur}s" repeatCount="indefinite"/></circle>
+      <circle cx="${cx}" cy="${cy}" r="${(coreR * 2).toFixed(1)}" fill="#4a6fa5" opacity=".25" filter="url(#tiSoft)"/>
+      <circle cx="${cx}" cy="${cy}" r="${coreR.toFixed(1)}" fill="#4a6fa5"><animate attributeName="opacity" values="1;.55;1" dur="${coreDur}s" repeatCount="indefinite"/></circle>
       <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="${spin}s" repeatCount="indefinite"/>
     </g>
   </svg></div>`;
