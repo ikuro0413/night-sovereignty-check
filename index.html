@@ -529,7 +529,7 @@ const DOMAINS = {
         ]},
       {type:'scale', text:'朝、起きてから太陽の光を浴びる習慣がない', sub:'light'},
     ]},
-  stimulus:{ name:'睡眠の質を下げる刺激',
+  stimulus:{ name:'睡眠の質を下げる食生活',
     screen:'夜遅い食事や間食、夕方以降のカフェイン、寝る前のお酒が習慣になっている',
     deep:[
       {type:'choice', text:'夜の飲食で、いちばん心当たりがあるのはどれですか',
@@ -540,7 +540,9 @@ const DOMAINS = {
           {label:'複数当てはまる'},
           {label:'どれも当てはまらない'},
         ]},
+      {type:'scale', text:'夕方（17時ごろ）以降にコーヒー・お茶・エナジードリンクを飲むことが多い', sub:'caffeine'},
       {type:'scale', text:'21時以降に食事や間食をとることが多い', sub:'meal'},
+      {type:'scale', text:'眠るためにお酒を飲むことがある', sub:'alcohol'},
     ]},
 };
 
