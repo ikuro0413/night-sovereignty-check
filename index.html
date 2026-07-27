@@ -183,7 +183,7 @@
       <p style="font-size:15.5px;color:var(--ink)">これは、睡眠を妨げる<b>行動のクセ</b>を読み解く、無料のセルフチェックです。</p>
       <p>意志の強さや体質で片付けず<b style="color:var(--bad)">「なぜ睡眠の満足度が低いのか」</b>を行動の側から、原因分析します。気になるところだけを深掘りする方式なので、1〜3分で終わります。</p>
     </div>
-    <div class="qhead">現代を生きる"睡眠力"診断</div>
+    <div class="qhead" id="qhead">現代を生きる"睡眠力"診断</div>
     <div class="phase" id="phase"></div>
     <div id="aiVisual" style="margin:2px 0 14px">
       <svg viewBox="0 0 680 200" width="100%" role="img" aria-label="回答が進むほど成長するAI頭脳のイメージ" xmlns="http://www.w3.org/2000/svg" style="display:block">
@@ -964,6 +964,9 @@ function render(){
   // 説明文は最初の設問ページにだけ表示する
   const intro = $('intro');
   if(intro) intro.style.display = answered===0 ? '' : 'none';
+  // タイトルも最初の設問ページにだけ表示する
+  const qhead = $('qhead');
+  if(qhead) qhead.style.display = answered===0 ? '' : 'none';
   // AIイラストは全設問ページに表示し、回答が進むほど点と線が増えて成長する。
   // 入口フェーズではまだ積まれていない深掘り分を見込んで分母を補正し、
   // 序盤で成長しきらず最後の設問まで進化が続くようにする(段階は巻き戻らない)
