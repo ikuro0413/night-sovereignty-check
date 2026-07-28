@@ -1516,31 +1516,11 @@ function タイプイラスト(sovereign){
     const x = ringX * (1 - c) + randX * c, y = ringY * (1 - c) + randY * c;
     const z = r3;   // 奥行き: 0=奥(小さく暗い) 1=手前(大きく明るい)
     const size = (.9 + z * 1.3) * (1 + c * .5);
-    const dur = ((8.5 - c * 3 - extreme * 3.5) * (.7 + r4 * .6)).toFixed(2);   // 危険域は動きも速くなる
-    const amp = (6 + c * 14 + extreme * 30) * (.5 + z * .8);   // 危険域は揺れ幅も増幅
+    const dur = ((8.5 - c * 3 - extreme * 3.5 - burstPower * 2.2) * (.7 + r4 * .6)).toFixed(2);   // 危険域は動きが速くなり、5点以下でさらに加速
+    const amp = (6 + c * 14 + extreme * 34 + burstPower * 40) * (.5 + z * .8);   // 危険域は揺れ幅を大きく増幅。5点以下はさらに大振幅
     const dx = ((r1 - .5) * 2 * amp).toFixed(1), dy = ((r2 - .5) * 2 * amp).toFixed(1);
     const col = (c > .55 && r4 > .55) ? '#c98a7a' : (r3 > .5 ? '#7fa6c4' : '#c8b273');
     nodes.push({x, y, z, size, dur, dx, dy, col, op: .35 + z * .55});
-  }
-  // 危険域（20点以下）: 輪の外へ弾け飛ぶ火花状の線。5点以下は最大強度で頭打ちにして、
-  // なだらかな連続変化ではなく「崖を越えた」ような明確な激しさの差をつける
-  let burst = '';
-  if(extreme > 0){
-    const burstN = Math.round(5 + burstPower * 15);
-    for(let i = 0; i < burstN; i++){
-      const ra = シナプス乱数(i * 53 + 201) * Math.PI * 2;
-      const r0 = 90 + シナプス乱数(i * 17 + 5) * 8;
-      const len = 14 + burstPower * 40 + シナプス乱数(i * 29 + 3) * 20;
-      const travel = 20 + burstPower * 70;
-      const x1 = cx + Math.cos(ra) * r0, y1 = cy + Math.sin(ra) * r0;
-      const x2 = cx + Math.cos(ra) * (r0 + len), y2 = cy + Math.sin(ra) * (r0 + len);
-      const bx = (Math.cos(ra) * travel).toFixed(1), by = (Math.sin(ra) * travel).toFixed(1);
-      const bd = (0.45 + シナプス乱数(i * 7 + 2) * 0.5 - burstPower * 0.15).toFixed(2);
-      const col = シナプス乱数(i * 41 + 11) > .5 ? '#c98a7a' : '#7fa6c4';
-      burst += `<line class="syn-burst" data-bx="${bx}" data-by="${by}" data-bd="${bd}"
-        x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"
-        stroke="${col}" stroke-width="${(1 + burstPower * 1.3).toFixed(2)}" stroke-linecap="round" opacity="${(.4 + burstPower * .5).toFixed(2)}"/>`;
-    }
   }
   let edges = '';
   const maxD = 75 + c * 115;
@@ -1563,9 +1543,6 @@ function タイプイラスト(sovereign){
   const coreDur = Math.max(.5, 3.4 - c * 2.5 - burstPower * 1.2).toFixed(2);
   const spin = Math.max(8, 130 - c * 105 - burstPower * 15).toFixed(0);   // 全体の回転: 洗練=ゆっくり、カオス・危険域ほど速い
   const calmRing = c < .45 ? `<circle cx="${cx}" cy="${cy}" r="95" fill="none" stroke="#7fa6c4" stroke-opacity="${(.4 - c * .5).toFixed(2)}" stroke-width="1"/>` : '';
-  // 危険域は「本来の輪」を示す枠を出し、そこから火花(syn-burst)が外へ弾け飛ぶことで
-  // 破綻していく様子を視覚化する。円が壊れゆく印象を出すため、5点以下は点線がさらに粗くなる
-  const dangerRing = extreme > 0 ? `<circle cx="${cx}" cy="${cy}" r="90" fill="none" stroke="#c98a7a" stroke-opacity="${(.18 + burstPower * .32).toFixed(2)}" stroke-width="1" stroke-dasharray="${(3 + burstPower * 9).toFixed(0)} ${(4 + burstPower * 3).toFixed(0)}"/>` : '';
   const chaosGlow = c > .5 ? `<circle class="syn-pulse" data-cd="1.8" cx="${cx}" cy="${cy}" r="${(60 + c * 40 + burstPower * 25).toFixed(0)}" fill="#c98a7a" fill-opacity="${(c * .13 + burstPower * .1).toFixed(2)}" filter="url(#tiSoft)"/>` : '';
   return `<div class="typesvg-wrap"><svg viewBox="0 0 680 260" width="100%" style="display:block" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="睡眠力スコアに応じて姿を変えるシナプスのイメージ">
     <defs>
@@ -1577,10 +1554,8 @@ function タイプイラスト(sovereign){
     <circle cx="610" cy="52" r="1.4" fill="#e9e6dc" opacity=".45"/>
     <g class="syn-rot" data-spin="${spin}">
       ${calmRing}
-      ${dangerRing}
       ${edges}
       ${dots}
-      ${burst}
       <circle cx="${cx}" cy="${cy}" r="${(coreR * 2).toFixed(1)}" fill="#4a6fa5" fill-opacity=".25" filter="url(#tiSoft)"/>
       <circle class="syn-pulse" data-cd="${coreDur}" cx="${cx}" cy="${cy}" r="${coreR.toFixed(1)}" fill="#4a6fa5"/>
     </g>
@@ -1610,16 +1585,6 @@ function シナプス起動(root){
   root.querySelectorAll('.syn-flick').forEach(el=>{
     el.animate([{opacity:1},{opacity:.1},{opacity:1}],
       {duration:(parseFloat(el.dataset.fd)||1.2)*1000, iterations:Infinity, easing:'ease-in-out'});
-  });
-  // 危険域(20点以下)の火花: 輪の外側へ飛び出しながら消え、また現れる を繰り返す
-  root.querySelectorAll('.syn-burst').forEach((el,i)=>{
-    const bx = parseFloat(el.dataset.bx)||0, by = parseFloat(el.dataset.by)||0;
-    const dur = (parseFloat(el.dataset.bd)||0.7)*1000;
-    el.animate([
-      {transform:'translate(0px,0px)', opacity:0},
-      {transform:'translate('+(bx*.2)+'px,'+(by*.2)+'px)', opacity:1, offset:.2},
-      {transform:'translate('+bx+'px,'+by+'px)', opacity:0},
-    ], {duration:dur, iterations:Infinity, easing:'ease-out', delay:-(i*137%dur)});
   });
 }
 
