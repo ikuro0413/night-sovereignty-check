@@ -1544,9 +1544,32 @@ function タイプイラスト(sovereign){
   const spin = Math.max(8, 130 - c * 105 - burstPower * 15).toFixed(0);   // 全体の回転: 洗練=ゆっくり、カオス・危険域ほど速い
   const calmRing = c < .45 ? `<circle cx="${cx}" cy="${cy}" r="95" fill="none" stroke="#7fa6c4" stroke-opacity="${(.4 - c * .5).toFixed(2)}" stroke-width="1"/>` : '';
   const chaosGlow = c > .5 ? `<circle class="syn-pulse" data-cd="1.8" cx="${cx}" cy="${cy}" r="${(60 + c * 40 + burstPower * 25).toFixed(0)}" fill="#c98a7a" fill-opacity="${(c * .13 + burstPower * .1).toFixed(2)}" filter="url(#tiSoft)"/>` : '';
+  // 0点だけの特別演出: 中心の核を、青い光の粒ではなく邪悪な灰色の雲に置き換える
+  const isZero = s === 0;
+  const cloudDefs = isZero ? `
+      <radialGradient id="evilCloud" cx="38%" cy="32%" r="75%">
+        <stop offset="0%" stop-color="#8a8a86"/>
+        <stop offset="55%" stop-color="#55534f"/>
+        <stop offset="100%" stop-color="#232220"/>
+      </radialGradient>
+      <filter id="tiCloudShape" x="-120%" y="-120%" width="340%" height="340%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.028 0.045" numOctaves="3" seed="7" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>` : '';
+  const coreGlow = isZero
+    ? `<circle cx="${cx}" cy="${cy}" r="${(coreR * 2.6).toFixed(1)}" fill="#3a3936" fill-opacity=".35" filter="url(#tiSoft)"/>`
+    : `<circle cx="${cx}" cy="${cy}" r="${(coreR * 2).toFixed(1)}" fill="#4a6fa5" fill-opacity=".25" filter="url(#tiSoft)"/>`;
+  const core = isZero
+    ? `<g filter="url(#tiCloudShape)">
+        <circle cx="${(cx - coreR * .4).toFixed(1)}" cy="${(cy - coreR * .3).toFixed(1)}" r="${(coreR * 1.05).toFixed(1)}" fill="url(#evilCloud)"/>
+        <circle cx="${(cx + coreR * .55).toFixed(1)}" cy="${(cy + coreR * .35).toFixed(1)}" r="${(coreR * .8).toFixed(1)}" fill="url(#evilCloud)"/>
+        <circle class="syn-pulse" data-cd="${coreDur}" cx="${cx}" cy="${cy}" r="${coreR.toFixed(1)}" fill="url(#evilCloud)"/>
+      </g>`
+    : `<circle class="syn-pulse" data-cd="${coreDur}" cx="${cx}" cy="${cy}" r="${coreR.toFixed(1)}" fill="#4a6fa5"/>`;
   return `<div class="typesvg-wrap"><svg viewBox="0 0 680 260" width="100%" style="display:block" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="睡眠力スコアに応じて姿を変えるシナプスのイメージ">
     <defs>
       <filter id="tiSoft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
+      ${cloudDefs}
     </defs>
     ${chaosGlow}
     <circle cx="120" cy="34" r="1.5" fill="#e9e6dc" opacity=".5"/>
@@ -1556,8 +1579,8 @@ function タイプイラスト(sovereign){
       ${calmRing}
       ${edges}
       ${dots}
-      <circle cx="${cx}" cy="${cy}" r="${(coreR * 2).toFixed(1)}" fill="#4a6fa5" fill-opacity=".25" filter="url(#tiSoft)"/>
-      <circle class="syn-pulse" data-cd="${coreDur}" cx="${cx}" cy="${cy}" r="${coreR.toFixed(1)}" fill="#4a6fa5"/>
+      ${coreGlow}
+      ${core}
     </g>
   </svg></div>`;
 }
