@@ -917,7 +917,7 @@ let CAME_FROM_PAY = false;  // 決済から戻った直後か(完全版の所有
 /* 本番のStripe決済リンク。発行され次第ここに設定する(空の間はテスト動作=成功リダイレクトを模擬) */
 const STRIPE_URL = 'https://buy.stripe.com/8x29AUcp24RCcrkdIj5sA02';
 /* テスト用スイッチ: true の間は決済を通さず、ボタンを押すだけで完全版が開く。テストが済んだら false に戻す */
-const 無料テスト = true;
+const 無料テスト = false;
 /* AmazonアソシエイトのトラッキングID(例: 'xxxx-22')。発行され次第ここに設定する。
    設定すると全ての商品リンクにタグが付き、フッターに規約上必須の開示文が表示される */
 const AMAZON_TAG = '';
