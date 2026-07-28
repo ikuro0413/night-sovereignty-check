@@ -1516,7 +1516,7 @@ function タイプイラスト(sovereign){
     const x = ringX * (1 - c) + randX * c, y = ringY * (1 - c) + randY * c;
     const z = r3;   // 奥行き: 0=奥(小さく暗い) 1=手前(大きく明るい)
     const size = (.9 + z * 1.3) * (1 + c * .5);
-    const dur = ((8.5 - c * 3 - extreme * 3.5 - burstPower * 2.2) * (.7 + r4 * .6)).toFixed(2);   // 危険域は動きが速くなり、5点以下でさらに加速
+    const dur = (Math.max(1.1, 8.5 - c * 3 - extreme * 3.5 - burstPower * 2.2) * (.7 + r4 * .6)).toFixed(2);   // 危険域は動きが速くなり、5点以下でさらに加速（下限を設けて0や負にならないようにする）
     const amp = (6 + c * 14 + extreme * 34 + burstPower * 40) * (.5 + z * .8);   // 危険域は揺れ幅を大きく増幅。5点以下はさらに大振幅
     const dx = ((r1 - .5) * 2 * amp).toFixed(1), dy = ((r2 - .5) * 2 * amp).toFixed(1);
     const col = (c > .55 && r4 > .55) ? '#c98a7a' : (r3 > .5 ? '#7fa6c4' : '#c8b273');
