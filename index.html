@@ -28,7 +28,7 @@
   .btn:hover{transform:translateY(-1px)} .btn:active{transform:translateY(0)}
   .prog{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:14px}
   .prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0;transition:width .3s}
-  .intro-note{font-size:13.5px;color:#c9c5b8;line-height:1.9;background:#131a28;border:1px solid var(--line);
+  .intro-note{font-size:16px;font-weight:500;color:#c9c5b8;line-height:1.9;background:#131a28;border:1px solid var(--line);
     border-radius:12px;padding:14px 16px;margin-bottom:18px}
   @keyframes aiPulse{0%,100%{opacity:.55}50%{opacity:1}}
   .ai-core{animation:aiPulse 3.2s ease-in-out infinite}
@@ -173,12 +173,12 @@
 <div class="wrap">
 
   <section id="quiz" class="card fade">
-    <div id="intro" class="intro-note">
-      <p style="font-size:15.5px;color:var(--ink)">これは、睡眠を妨げる<b>行動のクセ</b>を読み解く、無料のセルフチェックです。</p>
-      <p>意志の強さや体質で片付けず<b style="color:var(--bad)">「なぜ睡眠の満足度が低いのか」</b>を行動の側から、原因分析します。気になるところだけを深掘りする方式なので、1〜3分で終わります。</p>
-    </div>
     <div class="qhead" id="qhead">現代を生きる"睡眠力"診断</div>
     <div class="phase" id="phase"></div>
+    <div id="intro" class="intro-note">
+      <p style="font-size:18px;font-weight:700;color:var(--ink)">これは、睡眠を妨げる<b>行動のクセ</b>を読み解く、無料のセルフチェックです。</p>
+      <p><b style="color:var(--bad)">「なぜ睡眠の満足度が低いのか」</b>を行動の傾向から、最新の研究データをもとにAIが原因分析し、あなたのタイプ、具体的な対策を示します。気になるところだけを深掘りする方式なので、1〜3分で終わります。</p>
+    </div>
     <div id="aiVisual" style="margin:2px 0 14px">
       <svg viewBox="0 0 680 200" width="100%" role="img" aria-label="回答が進むほど成長するAI頭脳のイメージ" xmlns="http://www.w3.org/2000/svg" style="display:block">
         <defs>
