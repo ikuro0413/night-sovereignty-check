@@ -81,9 +81,9 @@
   .delta.up{color:var(--good)} .delta.down{color:var(--bad)}
   .hist{margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:11px;color:var(--sub)}
   .hist span{border:1px solid var(--line);border-radius:6px;padding:2px 8px}
-  .feat{background:#1a2130;border:1px solid var(--accent);border-radius:10px;padding:12px 14px;font-size:14px;color:#e9e2cf;line-height:1.75;margin-bottom:4px}
-  h2{font-size:18px;margin:24px 0 10px;letter-spacing:.04em;border-left:3px solid var(--accent);padding-left:12px}
-  p.body{font-size:15px;color:#d8d4c8;margin-bottom:10px}
+  .feat{background:#1a2130;border:1px solid var(--accent);border-radius:10px;padding:13px 15px;font-size:16px;font-weight:600;color:var(--ink);line-height:1.75;margin-bottom:4px}
+  h2{font-size:20px;font-weight:700;margin:24px 0 10px;letter-spacing:.04em;border-left:3px solid var(--accent);padding-left:12px;color:var(--ink)}
+  p.body{font-size:16.5px;color:#d8d4c8;margin-bottom:10px}
   .bars{margin:6px 0}
   .bar{margin:11px 0}
   .bar .bl{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);margin-bottom:4px}
@@ -94,48 +94,48 @@
   /* 無料の診断カード */
   .diag{border:1px solid var(--line);border-radius:14px;margin:16px 0;overflow:hidden;background:#121927}
   .diag .dh{padding:14px 18px;background:linear-gradient(180deg,#1a2233,#141c2b);border-bottom:1px solid var(--line)}
-  .diag .dh .dt{font-size:16px;font-weight:600;color:var(--ink)}
+  .diag .dh .dt{font-size:17.5px;font-weight:700;color:var(--ink)}
   .diag .dh .ds{font-size:12px;color:var(--sub);margin-top:2px}
   .diag .dh .pri{display:inline-block;font-size:11px;color:#1a1305;background:var(--accent);border-radius:6px;padding:1px 8px;margin-left:8px;vertical-align:2px}
   .diag .db{padding:16px 18px}
   .fact{background:#1a2130;border-left:3px solid var(--accent);border-radius:0 10px 0 0;
-    padding:12px 14px;font-size:14px;color:#e8e1cb;line-height:1.9;margin-bottom:0}
+    padding:13px 15px;font-size:15.5px;color:#efe9d8;line-height:1.9;margin-bottom:0}
   .factimg{margin:0 0 14px;border-radius:0 0 10px 10px;overflow:hidden;border:1px solid var(--line);border-top:none}
   .factimg img{display:block;width:100%;height:auto}
-  .diag .mech{font-size:14px;color:#d2cec2;line-height:1.85;margin-bottom:12px}
-  .lab{font-size:12px;letter-spacing:.15em;color:var(--accent2);margin:12px 0 6px}
-  .acts{list-style:none;font-size:14px;color:#d8d4c8}
-  .acts li{padding:8px 0 8px 22px;border-bottom:1px dashed var(--line);position:relative;line-height:1.75}
-  .acts li:before{content:"◆";position:absolute;left:2px;color:var(--accent);font-size:10px;top:13px}
-  /* premium */
-  .prem{position:relative;margin-top:22px;border:1px solid var(--accent);border-radius:14px;overflow:hidden}
+  .diag .mech{font-size:15.5px;color:#dedacd;line-height:1.9;margin-bottom:12px}
+  .lab{font-size:12.5px;font-weight:700;letter-spacing:.15em;color:var(--accent2);margin:14px 0 7px}
+  .acts{list-style:none;font-size:15.5px;color:#e2ded1}
+  .acts li{padding:9px 0 9px 22px;border-bottom:1px dashed var(--line);position:relative;line-height:1.8}
+  .acts li:before{content:"◆";position:absolute;left:2px;color:var(--accent);font-size:10px;top:15px}
+  /* premium: 枠(border)は撤去し、背景色の違いだけで診断カードと区切る。上端に薄い線だけ残す */
+  .prem{position:relative;margin-top:22px;border-radius:14px;overflow:hidden;background:#0f1420;border-top:1px solid var(--line)}
   .prem .head{background:linear-gradient(180deg,#1d2436,#161d2b);padding:16px 18px;border-bottom:1px solid var(--line)}
-  .prem .head .t{font-size:16px;font-weight:600;color:var(--accent)}
-  .prem .head .s{font-size:12px;color:var(--sub);margin-top:3px}
+  .prem .head .t{font-size:17px;font-weight:700;color:var(--accent)}
+  .prem .head .s{font-size:12.5px;color:var(--sub);margin-top:3px}
   .locked{padding:18px}
-  .locked ul{list-style:none;font-size:14px;color:#cfcbbf}
+  .locked ul{list-style:none;font-size:15px;color:#cfcbbf}
   .locked li{padding:7px 0;border-bottom:1px dashed var(--line);filter:blur(3.5px);user-select:none}
   .lockbar{padding:16px 18px;background:#131a28;text-align:center}
   .price{font-size:22px;font-weight:700;color:var(--ink)}.price small{font-size:13px;color:var(--sub);font-weight:400}
-  .prem h3{font-size:15px;color:var(--accent);margin:0 0 8px;letter-spacing:.03em}
-  .prem .rep{list-style:none;font-size:14px;color:#d2cec2;margin:4px 0 8px}
-  .prem .rep li{padding:9px 0;border-bottom:1px solid var(--line);line-height:1.75}
+  .prem h3{font-size:16.5px;font-weight:700;color:var(--accent);margin:0 0 8px;letter-spacing:.03em}
+  .prem .rep{list-style:none;font-size:15.5px;color:#dedacd;margin:4px 0 8px}
+  .prem .rep li{padding:9px 0;border-bottom:1px solid var(--line);line-height:1.8}
   .prem .rep li b{color:var(--ink)}
   .sec{padding:16px 18px;border-top:1px solid var(--line)}
-  .sec .sc{font-size:12px;color:var(--sub);font-weight:400}
-  .goods{list-style:none;font-size:13.5px}
+  .sec .sc{font-size:12.5px;color:var(--sub);font-weight:400}
+  .goods{list-style:none;font-size:14.5px}
   .goods li{padding:9px 0;border-bottom:1px dashed var(--line);line-height:1.7}
   .goods .pr{color:var(--accent);font-weight:600}
-  .goods .gn{color:var(--sub);font-size:12.5px}
-  .goods .amz{color:var(--accent2);font-size:12px;text-decoration:none;border:1px solid var(--accent2);border-radius:6px;padding:2px 9px;white-space:nowrap}
+  .goods .gn{color:var(--sub);font-size:13px}
+  .goods .amz{color:var(--accent2);font-size:12.5px;text-decoration:none;border:1px solid var(--accent2);border-radius:6px;padding:2px 9px;white-space:nowrap}
   .goods .amz:hover{background:#17202f}
-  .svc2{background:#12202a;border:1px solid #2c4658;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#d6e2ea;line-height:1.75}
-  .svc2 b{color:var(--good)}
+  .svc2{background:#12202a;border:1px solid #2c4658;border-radius:10px;padding:13px 15px;font-size:15px;color:#e2ecf1;line-height:1.8}
+  .svc2 b{color:var(--good);font-weight:700}
   .btn2{display:block;width:100%;text-align:center;cursor:pointer;border:1px solid var(--good);
     border-radius:10px;padding:13px;font-family:inherit;font-size:15px;color:#0b1410;font-weight:600;
     background:linear-gradient(180deg,#8bbf9f,#6ba585)}
   .testnote{font-size:12px;color:var(--sub);margin-top:16px;background:#131a28;border:1px solid var(--line);border-radius:10px;padding:12px}
-  .prem .intro{font-size:14px;color:#cfcbbf;padding:18px 18px 0}
+  .prem .intro{font-size:15.5px;color:#d6d2c5;padding:18px 18px 0}
   .disc{margin-top:26px;font-size:11px;color:#6f778a;line-height:1.7;border-top:1px solid var(--line);padding-top:16px}
   .hidden{display:none}
   .fade{animation:fade .35s ease}
