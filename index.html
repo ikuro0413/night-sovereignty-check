@@ -1110,9 +1110,12 @@ function pickSub(d){
 
 function finish(){
   const sev = {}; DOMS.forEach(d=>sev[d]=severity(d));
-  const flagged = DOMS.filter(d=>state.screen[d]>=4).sort((a,b)=>sev[b]-sev[a]);
+  let flagged = DOMS.filter(d=>state.screen[d]>=4).sort((a,b)=>sev[b]-sev[a]);
   const ranked = DOMS.map(d=>({d, s:sev[d]})).sort((a,b)=>b.s-a.s);
   const sovereign = Math.max(0, 100 - Math.round(DOMS.reduce((a,d)=>a+sev[d],0)/DOMS.length));
+  // 「とても当てはまる」が1つもない(=深掘り対象なし)でも、総合スコアが低ければ最もスコアの悪い領域を1つ拾う。
+  // 拾わないと、スコアは低いのに「大きな問題は見つかりませんでした」と出て見出しの総評と矛盾する
+  if(!flagged.length && sovereign<90) flagged = [ranked[0].d];
   const hist = historyUpdate(sovereign);
   const trust = いたずら点>=2 ? '低' : (いたずら点===1 ? '中' : '高');
   LAST = {sev, flagged, ranked, sovereign, hist, subPt: state.subPt, trust, serious: 深刻点>0};
