@@ -491,7 +491,6 @@ const DOMAINS = {
           {label:'どれも当てはまらない'},
         ]},
       {type:'scale', text:'次のコンテンツが自動で始まると、そのまま見続けてしまう'},
-      {type:'scale', text:'「スマホをやめよう」と思ってから、実際にやめるまで30分以上かかることがある'},
     ]},
   commit:{ name:'就寝時刻の曖昧さ',
     screen:'寝る時刻を決めていない、または決めても守れないことが多い',
@@ -588,9 +587,7 @@ const DOMAINS = {
           {label:'複数当てはまる'},
           {label:'どれも当てはまらない'},
         ]},
-      {type:'scale', text:'夕方（17時ごろ）以降にコーヒー・お茶・エナジードリンクを飲むことが多い', sub:'caffeine'},
-      {type:'scale', text:'21時以降に食事や間食をとることが多い', sub:'meal'},
-      {type:'scale', text:'眠るためにお酒を飲むことがある', sub:'alcohol'},
+      {type:'scale', text:'夕方以降のカフェイン・遅い夕食や間食・寝酒のいずれかが、直近もほぼ毎日続いている'},
     ]},
 };
 
@@ -1012,7 +1009,7 @@ function render(){
   if(aiv){
     let est = answered + queue.length;
     if(!stateBuiltDeep){
-      const flaggedNow = DOMS.filter(d=>state.screen[d]>=3).length;
+      const flaggedNow = DOMS.filter(d=>state.screen[d]>=4).length;
       est += Math.round(flaggedNow * 2.5);
     }
     let vis = Math.max(成長段階, Math.min(14, Math.floor((answered/Math.max(est,1))*14) + 1));
@@ -1076,9 +1073,10 @@ function answerChoice(q, i){
 }
 function afterAnswer(){
   // 入口が終わったら、引っかかった領域の深掘りを重い順に積む
+  // 「とても当てはまる」(4件法の最大値)だけを深掘り対象にする。「やや当てはまる」止まりの領域まで拾うと設問数が膨らみすぎるため
   if(queue.length===0 && !stateBuiltDeep){
     stateBuiltDeep = true;
-    const flagged = DOMS.filter(d=>state.screen[d]>=3)
+    const flagged = DOMS.filter(d=>state.screen[d]>=4)
       .sort((a,b)=>state.screen[b]-state.screen[a]);
     flagged.forEach(d=>{
       DOMAINS[d].deep.forEach(dq=>queue.push(Object.assign({dom:d}, dq)));
@@ -1112,7 +1110,7 @@ function pickSub(d){
 
 function finish(){
   const sev = {}; DOMS.forEach(d=>sev[d]=severity(d));
-  const flagged = DOMS.filter(d=>state.screen[d]>=3).sort((a,b)=>sev[b]-sev[a]);
+  const flagged = DOMS.filter(d=>state.screen[d]>=4).sort((a,b)=>sev[b]-sev[a]);
   const ranked = DOMS.map(d=>({d, s:sev[d]})).sort((a,b)=>b.s-a.s);
   const sovereign = Math.max(0, 100 - Math.round(DOMS.reduce((a,d)=>a+sev[d],0)/DOMS.length));
   const hist = historyUpdate(sovereign);
