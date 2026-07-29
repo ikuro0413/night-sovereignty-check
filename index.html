@@ -121,7 +121,8 @@
   .prem .rep{list-style:none;font-size:15.5px;color:#dedacd;margin:4px 0 8px}
   .prem .rep li{padding:9px 0;border-bottom:1px solid var(--line);line-height:1.8}
   .prem .rep li b{color:var(--ink)}
-  .sec{padding:16px 18px;border-top:1px solid var(--line)}
+  /* sec: 横paddingは持たない(=無料版の診断カードと同じ幅で揃える)。縦の余白と区切り線だけ持つ */
+  .sec{padding:16px 0;border-top:1px solid var(--line)}
   .sec .sc{font-size:12.5px;color:var(--sub);font-weight:400}
   .goods{list-style:none;font-size:14.5px}
   .goods li{padding:9px 0;border-bottom:1px dashed var(--line);line-height:1.7}
@@ -135,7 +136,7 @@
     border-radius:10px;padding:13px;font-family:inherit;font-size:15px;color:#0b1410;font-weight:600;
     background:linear-gradient(180deg,#8bbf9f,#6ba585)}
   .testnote{font-size:12px;color:var(--sub);margin-top:16px;background:#131a28;border:1px solid var(--line);border-radius:10px;padding:12px}
-  .prem .intro{font-size:15.5px;color:#d6d2c5;padding:18px 18px 0}
+  .prem .intro{font-size:15.5px;color:#d6d2c5;padding:18px 0 0}
   .disc{margin-top:26px;font-size:11px;color:#6f778a;line-height:1.7;border-top:1px solid var(--line);padding-top:16px}
   .hidden{display:none}
   .fade{animation:fade .35s ease}
@@ -1232,6 +1233,19 @@ function 点数表示(良い点){
   return `<span style="font-size:17px;font-weight:700;color:${c}">${良い点}点</span>`;
 }
 
+/* 長文の読みやすさ対策。「。」区切りの文が3文以上あるとき、
+   前半は2文ずつのまとまりに改行を入れて分割し、最後の1文(=結論・あなた向けの一手)だけ強調色にする。
+   FACT/mechの原稿は「根拠→根拠→あなたにとっての意味」の順で書かれているため、最後の文を強調すれば要点が拾える */
+function 強調整形(text){
+  if(!text) return text;
+  const 文 = text.split('。').filter(Boolean).map(s=>s+'。');
+  if(文.length <= 2) return text;
+  const 結論 = 文.pop();
+  const 段落 = [];
+  for(let i=0; i<文.length; i+=2) 段落.push(文.slice(i,i+2).join(''));
+  return 段落.join('<br><br>') + '<br><br>' + `<b style="color:var(--accent)">${結論}</b>`;
+}
+
 /* 点数の帯。強さのラベルと、いまの段階の一手の選択に使う。
    帯別の定型文は出さない（複数カードで同文が並ぶと定型文に見えるため廃止） */
 function bandInfo(s){
@@ -1487,8 +1501,8 @@ function diagCard(d, i, sev, withGoods, withSupport){
       ${i===0?'<div class="ds" style="margin-top:4px"><span class="pri" style="margin-left:0;vertical-align:0">最優先</span></div>':''}
     </div>
     <div class="db">
-      ${FACT[d]?`<p class="fact">${FACT[d]}</p><div class="factimg"><img src="img/evidence/${d}.jpg" alt="" loading="lazy"></div>`:''}
-      <p class="mech">${sub.mech}</p>
+      ${FACT[d]?`<p class="fact">${強調整形(FACT[d])}</p><div class="factimg"><img src="img/evidence/${d}.jpg" alt="" loading="lazy"></div>`:''}
+      <p class="mech">${強調整形(sub.mech)}</p>
       <div class="lab">いまの段階の一手</div>
       <div class="feat">${feat}</div>
       <div class="lab">あわせてできること</div>
@@ -1835,9 +1849,9 @@ function keepCard(d, sev, isStrength, withSupport){
       ${isStrength?'<div class="ds" style="margin-top:4px"><span class="pri" style="margin-left:0;vertical-align:0;background:var(--good)">あなたの強み</span></div>':''}
     </div>
     <div class="db">
-      <p class="mech">${k.strength}</p>
+      <p class="mech">${強調整形(k.strength)}</p>
       <div class="lab">崩れやすい引き金</div>
-      <p class="mech">${k.trigger}</p>
+      <p class="mech">${強調整形(k.trigger)}</p>
       <div class="lab">保つためにできること</div>
       <ul class="acts">${k.keep.map(a=>`<li>${a}</li>`).join('')}</ul>
       ${goods?`<div class="lab">保つのに効く道具　価格は実売の目安</div><ul class="goods">${goods}</ul>`:''}
