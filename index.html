@@ -121,8 +121,9 @@
   .prem .rep{list-style:none;font-size:15.5px;color:#dedacd;margin:4px 0 8px}
   .prem .rep li{padding:9px 0;border-bottom:1px solid var(--line);line-height:1.8}
   .prem .rep li b{color:var(--ink)}
-  /* sec: 横paddingは持たない(=無料版の診断カードと同じ幅で揃える)。縦の余白と区切り線だけ持つ */
-  .sec{padding:16px 0;border-top:1px solid var(--line)}
+  .sec{padding:16px 18px;border-top:1px solid var(--line)}
+  /* .sec直下の診断カードだけは、secの横paddingを打ち消して無料版の診断カードと同じ幅まで広げる */
+  .sec > .diag{margin-left:-18px;margin-right:-18px}
   .sec .sc{font-size:12.5px;color:var(--sub);font-weight:400}
   .goods{list-style:none;font-size:14.5px}
   .goods li{padding:9px 0;border-bottom:1px dashed var(--line);line-height:1.7}
@@ -136,7 +137,7 @@
     border-radius:10px;padding:13px;font-family:inherit;font-size:15px;color:#0b1410;font-weight:600;
     background:linear-gradient(180deg,#8bbf9f,#6ba585)}
   .testnote{font-size:12px;color:var(--sub);margin-top:16px;background:#131a28;border:1px solid var(--line);border-radius:10px;padding:12px}
-  .prem .intro{font-size:15.5px;color:#d6d2c5;padding:18px 0 0}
+  .prem .intro{font-size:15.5px;color:#d6d2c5;padding:18px 18px 0}
   .disc{margin-top:26px;font-size:11px;color:#6f778a;line-height:1.7;border-top:1px solid var(--line);padding-top:16px}
   .hidden{display:none}
   .fade{animation:fade .35s ease}
