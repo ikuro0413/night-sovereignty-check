@@ -1934,6 +1934,7 @@ function boot(){
       .then(function(res){ return res.json(); })
       .then(function(j){
         if(j && j.ok && j.result && j.result.ranked){
+          CAME_FROM_PAY = true;  // 専用URLは購入者専用の閲覧なので「テスト表示中」を出さない
           state.subPt = j.result.subPt || state.subPt;
           LAST = j.result;
           renderResult(LAST);
