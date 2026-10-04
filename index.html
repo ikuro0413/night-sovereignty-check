@@ -1188,6 +1188,8 @@ function 診断ログ送信(D){
       rarePts: いたずら点,
       seriousPts: 深刻点,
       referrer: document.referrer || '',
+      from: 流入元().from || '',
+      fromPos: 流入元().pos || '',
       ua: navigator.userAgent || '',
       lang: navigator.language || '',
       screenW: (window.screen && window.screen.width) || ''
@@ -1230,6 +1232,8 @@ function amzClick(dom, kw, name, place){
       primaryDomName: primaryDom ? ((DOMAINS[primaryDom]||{}).name||primaryDom) : '',
       primarySub: primaryDom ? pickSub(primaryDom) : '',
       referrer: document.referrer || '',
+      from: 流入元().from || '',
+      fromPos: 流入元().pos || '',
       ua: navigator.userAgent || '',
     });
     if(navigator.sendBeacon){
@@ -1954,8 +1958,16 @@ $('globalDisc').innerHTML =
 /* 起動処理。
    - 決済成功で ?paid=1 付きで戻ってきたら: 購入フラグを保存→保存済みの診断結果を復元→完全版を自動で開く
    - それ以外: 開いた瞬間に最初の質問から開始(購入済みなら診断完了時に完全版が自動で開く) */
+/* 流入元: DetoxNewsの記事リンクに付く ?from=記事名&pos=位置 を、このタブの間だけ覚えておく。
+   リファラはクロスオリジンでパスが落ちるため、どの記事から来たかはこの値で判別する */
+function 流入元(){
+  try{ return JSON.parse(sessionStorage.getItem('yoru_shindan_from')||'{}'); }catch(e){ return {}; }
+}
 function boot(){
   const p = new URLSearchParams(location.search);
+  if(p.get('from')){
+    try{ sessionStorage.setItem('yoru_shindan_from', JSON.stringify({from:p.get('from'), pos:p.get('pos')||''})); }catch(e){}
+  }
   if(p.get('reset')==='1'){
     // テスト用: 購入フラグと保存結果を消す(スコア履歴は残す)
     try{ localStorage.removeItem('yoru_shindan_paid'); localStorage.removeItem('yoru_shindan_last'); }catch(e){}
