@@ -942,7 +942,7 @@ const 無料テスト = false;
 const AMAZON_TAG = 'detoxnews-22';
 /* 診断専用のトラッキングID。設定すると診断内の商品リンクはこちらのタグになり、
    アソシエイトの注文レポートで「診断経由で何が買われたか」をサイト記事と分けて見られる。空の間は AMAZON_TAG を使う */
-const AMAZON_TAG_診断 = '';
+const AMAZON_TAG_診断 = 'detoxnewssd-22';
 function 診断タグ(){ return AMAZON_TAG_診断 || AMAZON_TAG; }
 function amazonUrl(kw){
   const tag = 診断タグ();
