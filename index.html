@@ -878,25 +878,35 @@ const GOODS = {
     {name:'スマートプラグ', price:'¥1,650〜2,500', kw:'スマートプラグ SwitchBot', note:'ルーターや照明を毎晩決まった時刻に自動で切り、夜更かしの初期設定を変える'}],
   fatigue:[
     {name:'スマートスピーカー', price:'約¥5,000〜7,500', kw:'Echo Dot', note:'「アレクサ、おやすみ」の一言で照明もテレビもまとめて消える設定にする。夜の判断がゼロになる'},
-    {name:'スマートプラグ', price:'¥1,650〜', kw:'スマートプラグ SwitchBot', note:'照明やルーターを自動で切り、夜に消そうか考えること自体をなくす'}],
+    {name:'スマートプラグ', price:'¥1,650〜', kw:'スマートプラグ SwitchBot', note:'照明やルーターを自動で切り、夜に消そうか考えること自体をなくす'},
+    {name:'調光できるスマート電球', price:'¥1,500〜2,500', kw:'スマート電球 調光 調色', note:'夜になると暖色の暗めの光へ自動で切り替わる。眠る前の明るさを毎晩考えずに済む'}],
   hotcold:[
     {name:'卓上ホワイトボード', price:'¥1,000〜2,000', kw:'卓上 ホワイトボード', note:'朝のうちに「今夜はこうする」と書いて、夜必ず目に入る場所に置く。朝の自分の字で夜の自分に指示が届く'},
-    {name:'光目覚まし時計', price:'約¥6,000〜8,000', kw:'光目覚まし時計', note:'YABAEなど手頃なもの。設定時刻に強い光で起こし、起床を固定しやすくする'}],
+    {name:'光目覚まし時計', price:'約¥6,000〜8,000', kw:'光目覚まし時計', note:'YABAEなど手頃なもの。設定時刻に強い光で起こし、起床を固定しやすくする'},
+    {name:'大きめの付箋', price:'数百円〜', kw:'付箋 大判', note:'朝決めた「今夜の一手」を書いて、スマホの充電場所に貼っておく。夜に手に取る瞬間に目に入る'}],
   sunk:[
     {name:'残り時間が見える作業用タイマー', price:'¥3,000〜5,000', kw:'タイムタイマー', note:'残り時間が赤い円で減っていくのが目で見えるタイマー。終わりが見えると切り上げやすい'},
     {name:'スマホ用タイムロックボックス', price:'¥2,900〜3,980', kw:'タイムロッキングコンテナ', note:'時間が来るまで開かない。あと少しを物理的に断つ'},
     {name:'キッチンタイマー', price:'数百円〜', kw:'キッチンタイマー', note:'区切りを機械に任せる、いちばん安い道具'}],
   loop:[
     {name:'フィジェットキューブ', price:'¥1,000前後', kw:'フィジェットキューブ', note:'手持ち無沙汰の瞬間にスマホの代わりに握る小さな玩具。手の行き先を替える'},
-    {name:'スマホ用タイムロックボックス', price:'¥2,900〜3,980', kw:'タイムロッキングコンテナ', note:'きっかけがあっても手が届かない状態を作る'}],
+    {name:'スマホ用タイムロックボックス', price:'¥2,900〜3,980', kw:'タイムロッキングコンテナ', note:'きっかけがあっても手が届かない状態を作る'},
+    {name:'暖色のブックライト', price:'¥1,500〜2,500', kw:'ブックライト 暖色', note:'手持ち無沙汰の時間を紙の本に置き換える。小さな暖色の灯りなら眠気を邪魔しにくい'}],
   rhythm:[
     {name:'カーテンの自動開閉機', price:'約¥8,000〜9,000', kw:'SwitchBot カーテン', note:'SwitchBotカーテンなど。設定した時刻にカーテンが自動で開き、毎朝同じ時刻に太陽の光が部屋へ入る'},
-    {name:'光目覚まし時計', price:'約¥6,000〜8,000', kw:'光目覚まし時計', note:'YABAEなど。設定時刻の光で起床をそろえる道具'}],
+    {name:'光目覚まし時計', price:'約¥6,000〜8,000', kw:'光目覚まし時計', note:'YABAEなど。設定時刻の光で起床をそろえる道具'},
+    {name:'睡眠を記録できるスマートバンド', price:'¥3,000〜6,000', kw:'スマートバンド 睡眠 記録', note:'寝た時刻と起きた時刻が自動で記録され、日ごとのばらつきが数字で見える'}],
   stimulus:[
     {name:'デカフェコーヒー', price:'¥1,000前後', kw:'デカフェ コーヒー', note:'夕方以降の1杯をこれに置き換える。飲む楽しみは保ったまま、カフェインだけを抜く'},
     {name:'ノンカフェインのハーブティー', price:'¥800〜1,500', kw:'カモミールティー ノンカフェイン', note:'寝る前の間食や寝酒の置き換えに。温かい飲み物は口寂しさを満たしつつ、眠る前の合図にもなる'},
     {name:'ノンアルコール飲料', price:'¥1,000前後', kw:'ノンアルコールビール', note:'寝酒の置き換えに。「一杯やって寝る」の流れは保ったまま、眠りを壊す成分だけを抜く'}],
 };
+/* 大きな問題が見つからなかった人向けの「保つ」道具 */
+const GOODS_OK = [
+  {dom:'rhythm', name:'光目覚まし時計', price:'約¥6,000〜8,000', kw:'光目覚まし時計', note:'起きる時刻を休日も含めてそろえるための道具。夜の眠気は朝の光で決まる'},
+  {dom:'default', name:'充電ステーション', price:'¥1,500〜3,000', kw:'充電ステーション スマホ', note:'寝室の外にスマホの定位置を作り、今の良い環境をそのまま保つ'},
+  {dom:'present', name:'スマホ用タイムロックボックス', price:'¥2,900〜3,980', kw:'タイムロッキングコンテナ', note:'忙しい時期や生活が変わった直後の「崩れかけ」に備えて'},
+];
 const SVC = {
   present:{title:'LINEでやめる時刻を宣言→その時刻に合図', body:'専用LINEに「今夜◯時にやめる」と宣言すると、その時刻に合図が届きます。意志ではなく、外からの合図で区切ります。', cta:'LINEでやめる時刻を宣言する'},
   commit:{title:'LINEで寝る時刻を宣言→毎晩リマインド', body:'専用LINEに寝る時刻を宣言すると、毎晩その時刻にリマインドが届きます。「おやすみ」と送れば就寝時刻を記録し、守れた日が積み上がって推移も見られます。', cta:'LINEで寝る時刻を宣言する'},
@@ -921,24 +931,32 @@ let phaseText = '';
 let LAST = null;
 let CAME_FROM_PAY = false;  // 決済から戻った直後か(完全版の所有証明はメールの専用URLに一本化)
 
-/* 本番のStripe決済リンク。発行され次第ここに設定する(空の間はテスト動作=成功リダイレクトを模擬) */
-const STRIPE_URL = 'https://buy.stripe.com/8x29AUcp24RCcrkdIj5sA02';
+/* Stripe決済リンク。完全版はメール登録で無料提供に切り替えたため空にしている。
+   空のときは REPORT_API のメール登録動線(submitBuy)で完全版を開く。
+   有料に戻す場合は 'https://buy.stripe.com/8x29AUcp24RCcrkdIj5sA02' を設定する */
+const STRIPE_URL = '';
 /* テスト用スイッチ: true の間は決済を通さず、ボタンを押すだけで完全版が開く。テストが済んだら false に戻す */
 const 無料テスト = false;
 /* AmazonアソシエイトのトラッキングID(例: 'xxxx-22')。発行され次第ここに設定する。
    設定すると全ての商品リンクにタグが付き、フッターに規約上必須の開示文が表示される */
 const AMAZON_TAG = 'detoxnews-22';
+/* 診断専用のトラッキングID。設定すると診断内の商品リンクはこちらのタグになり、
+   アソシエイトの注文レポートで「診断経由で何が買われたか」をサイト記事と分けて見られる。空の間は AMAZON_TAG を使う */
+const AMAZON_TAG_診断 = '';
+function 診断タグ(){ return AMAZON_TAG_診断 || AMAZON_TAG; }
 function amazonUrl(kw){
-  return 'https://www.amazon.co.jp/s?k=' + encodeURIComponent(kw) + (AMAZON_TAG ? '&tag=' + AMAZON_TAG : '');
+  const tag = 診断タグ();
+  return 'https://www.amazon.co.jp/s?k=' + encodeURIComponent(kw) + (tag ? '&tag=' + tag : '');
 }
 /* 商品リンクのHTML。data属性にクリック計測用の情報を積んでおき、実際の送信は
    委任イベント(amzClickハンドラ設置箇所)でまとめて行う。属性値はエスケープして埋め込む */
 function amzAttr(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
 }
-function amzLinkHtml(d, g){
+/* place: 表示場所(free=無料の診断カード / full=完全版の診断カード / keep=完全版の強み・維持カード / ok=問題なしの結果) */
+function amzLinkHtml(d, g, place){
   return `<a class="amz" href="${amazonUrl(g.kw)}" target="_blank" rel="noopener"
-    data-dom="${amzAttr(d)}" data-kw="${amzAttr(g.kw)}" data-name="${amzAttr(g.name)}">Amazonで見る</a>`;
+    data-dom="${amzAttr(d)}" data-kw="${amzAttr(g.kw)}" data-name="${amzAttr(g.name)}" data-place="${amzAttr(place||'')}">Amazonで見る</a>`;
 }
 /* GASレポートサーバーのウェブアプリURL。デプロイ後に設定する。
    設定すると: メール入力→専用URL発行→メール送信→?r=ID でいつでも完全版を開ける */
@@ -1192,7 +1210,7 @@ function 診断ログ送信(D){
    .amzリンクは target="_blank" で別タブに開くため、このページ自体は残り続ける。
    よってsendBeaconでなくてもよいが、診断ログ送信と同じ形に揃えて堅牢にしている
 ============================================================ */
-function amzClick(dom, kw, name){
+function amzClick(dom, kw, name, place){
   if(!REPORT_API) return;
   try{
     const primaryDom = LAST && LAST.flagged.length ? LAST.flagged[0] : '';
@@ -1203,6 +1221,8 @@ function amzClick(dom, kw, name){
       domName: (DOMAINS[dom]||{}).name || dom,
       kw: kw,
       name: name,
+      place: place || '',
+      tag: 診断タグ(),
       sovereign: LAST ? LAST.sovereign : '',
       typeName: LAST ? buildTypeName(LAST.sovereign, LAST.flagged, LAST.ranked) : '',
       flaggedCount: LAST ? LAST.flagged.length : '',
@@ -1224,7 +1244,8 @@ function amzClick(dom, kw, name){
 document.addEventListener('click', function(e){
   const a = e.target.closest && e.target.closest('.amz');
   if(!a) return;
-  amzClick(a.dataset.dom||'', a.dataset.kw||'', a.dataset.name||'');
+  amzClick(a.dataset.dom||'', a.dataset.kw||'', a.dataset.name||'', a.dataset.place||'');
+  try{ if(window.gtag) gtag('event','amazon_click',{item_name:a.dataset.name||'', domain:a.dataset.dom||'', place:a.dataset.place||''}); }catch(err){}
 });
 
 /* 領域スコアの表示。内部計算は「高いほど問題が強い」のままだが、
@@ -1490,7 +1511,7 @@ function diagCard(d, i, sev, withGoods, withSupport){
   const feat = sub.acts[fi];
   const rest = sub.acts.filter((_,j)=>j!==fi).map(a=>`<li>${a}</li>`).join('');
   const goods = withGoods ? (GOODS[d]||[]).map(g=>{
-    return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　${amzLinkHtml(d,g)}<br><span class="gn">${g.note}</span></li>`;
+    return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　${amzLinkHtml(d,g,withSupport?'full':'free')}<br><span class="gn">${g.note}</span></li>`;
   }).join('') : '';
   const s = SVC[d];
   const support = (withSupport && s) ? `
@@ -1671,7 +1692,10 @@ function renderResult(D){
         <li>起きる時刻を休日も含めてそろえ続ける。夜は朝で作られる</li>
         <li>スマホの充電場所を寝室の外に保つ。環境が良い限り、習慣は崩れにくい</li>
         <li>生活が変わる時期、転職や引っ越しの直後だけ意識して見直す。乱れはそこから始まりやすい</li>
-      </ul></div></div>`;
+      </ul>
+      <div class="lab">保つのに効く道具　価格は実売の目安</div>
+      <ul class="goods">${GOODS_OK.map(g=>`<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　${amzLinkHtml(g.dom,g,'ok')}<br><span class="gn">${g.note}</span></li>`).join('')}</ul>
+      </div></div>`;
   }
 
 
@@ -1720,9 +1744,12 @@ function renderResult(D){
         </ul>
       </div>
       <div class="lockbar">
-        <div style="font-size:13px;color:var(--sub)"><s>通常価格 ¥1,560</s>　<span style="color:var(--bad);font-weight:700">リリース記念価格</span></div>
-        <div class="price">¥780 <small>／ 買い切り</small></div>
-        <button class="btn" style="margin-top:12px" onclick="buy()">完全版レポートを見る</button>
+        <div class="price">無料 <small>／ メールで受け取る</small></div>
+        <p class="gn" style="font-size:12.5px;color:var(--sub);margin-top:8px;text-align:left">完全版レポートの専用URLをメールでお送りします。この画面を閉じても、メールのリンクからいつでも読み直せます。</p>
+        <input class="mailin" id="buyMail" type="email" placeholder="メールアドレス" autocomplete="email">
+        <button class="btn" style="margin-top:10px" onclick="submitBuy()">メールで完全版を受け取る</button>
+        <p class="gn" id="buyMsg" style="font-size:12.5px;margin-top:8px"></p>
+        <p class="gn" style="font-size:11.5px;color:var(--sub);margin-top:6px;text-align:left">睡眠に役立つお知らせをお送りすることがあります。配信はいつでも停止できます。詳しくは<a href="privacy.html" style="color:var(--accent2)">プライバシーポリシー</a>へ。</p>
       </div>
     </div>
 
@@ -1816,6 +1843,7 @@ function submitBuy(){
     body: JSON.stringify({action:'save', email:em, result:LAST, uid:回答者ID(), paid:CAME_FROM_PAY})
   }).then(function(r){ return r.json(); }).then(function(j){
     if(j && j.ok){
+      try{ if(window.gtag) gtag('event','email_signup',{method:'full_report'}); }catch(err){}
       const prem = document.querySelector('.prem');
       prem.innerHTML = buildPremium(LAST);
       const body = prem.querySelector('.repbody');
@@ -1838,7 +1866,7 @@ function submitBuy(){
 function keepCard(d, sev, isStrength, withSupport){
   const k = KEEP[d];
   const goods = withSupport ? (GOODS[d]||[]).map(g=>{
-    return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　${amzLinkHtml(d,g)}<br><span class="gn">${g.note}</span></li>`;
+    return `<li><b>${g.name}</b>　<span class="pr">${g.price}</span>　${amzLinkHtml(d,g,'keep')}<br><span class="gn">${g.note}</span></li>`;
   }).join('') : '';
   const s = SVC[d];
   const support = (withSupport && s) ? `
@@ -1883,7 +1911,7 @@ function buildPremium(D){
     + keeps.map(d=>keepCard(d,sev,false,true)).join('');
   return `
     <div class="head">
-      <div class="t">完全版レポート${CAME_FROM_PAY?'':'　テスト表示中'}</div>
+      <div class="t">完全版レポート</div>
       <div class="s">すべての診断と、続けるための30日設計・毎日のサポート</div>
     </div>
     <div class="repbody">
@@ -1905,11 +1933,9 @@ function buildPremium(D){
         <h3>3ヶ月後の再診断</h3>
         <ul class="rep"><li>同じ診断にもう一度答えると、睡眠力スコアの変化を確認できます。行動の定着には平均66日かかるという研究報告があります。60日を過ぎたあたりでの再診断がおすすめです。</li></ul>
         <div class="feat noprint" style="margin-top:14px">
-          この画面を一度閉じると、再び表示することはできません。商品の性質上、閲覧済みのレポートの返金にも応じられません。<br>
-          上部の<b>「専用URLをメールで受け取る」</b>から専用URLの送信を済ませ、<b>メールが届いているかを今この場でご確認ください</b>。メールのリンクからは、いつでもこのレポートを開き直せます。<br>
+          このレポートの専用URLは、ご登録のメールアドレスにお送りしています。メールのリンクからは、いつでもこのレポートを開き直せます。<br>
           メールが見つからない場合は、<b>迷惑メールフォルダ</b>もあわせてご確認ください。
         </div>
-        ${CAME_FROM_PAY?'':'<p class="testnote">※現在はテスト動作です(決済なしで解錠されます)。本番ではStripe決済 ¥780 の完了後に、専用URLの発行とメール送信を行います。</p>'}
       </div>
     </div>`;
 }
